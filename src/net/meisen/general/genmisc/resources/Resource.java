@@ -385,10 +385,11 @@ public class Resource {
 		final Set<ResourceInfo> retval = new HashSet<ResourceInfo>();
 
 		if (lookOnClassPath) {
-
+			
 			// look on the classpath for the pattern
+			final String pathSep = System.getProperty("path.separator");
 			final String classPath = System.getProperty("java.class.path", ".");
-			final String[] classPathElements = classPath.split(";");
+			final String[] classPathElements = classPath.split(pathSep);
 			for (final String element : classPathElements) {
 				final File file = new File(element);
 				if (file.isDirectory()) {
@@ -398,7 +399,7 @@ public class Resource {
 					retval.addAll(getResourcesFromJarFile(file, pattern));
 				}
 			}
-		} 
+		}
 		if (lookInWorkingDir) {
 
 			// look in the working directory for the pattern
