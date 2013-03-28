@@ -34,7 +34,6 @@ public class TestResource {
 	private static FileManager fileManager = new FileManager();
 	private static String testFileName = "dummy.txt";
 
-	// initialize
 	/**
 	 * Initializes the resources available
 	 */
@@ -107,13 +106,12 @@ public class TestResource {
 		assertEquals(path, workingDir + file.getName());
 
 		/*
-		 * a relative path should be resolved to a class-path if not available
-		 * on file-system
+		 * a relative path should be resolved to a class-path if not available on
+		 * file-system
 		 */
 		path = Resource
 				.resolveResource(".\\net\\meisen\\general\\gendummy\\dummy.txt");
-		assertEquals(path.endsWith("net/meisen/general/gendummy/dummy.txt"),
-				true);
+		assertEquals(path.endsWith("net/meisen/general/gendummy/dummy.txt"), true);
 
 		/*
 		 * check the resolution of an absolute path
@@ -128,17 +126,15 @@ public class TestResource {
 				.resolveResource("./net\\meisen/general/gendummy/dummy2.txt");
 		assertEquals(path, null);
 
-		path = Resource
-				.resolveResource("./net/meisen/general/gendummy/dummy.txt");
-		assertEquals(path.endsWith("net/meisen/general/gendummy/dummy.txt"),
-				true);
+		path = Resource.resolveResource("./net/meisen/general/gendummy/dummy.txt");
+		assertEquals(path.endsWith("net/meisen/general/gendummy/dummy.txt"), true);
 	}
 
 	/**
 	 * Check the {@link Resource#hasResource(String)} functionality
 	 * 
 	 * @throws IOException
-	 *             if a test-file cannot be created
+	 *           if a test-file cannot be created
 	 */
 	@Test
 	public void testHasResource() throws IOException {
@@ -160,8 +156,8 @@ public class TestResource {
 		assertEquals(hasResource, false);
 
 		/*
-		 * a relative path should be resolved to a class-path if not available
-		 * on file-system
+		 * a relative path should be resolved to a class-path if not available on
+		 * file-system
 		 */
 		hasResource = Resource
 				.hasResource(".\\net\\meisen\\general\\gendummy\\Dummy.java");
@@ -229,7 +225,7 @@ public class TestResource {
 	 * Tests the availability of resources
 	 * 
 	 * @throws IOException
-	 *             if a test-file cannot be created
+	 *           if a test-file cannot be created
 	 */
 	@Test
 	public void testGetAvailableResources() throws IOException {
@@ -284,8 +280,7 @@ public class TestResource {
 		/*
 		 * lets check something within a jar file
 		 */
-		files = Resource
-				.getAvailableResources("./net\\meisen/general/gendummy/");
+		files = Resource.getAvailableResources("./net\\meisen/general/gendummy/");
 		assertEquals(files.size(), 2);
 		assertEquals(files.contains(testFileName), true);
 		assertEquals(files.contains("Dummy.class"), true);
@@ -331,8 +326,7 @@ public class TestResource {
 		final File dir = fileManager.createDir(workingDir);
 		final File subDir1 = fileManager.createDir(dir.getAbsolutePath());
 		final File subDir2 = fileManager.createDir(dir.getAbsolutePath());
-		final File subSubDir1 = fileManager
-				.createDir(subDir1.getAbsolutePath());
+		final File subSubDir1 = fileManager.createDir(subDir1.getAbsolutePath());
 		final File subFile1 = fileManager.createFile(subDir1.getAbsolutePath());
 		final File subFile2 = fileManager.createFile(subDir1.getAbsolutePath());
 		files = Resource.getAvailableResources(dir.getAbsolutePath(), true);
@@ -355,7 +349,7 @@ public class TestResource {
 	 * Tests the retrieval of resources fromt he classpath
 	 * 
 	 * @throws IOException
-	 *             if a file cannot be read or written
+	 *           if a file cannot be read or written
 	 */
 	@Test
 	public void testGetResourcesFromClasspath() throws IOException {
@@ -367,24 +361,47 @@ public class TestResource {
 		final File dummySubRes = new File(dir, testFileName);
 		dummySubRes.createNewFile();
 
-		// we also need the test-jar file
-		final File jarTestFile = new File("lib",
-				"net-meisen-general-gen-dummy-1.0.0-SNAPSHOT.jar");
+		// we also need the test-jar file from the class-path
+		final String pathSep = System.getProperty("path.separator");
+		final String classPath = System.getProperty("java.class.path", ".");
+		final String[] classPathElements = classPath.split(pathSep);
+		File jarTestFile = null;
+		for (final String element : classPathElements) {
+			final File posFile = new File(element);
+			if ("net-meisen-general-gen-dummy-1.0.0-SNAPSHOT.jar".equals(posFile
+					.getName())) {
+				jarTestFile = posFile;
+				break;
+			}
+		}
 
 		// check the resources
-		final Collection<ResourceInfo> files = Resource.getResources(
-				testFileName, true, false);
-		assertEquals(files.size(), 4);
-		assertEquals(files.contains(new ResourceInfo(dummyRes
-				.getCanonicalPath(), true)), true);
-		assertEquals(files.contains(new ResourceInfo(dummySubRes
-				.getCanonicalPath(), true)), true);
-		assertEquals(files.contains(new ResourceInfo(testFileName, jarTestFile
-				.getCanonicalPath(), true)), true);
-		assertEquals(files.contains(new ResourceInfo(
-				"net/meisen/general/gendummy/dummy.txt", jarTestFile
-						.getCanonicalPath(), true)), true);
-		
+		final Collection<ResourceInfo> files = Resource.getResources(testFileName,
+				true, false);
+		assertEquals("Expected to find exactly 4 files.", files.size(), 4);
+		assertEquals("The dummyRes '" + dummyRes.getCanonicalPath()
+				+ "' was not found.",
+				files.contains(new ResourceInfo(dummyRes.getCanonicalPath(), true)),
+				true);
+		assertEquals("The dummySubRes '" + dummySubRes.getCanonicalPath()
+				+ "' was not found.",
+				files.contains(new ResourceInfo(dummySubRes.getCanonicalPath(), true)),
+				true);
+		assertEquals(
+				"The resource '"
+						+ testFileName
+						+ "' was not found in the jarTestFile '"
+						+ jarTestFile.getCanonicalPath()
+						+ " (ResInfo: "
+						+ new ResourceInfo(testFileName, jarTestFile.getCanonicalPath(),
+								true) + ")", files.contains(new ResourceInfo(testFileName,
+						jarTestFile.getCanonicalPath(), true)), true);
+		assertEquals("The file in the subdirectories of the jarTestFile '"
+				+ jarTestFile.getCanonicalPath() + "' was not found",
+				files.contains(new ResourceInfo(
+						"net/meisen/general/gendummy/dummy.txt", jarTestFile
+								.getCanonicalPath(), true)), true);
+
 		// delete the dummy file now
 		dummyRes.delete();
 	}
@@ -393,7 +410,7 @@ public class TestResource {
 	 * Tests the retrieval of resources fromt he classpath
 	 * 
 	 * @throws IOException
-	 *             if a file cannot be read or written
+	 *           if a file cannot be read or written
 	 */
 	@Test
 	public void testGetResourcesFromWorkingDir() throws IOException {
@@ -406,14 +423,16 @@ public class TestResource {
 		dummySubRes.createNewFile();
 
 		// check the resources
-		final Collection<ResourceInfo> files = Resource.getResources(
-				testFileName, false, true);
+		final Collection<ResourceInfo> files = Resource.getResources(testFileName,
+				false, true);
 
 		assertEquals(files.size(), 2);
-		assertEquals(files.contains(new ResourceInfo(dummyRes
-				.getCanonicalPath(), true)), true);
-		assertEquals(files.contains(new ResourceInfo(dummySubRes
-				.getCanonicalPath(), true)), true);
+		assertEquals(
+				files.contains(new ResourceInfo(dummyRes.getCanonicalPath(), true)),
+				true);
+		assertEquals(
+				files.contains(new ResourceInfo(dummySubRes.getCanonicalPath(), true)),
+				true);
 
 		// delete the dummy file now
 		dummyRes.delete();
@@ -426,11 +445,11 @@ public class TestResource {
 	public static void cleanUp() {
 
 		// lets clean up for the test
-		final List<File> listWorkingDir = Files.getFilelist(
-				new File(workingDir), null, testFileName);
+		final List<File> listWorkingDir = Files.getFilelist(new File(workingDir),
+				null, testFileName);
 		Files.bulkDeleteFiles(listWorkingDir);
-		final List<File> listResourceDir = Files.getFilelist(new File(
-				resourceDir), null, testFileName);
+		final List<File> listResourceDir = Files.getFilelist(new File(resourceDir),
+				null, testFileName);
 		Files.bulkDeleteFiles(listResourceDir);
 
 		// cleanup
