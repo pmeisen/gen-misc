@@ -391,9 +391,6 @@ public class Resource {
 			final String classPath = System.getProperty("java.class.path", ".");
 			final String[] classPathElements = classPath.split(pathSep);
 			for (final String element : classPathElements) {
-				
-				System.out.println("---> " + element);
-				
 				final File file = new File(element);
 				if (file.isDirectory()) {
 					final List<File> files = Files.getFilelist(file, null, pattern);
