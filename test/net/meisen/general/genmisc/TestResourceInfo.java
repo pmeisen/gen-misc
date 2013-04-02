@@ -53,7 +53,9 @@ public class TestResourceInfo {
 	@Test
 	public void testFiles() throws IOException {
 		ResourceInfo info;
-
+System.out.println(workingDir);
+System.out.println(new File(workingDir).exists());
+System.out.println(new File(workingDir).canWrite());
 		// check a file-system directory
 		info = new ResourceInfo(workingDir, false);
 		assertEquals(info.getInJarPath(), null);
