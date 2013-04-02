@@ -345,8 +345,15 @@ public class Resource {
 	 */
 	public static Collection<ResourceInfo> getResources(final String fileName,
 			final boolean lookOnClassPath, final boolean lookInWorkingDir) {
-		final Pattern pattern = Pattern.compile("(?:^|.*[/\\\\])\\Q" + fileName
-				+ "\\E$");
+
+		// we have to modify the filename and replace the \ and / by regular
+		// expressions
+		final String regExFileName = "\\Q" + fileName.replace("/", "\\E[/\\\\]\\Q")
+				+ "\\E";
+
+		// create the pattern
+		final Pattern pattern = Pattern.compile("(?:^|.*[/\\\\])" + regExFileName
+				+ "$");
 		return getResources(pattern, lookOnClassPath, lookInWorkingDir);
 	}
 
@@ -385,7 +392,7 @@ public class Resource {
 		final Set<ResourceInfo> retval = new HashSet<ResourceInfo>();
 
 		if (lookOnClassPath) {
-			
+
 			// look on the classpath for the pattern
 			final String pathSep = System.getProperty("path.separator");
 			final String classPath = System.getProperty("java.class.path", ".");
