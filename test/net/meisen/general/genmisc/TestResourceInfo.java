@@ -56,13 +56,16 @@ public class TestResourceInfo {
 System.out.println(workingDir);
 System.out.println(new File(workingDir).exists());
 System.out.println(new File(workingDir).canWrite());
+System.out.println(resourceDir);
+System.out.println(new File(resourceDir).exists());
+System.out.println(new File(resourceDir).canWrite());
 		// check a file-system directory
 		info = new ResourceInfo(workingDir, false);
 		assertEquals(info.getInJarPath(), null);
 		assertEquals(info.getJarPath(), null);
 		assertEquals(info.getType(), ResourceType.FILE_SYSTEM_PATH);
 		assertEquals(info.getFullPath(), Files.getCanonicalPath(workingDir));
-
+System.out.println("HERE");
 		// check a file-system file
 		final File file = fileManager.createFile(workingDir);
 		info = new ResourceInfo(file.getAbsolutePath(), true);
@@ -70,7 +73,7 @@ System.out.println(new File(workingDir).canWrite());
 		assertEquals(info.getJarPath(), null);
 		assertEquals(info.getType(), ResourceType.FILE_SYSTEM_FILE);
 		assertEquals(info.getFullPath(), Files.getCanonicalPath(file));
-
+System.out.println("HERE2");
 		// lets create a file as resource, which can be found via class-path but
 		// is still a file
 		final File resFile = fileManager.createFile(resourceDir);
