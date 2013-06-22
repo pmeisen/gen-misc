@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+encoding//test/net/meisen/general/genmisc/encodedFiles/Cp1252.txt=Cp1252
+encoding//test/net/meisen/general/genmisc/encodedFiles/UTF8_noBOM.txt=UTF-8
+encoding//test/net/meisen/general/genmisc/exceptions/catalog/catalog-test-ISO.properties=ISO-8859-1
+encoding//test/net/meisen/general/genmisc/exceptions/catalog/catalog-test-UTF8.properties=UTF-8
+encoding//test/net/meisen/general/genmisc/exceptions/catalog/localizedCatalog/testExceptions_de.properties=UTF-8

@@ -19,17 +19,17 @@ public abstract class Utf8ResourceBundle {
 
 	/**
 	 * @param baseName
-	 *            the baseName of the {@link ResourceBundle} to be returned
-	 * @return the {@link ResourceBundle} with the specified
-	 *         <code>baseName</code>
+	 *          the baseName of the {@link ResourceBundle} to be returned
+	 * @return the {@link ResourceBundle} with the specified <code>baseName</code>
 	 */
 	public static final ResourceBundle getBundle(String baseName) {
 		ResourceBundle bundle = null;
 
 		try {
 			bundle = ResourceBundle.getBundle(baseName);
-		} catch (MissingResourceException e) {
-			// TODO add logging
+		} catch (final MissingResourceException e) {
+			System.err.println("Unable to load the bundle '" + baseName
+					+ "', because of a missing resource ('" + e.getMessage() + "')");
 			bundle = null;
 		}
 		return createUtf8PropertyResourceBundle(bundle);
@@ -37,19 +37,19 @@ public abstract class Utf8ResourceBundle {
 
 	/**
 	 * @param baseName
-	 *            the baseName of the {@link ResourceBundle} to be returned
+	 *          the baseName of the {@link ResourceBundle} to be returned
 	 * @param locale
-	 *            the {@link Locales} to be used for the {@link ResourceBundle}
-	 * @return the {@link ResourceBundle} with the specified
-	 *         <code>baseName</code>
+	 *          the {@link Locales} to be used for the {@link ResourceBundle}
+	 * @return the {@link ResourceBundle} with the specified <code>baseName</code>
 	 */
 	public static final ResourceBundle getBundle(String baseName, Locale locale) {
 		ResourceBundle bundle = null;
 
 		try {
 			bundle = ResourceBundle.getBundle(baseName, locale);
-		} catch (MissingResourceException e) {
-			// TODO add logging
+		} catch (final MissingResourceException e) {
+			System.err.println("Unable to load the bundle '" + baseName
+					+ "', because of a missing resource ('" + e.getMessage() + "')");
 			bundle = null;
 		}
 
@@ -58,14 +58,13 @@ public abstract class Utf8ResourceBundle {
 
 	/**
 	 * @param baseName
-	 *            the baseName of the {@link ResourceBundle} to be returned
+	 *          the baseName of the {@link ResourceBundle} to be returned
 	 * @param locale
-	 *            the {@link Locales} to be used for the {@link ResourceBundle}
+	 *          the {@link Locales} to be used for the {@link ResourceBundle}
 	 * @param loader
-	 *            the {@link ClassLoader} which identifies the
-	 *            {@link ResourceBundle} to be loaded
-	 * @return the {@link ResourceBundle} with the specified
-	 *         <code>baseName</code>
+	 *          the {@link ClassLoader} which identifies the
+	 *          {@link ResourceBundle} to be loaded
+	 * @return the {@link ResourceBundle} with the specified <code>baseName</code>
 	 */
 	public static ResourceBundle getBundle(String baseName, Locale locale,
 			ClassLoader loader) {
@@ -73,8 +72,9 @@ public abstract class Utf8ResourceBundle {
 
 		try {
 			bundle = ResourceBundle.getBundle(baseName, locale, loader);
-		} catch (MissingResourceException e) {
-			// TODO add logging
+		} catch (final MissingResourceException e) {
+			System.err.println("Unable to load the bundle '" + baseName
+					+ "', because of a missing resource ('" + e.getMessage() + "')");
 			bundle = null;
 		}
 
@@ -116,7 +116,7 @@ public abstract class Utf8ResourceBundle {
 				return null;
 			try {
 				return new String(value.getBytes("ISO-8859-1"), "UTF-8");
-			} catch (UnsupportedEncodingException e) {
+			} catch (final UnsupportedEncodingException e) {
 				// Shouldn't fail - but should we still add logging message?
 				return null;
 			}

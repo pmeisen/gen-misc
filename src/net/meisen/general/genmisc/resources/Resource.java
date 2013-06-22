@@ -348,13 +348,17 @@ public class Resource {
 
 		// we have to modify the filename and replace the \ and / by regular
 		// expressions
-		final String regExFileName = "\\Q" + fileName.replace("/", "\\E[/\\\\]\\Q")
-				+ "\\E";
+		final String regExFileName = transformFileNameIntoValidRegEx(fileName);
 
 		// create the pattern
 		final Pattern pattern = Pattern.compile("(?:^|.*[/\\\\])" + regExFileName
 				+ "$");
 		return getResources(pattern, lookOnClassPath, lookInWorkingDir);
+	}
+
+	public static String transformFileNameIntoValidRegEx(final String fileName) {
+		return "\\Q" + fileName.replaceAll("[\\\\/]", "\\\\E[/\\\\\\\\]\\\\Q")
+				+ "\\E";
 	}
 
 	/**

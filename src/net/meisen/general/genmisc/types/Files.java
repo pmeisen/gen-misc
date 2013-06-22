@@ -1187,4 +1187,53 @@ public class Files {
 			}
 		}
 	}
+
+	/**
+	 * Guesses the encoding of the passed file. If not guessable the default
+	 * encoding will be returned, which can be <code>null</code>. If
+	 * <code>null</code> is passed the system's default encoding (
+	 * <code>file.encoding</code>) will be used.
+	 * 
+	 * @param file
+	 *          the file to guess the encoding for
+	 * @param defaultEncoding
+	 *          the default encoding used when not guessable, can be
+	 *          <code>null</code>
+	 * 
+	 * @return the guessed encoding
+	 * 
+	 * @throws IOException
+	 *           if the file cannot be accessed
+	 * 
+	 * @see System#getProperties()
+	 */
+	public static String guessEncoding(final String file,
+			final String defaultEncoding) throws IOException {
+		return guessEncoding(new File(file), defaultEncoding);
+	}
+
+	/**
+	 * Guesses the encoding of the passed file. If not guessable the default
+	 * encoding will be returned, which can be <code>null</code>. If
+	 * <code>null</code> is passed the system's default encoding (
+	 * <code>file.encoding</code>) will be used.
+	 * 
+	 * @param file
+	 *          the file to guess the encoding for
+	 * @param defaultEncoding
+	 *          the default encoding used when not guessable, can be
+	 *          <code>null</code>
+	 * 
+	 * @return the guessed encoding
+	 * 
+	 * @throws IOException
+	 *           if the file cannot be accessed
+	 * 
+	 * @see System#getProperties()
+	 */
+	public static String guessEncoding(final File file,
+			final String defaultEncoding) throws IOException {
+		final InputStream inStream = new FileInputStream(file);
+		return Streams.guessEncoding(inStream, defaultEncoding);
+	}
 }
