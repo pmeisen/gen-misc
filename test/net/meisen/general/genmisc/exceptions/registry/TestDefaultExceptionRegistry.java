@@ -49,7 +49,7 @@ public class TestDefaultExceptionRegistry {
 
 		// throw some exceptions and check the result
 		try {
-			registry.throwException(FullException.class, 1000);
+			registry.throwException(FullException.class, 1000, new Locale("en"));
 			fail("Exception was not thrown.");
 		} catch (final FullException e) {
 			assertNull(e.getCause());
@@ -75,7 +75,7 @@ public class TestDefaultExceptionRegistry {
 		}
 
 		try {
-			registry.throwException(OnlyMessageException.class, 1001);
+			registry.throwException(OnlyMessageException.class, 1001, new Locale("en"));
 			fail("Exception was not thrown.");
 		} catch (final OnlyMessageException e) {
 			assertNull(e.getCause());
