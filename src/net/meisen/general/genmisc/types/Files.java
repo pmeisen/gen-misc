@@ -307,10 +307,15 @@ public class Files {
 		// create a filter
 		final FileFilter filter = new FileFilter() {
 
+			private final String dirRegEx = "\\Q" + Files.getCanonicalPath(dir)
+					+ "\\E";
+
 			@Override
 			public boolean accept(final File file) {
 				final String filePath = Files.getCanonicalPath(file);
-				return searchPattern.matcher(filePath).matches();
+				final String subFilePath = filePath.replaceFirst(dirRegEx, "");
+
+				return searchPattern.matcher(subFilePath).matches();
 			}
 		};
 

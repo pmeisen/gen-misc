@@ -356,6 +356,19 @@ public class Resource {
 		return getResources(pattern, lookOnClassPath, lookInWorkingDir);
 	}
 
+	/**
+	 * Helper method if a <code>fileName</code> has to be transformed into a
+	 * regular expression, which can be used to filter for the
+	 * <code>fileName</code>.
+	 * 
+	 * @param fileName
+	 *          the file's name to be transformed into a valid regular expression
+	 * 
+	 * @return the transformed valid regular expression
+	 * 
+	 * @see #getResources(Pattern)
+	 * @see #getResources(Pattern, boolean, boolean)
+	 */
 	public static String transformFileNameIntoValidRegEx(final String fileName) {
 		return "\\Q" + fileName.replaceAll("[\\\\/]", "\\\\E[/\\\\\\\\]\\\\Q")
 				+ "\\E";
@@ -402,7 +415,7 @@ public class Resource {
 			final String classPath = System.getProperty("java.class.path", ".");
 			final String[] classPathElements = classPath.split(pathSep);
 			for (final String element : classPathElements) {
-				final File file = new File(element);
+				final File file = new File(element);				
 				if (file.isDirectory()) {
 					final List<File> files = Files.getFilelist(file, null, pattern);
 					retval.addAll(ResourceInfo.transformFromFileCollection(files));

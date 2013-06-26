@@ -8,26 +8,69 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+/**
+ * Tests the implementation of a <code>LocalizedExceptionCatalog</code>.
+ * 
+ * @author pmeisen
+ * 
+ */
 public class TestLocalizedExceptionCatalog {
 
+	/**
+	 * Tests the loading of a <code>LocalizedExceptionCatalog</code> using the
+	 * <code>.properties</code> suffix and just the bundles name (i.e.
+	 * <code>testExceptions.properties</code>).
+	 * 
+	 * @throws InvalidCatalogEntryException
+	 *           if an entry of the properties file is invalid
+	 */
 	@Test
 	public void testNamingWithProperties() throws InvalidCatalogEntryException {
-		final LocalizedExceptionCatalog exceptionCatalog = new LocalizedExceptionCatalog(
+		final DefaultLocalizedExceptionCatalog exceptionCatalog = new DefaultLocalizedExceptionCatalog(
 				"testExceptions.properties");
 
 		assertNotNull(exceptionCatalog);
 		checkCatalog(exceptionCatalog);
 	}
 
+	/**
+	 * Tests the loading of a <code>LocalizedExceptionCatalog</code> using just
+	 * the bundles name (i.e. <code>testExceptions.properties</code>).
+	 * 
+	 * @throws InvalidCatalogEntryException
+	 *           if an entry of the properties file is invalid
+	 */
 	@Test
 	public void testNamingWithoutProperties() throws InvalidCatalogEntryException {
-		final LocalizedExceptionCatalog exceptionCatalog = new LocalizedExceptionCatalog(
+		final DefaultLocalizedExceptionCatalog exceptionCatalog = new DefaultLocalizedExceptionCatalog(
 				"testExceptions");
 		assertNotNull(exceptionCatalog);
 		checkCatalog(exceptionCatalog);
 	}
 
-	public void checkCatalog(final LocalizedExceptionCatalog catalog) {
+	/**
+	 * Tests the loading of a <code>LocalizedExceptionCatalog</code> using just
+	 * the bundles name (i.e. <code>testExceptions.properties</code>).
+	 * 
+	 * @throws InvalidCatalogEntryException
+	 *           if an entry of the properties file is invalid
+	 */
+	@Test
+	public void testNamingWithFullPath() throws InvalidCatalogEntryException {
+		final DefaultLocalizedExceptionCatalog exceptionCatalog = new DefaultLocalizedExceptionCatalog(
+				"net/meisen/general/genmisc/exceptions/catalog/localizedCatalog/testExceptions");
+		assertNotNull(exceptionCatalog);
+		checkCatalog(exceptionCatalog);
+	}
+
+	/**
+	 * Helper method which checks the passed <code>catalog</code> and the values
+	 * of it against the expected values of the test-bundle.
+	 * 
+	 * @param catalog
+	 *          the <code>LocalizedExceptionCatalog</code> to be tested
+	 */
+	public void checkCatalog(final DefaultLocalizedExceptionCatalog catalog) {
 		Locale l;
 
 		final Locale locale_de = new Locale("de");

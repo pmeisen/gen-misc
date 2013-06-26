@@ -3,9 +3,12 @@ package net.meisen.general.genmisc.exceptions.catalog;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,18 +40,23 @@ import net.meisen.general.genmisc.types.Objects;
  * @author pmeisen
  * 
  * @see Locale
- * @see ExceptionCatalog
+ * @see DefaultExceptionCatalog
  * 
  */
-public class LocalizedExceptionCatalog implements Serializable {
+public class DefaultLocalizedExceptionCatalog implements
+		ILocalizedExceptionCatalog, Serializable {
 	private static final long serialVersionUID = -6074214052182861862L;
 
-	private Map<Locale, ExceptionCatalog> localizedCatalogs = new HashMap<Locale, ExceptionCatalog>();
+	private Map<Locale, IExceptionCatalog> localizedCatalogs = new HashMap<Locale, IExceptionCatalog>();
+
+	private Set<Integer> sortedKeySet = new TreeSet<Integer>();
+
+	private Locale defLocale = null;
 
 	/**
 	 * Default constructor generates an empty catalog
 	 */
-	public LocalizedExceptionCatalog() {
+	public DefaultLocalizedExceptionCatalog() {
 		// nothing to do
 	}
 
@@ -62,7 +70,13 @@ public class LocalizedExceptionCatalog implements Serializable {
 	 * @throws InvalidCatalogEntryException
 	 *           if one of the entries of the catalog is invalid
 	 */
-	public LocalizedExceptionCatalog(final String bundle)
+	public DefaultLocalizedExceptionCatalog(final String bundle)
+			throws InvalidCatalogEntryException {
+		setBundle(bundle);
+	}
+
+	@Override
+	public void loadBundle(final String bundle)
 			throws InvalidCatalogEntryException {
 		setBundle(bundle);
 	}
@@ -82,6 +96,7 @@ public class LocalizedExceptionCatalog implements Serializable {
 
 		// remove everything we have so far
 		localizedCatalogs.clear();
+		sortedKeySet.clear();
 
 		// remove a .properties from the bundles name
 		String validBundleName;
@@ -92,14 +107,16 @@ public class LocalizedExceptionCatalog implements Serializable {
 		}
 
 		// create the pattern for the bundle's resources
-		final String regEx = ".*"
+		final String regExLocale = "(?:\\_([a-z]{2})(?:\\_([A-Z]{2}))?)?\\.properties$";
+		final String regExClasspath = ".*"
 				+ Resource.transformFileNameIntoValidRegEx(validBundleName)
-				+ "(?:\\_([a-z]{2})(?:\\_([A-Z]{2}))?)?\\.properties$";
-		final Pattern pattern = Pattern.compile(regEx);
+				+ regExLocale;
+		final Pattern patternClasspath = Pattern.compile(regExClasspath);
+		final Pattern patternLocale = Pattern.compile(regExLocale);
 
 		// get the resources
-		final Collection<ResourceInfo> resInfos = Resource.getResources(pattern,
-				true, false);
+		final Collection<ResourceInfo> resInfos = Resource.getResources(
+				patternClasspath, true, false);
 
 		// get through the resources we found
 		for (final ResourceInfo resInfo : resInfos) {
@@ -108,12 +125,16 @@ public class LocalizedExceptionCatalog implements Serializable {
 			final InputStream stream = Resource.getResourceAsStream(resInfo);
 
 			// create the catalog
-			final ExceptionCatalog catalog = new ExceptionCatalog(stream);
+			final IExceptionCatalog catalog = createNewCatalog(stream);
 
 			// add the locale setting to the map for the catalog
 			final String fullPath = resInfo.getFullPath();
-			final Matcher matcher = pattern.matcher(fullPath);
-			matcher.find();
+			final Matcher matcher = patternLocale.matcher(fullPath);
+
+			// if no matcher is found skip it
+			if (!matcher.find()) {
+				continue;
+			}
 
 			// get the language and country from the match
 			final String language = matcher.group(1);
@@ -131,22 +152,36 @@ public class LocalizedExceptionCatalog implements Serializable {
 
 			// add it
 			localizedCatalogs.put(locale, catalog);
+			sortedKeySet.addAll(catalog.getAvailableExceptions());
 		}
 	}
 
 	/**
-	 * Gets the message for the specified <code>number</code> in the specified
-	 * <code>locale</code>.
+	 * Method to create the <code>ExceptionCatalog</code> which is internally used
+	 * to store all the exceptions defined for one <code>Locale</code>.
 	 * 
-	 * @param number
-	 *          the number to get the message for
-	 * @param locale
-	 *          the <code>Locale</code> to get the message for
+	 * @param stream
+	 *          the <code>InputStream</code> of the <code>Locale</code>'s property
+	 *          file to load the <code>ExceptionCatalog</code> from
 	 * 
-	 * @return the message found for the specified <code>number</code> and the
-	 *         specified <code>locale</code>
+	 * @return the created new catalog
+	 * 
+	 * @throws InvalidCatalogEntryException
+	 *           if the properties cannot be read by the
+	 *           <code>ExceptionCatalog</code>
 	 */
+	public IExceptionCatalog createNewCatalog(final InputStream stream)
+			throws InvalidCatalogEntryException {
+		return new DefaultExceptionCatalog(stream);
+	}
+
+	@Override
 	public String getMessage(final Integer number, final Locale locale) {
+
+		// check if there is a message defined for the number
+		if (!sortedKeySet.contains(number)) {
+			return null;
+		}
 
 		// check what we have to validate
 		boolean useDefault = Objects.empty(locale);
@@ -156,7 +191,7 @@ public class LocalizedExceptionCatalog implements Serializable {
 		String message = null;
 		if (useCountry) {
 			final Locale l = new Locale(locale.getLanguage(), locale.getCountry());
-			final ExceptionCatalog catalog = localizedCatalogs.get(l);
+			final IExceptionCatalog catalog = localizedCatalogs.get(l);
 			message = catalog == null ? null : catalog.getMessage(number);
 
 			// check if we got a message, otherwise we have to check the language
@@ -167,7 +202,7 @@ public class LocalizedExceptionCatalog implements Serializable {
 
 		if (useLanguage) {
 			final Locale l = new Locale(locale.getLanguage());
-			final ExceptionCatalog catalog = localizedCatalogs.get(l);
+			final IExceptionCatalog catalog = localizedCatalogs.get(l);
 			message = catalog == null ? null : catalog.getMessage(number);
 
 			// check if we got a message, otherwise we have to check the default
@@ -178,10 +213,30 @@ public class LocalizedExceptionCatalog implements Serializable {
 
 		if (useDefault) {
 			final Locale l = null;
-			final ExceptionCatalog catalog = localizedCatalogs.get(l);
+			final IExceptionCatalog catalog = localizedCatalogs.get(l);
 			message = catalog == null ? null : catalog.getMessage(number);
 		}
 
 		return message;
+	}
+
+	@Override
+	public String getMessage(final Integer number) {
+
+		// get the default locale of the VM
+		final Locale locale = defLocale == null ? Locale.getDefault() : defLocale;
+
+		// get the message for the locale
+		return getMessage(number, locale);
+	}
+
+	@Override
+	public void setDefaultLocale(final Locale locale) {
+		this.defLocale = locale;
+	}
+
+	@Override
+	public Set<Integer> getAvailableExceptions() {
+		return Collections.unmodifiableSet(sortedKeySet);
 	}
 }

@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 /**
  * An entry for a <code>ExceptionCatalog</code>.
  * 
- * @see ExceptionCatalog
+ * @see DefaultExceptionCatalog
  * 
  * @author pmeisen
  * 

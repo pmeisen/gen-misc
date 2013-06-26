@@ -9,7 +9,9 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Collections;
 import java.util.Properties;
+import java.util.Set;
 
 import net.meisen.general.genmisc.types.Files;
 import net.meisen.general.genmisc.types.Streams;
@@ -22,13 +24,14 @@ import net.meisen.general.genmisc.types.Streams;
  * @author pmeisen
  * 
  */
-public class ExceptionCatalog extends HashMap<Integer, String> {
+public class DefaultExceptionCatalog extends HashMap<Integer, String> implements
+		IExceptionCatalog {
 	private static final long serialVersionUID = -199470873362845992L;
 
 	/**
 	 * Default constructor creates an empty catalog.
 	 */
-	public ExceptionCatalog() {
+	public DefaultExceptionCatalog() {
 		// creates an empty catalog
 	}
 
@@ -46,21 +49,54 @@ public class ExceptionCatalog extends HashMap<Integer, String> {
 	 *           integer
 	 * 
 	 * @see Properties
+	 * @see #addEntries(Properties, String)
 	 */
-	public ExceptionCatalog(final Properties properties, final String encoding)
-			throws InvalidCatalogEntryException {
+	public DefaultExceptionCatalog(final Properties properties,
+			final String encoding) throws InvalidCatalogEntryException {
 		addEntries(properties, encoding);
 	}
 
-	public ExceptionCatalog(final CatalogEntry... entries) {
+	/**
+	 * Creates a catalog based on the specified <code>entries</code>.
+	 * 
+	 * @param entries
+	 *          an array of <code>CatalogEntry</code> instances, which should be
+	 *          added to the catalog
+	 * 
+	 * @see CatalogEntry
+	 * @see #addEntries(CatalogEntry...)
+	 */
+	public DefaultExceptionCatalog(final CatalogEntry... entries) {
 		addEntries(entries);
 	}
 
-	public ExceptionCatalog(final InputStream stream)
+	/**
+	 * Creates a catalog based on the passed <code>stream</code>.
+	 * 
+	 * @param stream
+	 *          the stream to retrieve the entries from
+	 * 
+	 * @throws InvalidCatalogEntryException
+	 *           if the stream cannot be read or contains invalid entries
+	 * 
+	 * @see #addEntries(InputStream)
+	 */
+	public DefaultExceptionCatalog(final InputStream stream)
 			throws InvalidCatalogEntryException {
 		addEntries(stream);
 	}
 
+	/**
+	 * Creates a catalog based on the passed <code>File</code> (which has to be a
+	 * property file, i.e. a file with key-value-pairs).
+	 * 
+	 * @param propertyFile
+	 *          the <code>File</code> to read the properties from
+	 * 
+	 * @throws InvalidCatalogEntryException
+	 *           if the file contains invalid entries, i.e. if the key of a
+	 *           property cannot be interpreted as an integer
+	 */
 	public void addEntries(final File propertyFile)
 			throws InvalidCatalogEntryException {
 		try {
@@ -71,6 +107,15 @@ public class ExceptionCatalog extends HashMap<Integer, String> {
 		}
 	}
 
+	/**
+	 * Adds the entries of the passed <code>stream</code> to the catalog.
+	 * 
+	 * @param stream
+	 *          the stream to retrieve the entries from
+	 * 
+	 * @throws InvalidCatalogEntryException
+	 *           if the stream cannot be read or contains invalid entries
+	 */
 	public void addEntries(final InputStream stream)
 			throws InvalidCatalogEntryException {
 		final Properties properties = new Properties();
@@ -94,6 +139,20 @@ public class ExceptionCatalog extends HashMap<Integer, String> {
 		}
 	}
 
+	/**
+	 * Adds the entries of the passed <code>properties</code> to the catalog. The
+	 * <code>encoding</code> of the properties might be specified, if not the
+	 * default encoding is used.
+	 * 
+	 * @param properties
+	 *          the <code>properties</code> to be added, cannot be
+	 *          <code>null</code>
+	 * @param encoding
+	 *          the encoding used to read the properties, can be <code>null</code>
+	 * 
+	 * @throws InvalidCatalogEntryException
+	 *           if one of the properties' key cannot be interpreted as integer
+	 */
 	public void addEntries(final Properties properties, final String encoding)
 			throws InvalidCatalogEntryException {
 		final String usedEncoding = encoding == null ? System
@@ -118,7 +177,19 @@ public class ExceptionCatalog extends HashMap<Integer, String> {
 		}
 	}
 
-	private Integer getInt(final Object key) throws InvalidCatalogEntryException {
+	/**
+	 * Method to transform the passed key into a valid integer
+	 * 
+	 * @param key
+	 *          the key to be transformed
+	 * 
+	 * @return the integer retrieved from the key
+	 * 
+	 * @throws InvalidCatalogEntryException
+	 *           if the key cannot be transformed
+	 */
+	protected Integer getInt(final Object key)
+			throws InvalidCatalogEntryException {
 		if (key == null) {
 			return null;
 		} else if (key instanceof String) {
@@ -141,6 +212,12 @@ public class ExceptionCatalog extends HashMap<Integer, String> {
 		}
 	}
 
+	/**
+	 * Adds the passed <code>entries</code> to the catalog.
+	 * 
+	 * @param entries
+	 *          the <code>CatalogEntry</code> instances to be added
+	 */
 	public void addEntries(final CatalogEntry... entries) {
 		if (entries == null) {
 			// nothing to do
@@ -153,15 +230,35 @@ public class ExceptionCatalog extends HashMap<Integer, String> {
 		}
 	}
 
+	/**
+	 * Adds the passed <code>entry</code> to the catalog.
+	 * 
+	 * @param entry
+	 *          the <code>CatalogEntry</code> instance to be added
+	 */
 	public void addEntry(final CatalogEntry entry) {
 		addEntry(entry.getKey(), entry.getValue());
 	}
 
+	/**
+	 * Adds the specified entry to the catalog.
+	 * 
+	 * @param number
+	 *          the number of the entry
+	 * @param message
+	 *          the message associated to the passed <code>number</code>
+	 */
 	public void addEntry(final Integer number, final String message) {
 		put(number, message);
 	}
 
+	@Override
 	public String getMessage(final Integer number) {
 		return get(number);
+	}
+
+	@Override
+	public Set<Integer> getAvailableExceptions() {
+		return Collections.unmodifiableSet(keySet());
 	}
 }
