@@ -87,14 +87,12 @@ public class ResourceInfo {
 		final File file = "".equals(root) ? new File(path) : new File(root, path);
 
 		// we have an path to a jar which marks a file within the jar
-		final String lowerRoot = root.toLowerCase();
-		if (path.toLowerCase().contains(INJARMARKER)
-				|| lowerRoot.contains(INJARMARKER)
-				|| lowerRoot.toLowerCase().endsWith(".jar")) {
+		if (path.contains(INJARMARKER) || root.contains(INJARMARKER)
+				|| root.endsWith(".jar")) {
 
 			// if we have a root lets put it together
 			final String urlPath;
-			if (lowerRoot.endsWith(".jar") || lowerRoot.contains(INJARMARKER)) {
+			if (root.endsWith(".jar") || root.contains(INJARMARKER)) {
 				urlPath = root + (root.endsWith(".jar") ? "!" : "")
 						+ (path.endsWith("/") || path.endsWith("\\") ? "" : "/") + path;
 			} else {
@@ -143,7 +141,18 @@ public class ResourceInfo {
 
 				// it is within a file
 				if ("file".equalsIgnoreCase(protocol)) {
-					setFile(new File(url.getFile()), isFile);
+					File f;
+					try {
+						f = new File(url.toURI());
+					} catch (final URISyntaxException e) {
+
+						// let's try the URL getFile instead, that's the
+						// fall-back
+						// nothing more
+						f = new File(url.getFile());
+					}
+
+					setFile(f, isFile);
 				}
 				// it is within a jar
 				else if ("jar".equalsIgnoreCase(protocol)) {
@@ -204,31 +213,23 @@ public class ResourceInfo {
 			setEmpty();
 		} else {
 
-			final String urlPath = url.getPath();
+			// get the path
+			String fullyResolvedPath;
+			try {
+				fullyResolvedPath = URLDecoder.decode(url.getPath(), "UTF-8");
+			} catch (final UnsupportedEncodingException e) {
+				// fall-back to the path
+				fullyResolvedPath = url.getPath();
+			}
+			fullyResolvedPath = fullyResolvedPath.replaceFirst("^\\Qfile:/", "");
 			final String protocol = url.getProtocol();
 
 			if ("jar".equals(protocol)) {
-
-				final String jarFilePath = urlPath.substring(0,
-						urlPath.indexOf(INJARMARKER) + INJARMARKER.length() - 1);
-				final String pathInJar = urlPath.substring(urlPath.indexOf(INJARMARKER)
-						+ INJARMARKER.length());
-
-				// get the jar file
-				final URL jarURL;
-				try {
-					jarURL = new URL(jarFilePath);
-				} catch (final MalformedURLException e) {
-					throw new IllegalStateException("The jar-path '" + jarFilePath
-							+ "' cannot be parsed", e);
-				}
-				final File jarFile;
-				try {
-					jarFile = new File(jarURL.toURI());
-				} catch (final URISyntaxException e) {
-					throw new IllegalStateException("The jar-path '" + jarFilePath
-							+ "' cannot be parsed", e);
-				}
+				final String jarFilePath = fullyResolvedPath.substring(0,
+						fullyResolvedPath.indexOf(INJARMARKER) + INJARMARKER.length() - 1);
+				final String pathInJar = fullyResolvedPath.substring(fullyResolvedPath
+						.indexOf(INJARMARKER) + INJARMARKER.length());
+				final File jarFile = new File(jarFilePath);
 
 				if (jarFile.exists()) {
 
@@ -236,7 +237,7 @@ public class ResourceInfo {
 					jarPath = Files.getCanonicalPath(jarFile);
 					inJarPath = transformPathToClassPath(pathInJar, isFile);
 					type = isFile ? ResourceType.IN_JAR_FILE : ResourceType.IN_JAR_PATH;
-					fullPath = jarURL.toString() + "!/" + inJarPath;
+					fullPath = url.toString();
 
 					// check if the jar file really contains the resource
 					try {
@@ -257,13 +258,11 @@ public class ResourceInfo {
 						while (entries.hasMoreElements()) {
 							final JarEntry posEntry = entries.nextElement();
 							final String name = posEntry.getName();
+
 							if (name.matches(pattern)) {
 								entry = posEntry;
 							}
 						}
-
-						// close the file
-						jar.close();
 
 						if (entry == null) {
 							setEmpty();
@@ -314,11 +313,28 @@ public class ResourceInfo {
 			return null;
 		}
 
+		// check how we can get the jar-path
+		URL url = null;
+		String urlPath = path;
+		try {
+			url = new URL(path);
+		} catch (final MalformedURLException e) {
+
+			// try to use it as file
+			try {
+				url = (new File(path)).toURI().toURL();
+			} catch (final MalformedURLException innerException) {
+				// we have no other choice
+				url = null;
+			}
+		}
+		urlPath = url == null ? urlPath : url.toString();
+
 		// make sure that the path is a valid url
-		String modPath = path.replace('\\', '/');
-		if (!path.startsWith("jar:")) {
-			if (!path.startsWith("file:")) {
-				if (!path.startsWith("/")) {
+		String modPath = urlPath.replace('\\', '/');
+		if (!urlPath.startsWith("jar:")) {
+			if (!urlPath.startsWith("file:")) {
+				if (!urlPath.startsWith("/")) {
 					modPath = "/" + modPath;
 				}
 
@@ -327,6 +343,7 @@ public class ResourceInfo {
 
 			modPath = "jar:" + modPath;
 		}
+
 		URL dirURL;
 
 		// there can be a:
@@ -344,7 +361,7 @@ public class ResourceInfo {
 
 	/**
 	 * Transform a path to a valid class-path (i.e. without any '\', no leading
-	 * "/", ...).
+	 * "/", ...), and no URL encoding.
 	 * 
 	 * @param path
 	 *          the path to be transformed
@@ -419,7 +436,9 @@ public class ResourceInfo {
 
 	/**
 	 * The path to the resource within the jar-file. The method will return
-	 * <code>null</code> if the resource is a file located on the file-system.
+	 * <code>null</code> if the resource is a file located on the file-system. The
+	 * path is not URL encoded, i.e. special characters like white-spaces are
+	 * resolved.
 	 * 
 	 * @return the path of the resource within the jar file
 	 */
@@ -455,8 +474,8 @@ public class ResourceInfo {
 	 *         <code>false</code>, i.e. its a directory
 	 */
 	public boolean isFile() {
-		if (ResourceType.FILE_SYSTEM_FILE.equals(type)
-				|| ResourceType.IN_JAR_FILE.equals(type)) {
+		if (type == ResourceType.FILE_SYSTEM_FILE
+				|| type == ResourceType.IN_JAR_FILE) {
 			return true;
 		} else {
 			return false;

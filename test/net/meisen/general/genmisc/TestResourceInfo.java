@@ -1,6 +1,8 @@
 package net.meisen.general.genmisc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +50,7 @@ public class TestResourceInfo {
 	 * Checks files of the file-system
 	 * 
 	 * @throws IOException
-	 *             if a test-file cannot be created
+	 *           if a test-file cannot be created
 	 */
 	@Test
 	public void testFiles() throws IOException {
@@ -83,7 +85,7 @@ public class TestResourceInfo {
 	 * Checks files within a jar
 	 * 
 	 * @throws IOException
-	 *             if the test-file cannot be created
+	 *           if the test-file cannot be created
 	 */
 	@Test
 	public void testFilesInJar() throws IOException {
@@ -98,10 +100,8 @@ public class TestResourceInfo {
 				true);
 
 		// check a relative class-path file
-		info = new ResourceInfo("net\\meisen\\general\\gendummy\\dummy.txt",
-				true);
-		assertEquals(info.getInJarPath(),
-				"net/meisen/general/gendummy/dummy.txt");
+		info = new ResourceInfo("net\\meisen\\general\\gendummy\\dummy.txt", true);
+		assertEquals(info.getInJarPath(), "net/meisen/general/gendummy/dummy.txt");
 		assertEquals(
 				info.getJarPath().matches(
 						".*net\\-meisen\\-general\\-gen\\-dummy.*\\.jar"), true);
@@ -111,14 +111,12 @@ public class TestResourceInfo {
 						".jar!/net/meisen/general/gendummy/dummy.txt"), true);
 
 		// check an absolute class-path file
-		info = new ResourceInfo("net\\meisen\\general\\gendummy\\dummy.txt",
-				true);
+		info = new ResourceInfo("net\\meisen\\general\\gendummy\\dummy.txt", true);
 		final String jarFile = info.getJarPath();
 		final String fullPathInJar = new File(jarFile).toURI().toURL()
 				+ "!/net/meisen/general/gendummy/dummy.txt";
 		info = new ResourceInfo(fullPathInJar, true);
-		assertEquals(info.getInJarPath(),
-				"net/meisen/general/gendummy/dummy.txt");
+		assertEquals(info.getInJarPath(), "net/meisen/general/gendummy/dummy.txt");
 		assertEquals(info.getJarPath(), jarFile);
 		assertEquals(info.getType(), ResourceType.IN_JAR_FILE);
 		assertEquals(
@@ -134,8 +132,7 @@ public class TestResourceInfo {
 
 		// check an absolute class-path file with "invalid" syntax
 		info = new ResourceInfo(fullPathInJar.replace('/', '\\'), true);
-		assertEquals(info.getInJarPath(),
-				"net/meisen/general/gendummy/dummy.txt");
+		assertEquals(info.getInJarPath(), "net/meisen/general/gendummy/dummy.txt");
 		assertEquals(info.getJarPath(), jarFile);
 		assertEquals(info.getType(), ResourceType.IN_JAR_FILE);
 		assertEquals(
@@ -143,10 +140,9 @@ public class TestResourceInfo {
 						".jar!/net/meisen/general/gendummy/dummy.txt"), true);
 
 		// check an absolute class-path file with "invalid" syntax
-		info = new ResourceInfo(fullPathInJar.replace("file:/", "").replace(
-				'/', '\\'), true);
-		assertEquals(info.getInJarPath(),
-				"net/meisen/general/gendummy/dummy.txt");
+		info = new ResourceInfo(fullPathInJar.replace("file:/", "").replace('/',
+				'\\'), true);
+		assertEquals(info.getInJarPath(), "net/meisen/general/gendummy/dummy.txt");
 		assertEquals(info.getJarPath(), jarFile);
 		assertEquals(info.getType(), ResourceType.IN_JAR_FILE);
 		assertEquals(
@@ -156,8 +152,7 @@ public class TestResourceInfo {
 		// check an absolute class-path file with a root
 		info = new ResourceInfo("net\\meisen\\general\\gendummy\\dummy.txt",
 				jarFile, true);
-		assertEquals(info.getInJarPath(),
-				"net/meisen/general/gendummy/dummy.txt");
+		assertEquals(info.getInJarPath(), "net/meisen/general/gendummy/dummy.txt");
 		assertEquals(info.getJarPath(), jarFile);
 		assertEquals(info.getType(), ResourceType.IN_JAR_FILE);
 		assertEquals(
@@ -165,8 +160,7 @@ public class TestResourceInfo {
 						".jar!/net/meisen/general/gendummy/dummy.txt"), true);
 
 		// check a none existing file
-		info = new ResourceInfo("neverevershouldexists/unexistentFile.bad",
-				true);
+		info = new ResourceInfo("neverevershouldexists/unexistentFile.bad", true);
 		assertEquals(info.getInJarPath(), null);
 		assertEquals(info.getJarPath(), null);
 		assertEquals(info.getType(), null);
@@ -191,7 +185,7 @@ public class TestResourceInfo {
 	 * Test the <code>ResourceInfo</code> of directories on the file-system
 	 * 
 	 * @throws IOException
-	 *             if a test-directory cannot be created
+	 *           if a test-directory cannot be created
 	 */
 	@Test
 	public void testDirectory() throws IOException {
@@ -226,8 +220,7 @@ public class TestResourceInfo {
 		assertEquals(info.getJarPath() != null, true);
 		assertEquals(info.getType(), ResourceType.IN_JAR_PATH);
 		assertEquals(
-				info.getFullPath().endsWith(
-						".jar!/net/meisen/general/gendummy/"), true);
+				info.getFullPath().endsWith(".jar!/net/meisen/general/gendummy/"), true);
 	}
 
 	/**
@@ -235,10 +228,10 @@ public class TestResourceInfo {
 	 * in <code>null</code>
 	 * 
 	 * @throws IOException
-	 *             if a test-file or directory cannot be created
+	 *           if a test-file or directory cannot be created
 	 */
 	@Test
-	public void checkGeneralErrors() throws IOException {
+	public void testGeneralErrors() throws IOException {
 		ResourceInfo info;
 		File file;
 
@@ -257,6 +250,87 @@ public class TestResourceInfo {
 		assertEquals(info.getJarPath(), null);
 		assertEquals(info.getType(), null);
 		assertEquals(info.getFullPath(), null);
+	}
+
+	/**
+	 * Tests the retrieval of some files with special characters
+	 * 
+	 * @throws IOException
+	 *           if a test-file or directory cannot be created
+	 */
+	@Test
+	public void testUrlEncoding() throws IOException {
+		final File tmpDir = fileManager.createDir(resourceDir);
+
+		// create a folder with special characters
+		final File dir = new File(tmpDir, "Test with äüöäüö");
+		dir.mkdirs();
+
+		String relPath;
+		ResourceInfo info;
+		File file;
+
+		// first create a simple file within the directory
+		file = new File(dir, "sample.file");
+		file.createNewFile();
+
+		// the relative path
+		relPath = tmpDir.getName() + "/" + file.getParentFile().getName() + "/"
+				+ file.getName();
+
+		// check the result
+		info = new ResourceInfo(relPath, true);
+		assertEquals(Files.getCanonicalPath(new File(resourceDir, relPath)),
+				info.getFullPath());
+		assertEquals(ResourceType.FILE_SYSTEM_FILE, info.getType());
+		assertNull(info.getInJarPath());
+		assertNull(info.getJarPath());
+
+		// create a file with special chars
+		file = new File(dir, "änöther sämple.file tüpe");
+		file.createNewFile();
+
+		// the relative path
+		relPath = tmpDir.getName() + "/" + file.getParentFile().getName() + "/"
+				+ file.getName();
+
+		// check the result
+		info = new ResourceInfo(relPath, true);
+		assertEquals(Files.getCanonicalPath(new File(resourceDir, relPath)),
+				info.getFullPath());
+		assertEquals(ResourceType.FILE_SYSTEM_FILE, info.getType());
+		assertNull(info.getInJarPath());
+		assertNull(info.getJarPath());
+
+		Files.deleteDir(dir);
+
+		// files from another jar-file
+		relPath = "net/meisen/general/gendummy/göt me ä töst/a föle with special chäräcters.txt";
+		info = new ResourceInfo(relPath, true);
+		assertEquals(ResourceType.IN_JAR_FILE, info.getType());
+
+		assertTrue(info
+				.getFullPath()
+				.endsWith(
+						".jar!/net/meisen/general/gendummy/g%c3%b6t%20me%20%c3%a4%20t%c3%b6st/a%20f%c3%b6le%20with%20special%20ch%c3%a4r%c3%a4cters.txt"));
+		assertEquals(
+				"net/meisen/general/gendummy/göt me ä töst/a föle with special chäräcters.txt",
+				info.getInJarPath());
+		assertTrue(new File(info.getJarPath()).exists());
+		assertTrue(new File(info.getJarPath()).isFile());
+
+		// create a resource from the retrieved data
+		info = new ResourceInfo(info.getFullPath(), true);
+		assertEquals(ResourceType.IN_JAR_FILE, info.getType());
+		assertTrue(info
+				.getFullPath()
+				.endsWith(
+						".jar!/net/meisen/general/gendummy/g%c3%b6t%20me%20%c3%a4%20t%c3%b6st/a%20f%c3%b6le%20with%20special%20ch%c3%a4r%c3%a4cters.txt"));
+		assertEquals(
+				"net/meisen/general/gendummy/göt me ä töst/a föle with special chäräcters.txt",
+				info.getInJarPath());
+		assertTrue(new File(info.getJarPath()).exists());
+		assertTrue(new File(info.getJarPath()).isFile());
 	}
 
 	/**

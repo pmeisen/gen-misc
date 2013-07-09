@@ -313,7 +313,7 @@ public class TestResource {
 		 */
 		files = Resource.getAvailableResources("./net/meisen/general/gendummy",
 				true);
-		assertEquals(files.size(), 5);
+		assertEquals(files.size(), 7);
 		assertEquals(files.contains("moredummy/"), true);
 		assertEquals(files.contains("moredummy2/"), false);
 		assertEquals(files.contains("moredummy/dummy1.txt"), true);
@@ -321,6 +321,8 @@ public class TestResource {
 		assertEquals(files.contains("moredummy/dummy3.txt"), false);
 		assertEquals(files.contains(testFileName), true);
 		assertEquals(files.contains("Dummy.class"), true);
+		assertEquals(files.contains("göt me ä töst/"), true);
+		assertEquals(files.contains("göt me ä töst/a föle with special chäräcters.txt"), true);
 
 		// generate a sample file in the working directory
 		final File dir = fileManager.createDir(workingDir);
