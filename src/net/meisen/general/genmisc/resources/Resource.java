@@ -6,8 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -410,12 +415,46 @@ public class Resource {
 
 		if (lookOnClassPath) {
 
-			// look on the classpath for the pattern
-			final String pathSep = System.getProperty("path.separator");
-			final String classPath = System.getProperty("java.class.path", ".");
-			final String[] classPathElements = classPath.split(pathSep);
-			for (final String element : classPathElements) {
-				final File file = new File(element);				
+			// get the different ClassLoaders, hopefully we find our sources there
+			final Set<ClassLoader> mainClassloaders = new HashSet<ClassLoader>();
+			mainClassloaders.add(Resource.class.getClassLoader());
+			mainClassloaders.add(Thread.currentThread().getClass().getClassLoader());
+			mainClassloaders.add(Thread.currentThread().getContextClassLoader());
+
+			// get all the parents and add those as well
+			final Set<ClassLoader> classloaders = new HashSet<ClassLoader>();
+			for (ClassLoader classloader : mainClassloaders) {
+				while (classloader != null) {
+					classloaders.add(classloader);
+					classloader = classloader.getParent();
+				}
+			}
+
+			// now look for the URLs we can find
+			final Set<URL> urls = new HashSet<URL>();
+			for (final ClassLoader classloader : classloaders) {
+
+				if (classloader instanceof URLClassLoader) {
+					final URL[] clUrls = ((URLClassLoader) classloader).getURLs();
+					urls.addAll(Arrays.asList(clUrls));
+				} else {
+					try {
+						final Enumeration<URL> clUrls = classloader.getResources("");
+						urls.addAll(Collections.list(clUrls));
+					} catch (final IOException e) {
+						// ignore
+					}
+				}
+			}
+
+			for (final URL url : urls) {
+				File file;
+				try {
+					file = new File(url.toURI());
+				} catch (final URISyntaxException e) {
+					file = new File(url.getPath());
+				}
+
 				if (file.isDirectory()) {
 					final List<File> files = Files.getFilelist(file, null, pattern);
 					retval.addAll(ResourceInfo.transformFromFileCollection(files));
