@@ -42,9 +42,6 @@ public class TestResource {
 	 * Helper class to modify the ClassLoader on runtime
 	 * 
 	 * @author pmeisen
-	 * 
-	 * @see <a
-	 *      href="http://stackoverflow.com/questions/1082050/linking-to-an-external-url-in-javadoc">StackOverFlow</a>
 	 */
 	public class DynamicURLClassLoader extends URLClassLoader {
 
@@ -69,7 +66,6 @@ public class TestResource {
 		public void addURL(final URL url) {
 			super.addURL(url);
 		}
-
 	}
 
 	/**
@@ -483,7 +479,8 @@ public class TestResource {
 	/**
 	 * Modify the classpath and look for a resource on it
 	 * 
-	 * @throws Exception if the classpath cannot be modified
+	 * @throws Exception
+	 *           if the classpath cannot be modified
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
