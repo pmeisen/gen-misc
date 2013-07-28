@@ -6,7 +6,7 @@
   - https://github.com/pmeisen/ant-processenabler
   - git://github.com/pmeisen/ant-processenabler.git
   The fully packed 'application' is available here;
-  - http://ant-processenabler.meisen.net/downloads/ant-processenabler-1.0.0-SNAPSHOT.zip
+  - http://ant-processenabler.meisen.net/downloads/ant-processenabler-TRUNK-SNAPSHOT.zip
   -->
 <project name="gen-misc" default="assemble">	
 	<import file="${ant.home}\resources\ant\library_main.xml"/>

@@ -406,7 +406,7 @@ public class TestResource {
 		File jarTestFile = null;
 		for (final String element : classPathElements) {
 			final File posFile = new File(element);
-			if ("net-meisen-general-gen-dummy-1.0.0-SNAPSHOT.jar".equals(posFile
+			if ("net-meisen-general-gen-dummy-TRUNK-SNAPSHOT.jar".equals(posFile
 					.getName())) {
 				jarTestFile = posFile;
 				break;
