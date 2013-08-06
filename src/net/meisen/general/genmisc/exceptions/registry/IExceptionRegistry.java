@@ -253,7 +253,7 @@ public interface IExceptionRegistry {
 	/**
 	 * Throws an <code>Exception</code> of the specified class having the error
 	 * message of the specified number, whereby the passed
-	 * <code>parameter<code>s are replaced.
+	 * <code>parameter</code>s are replaced.
 	 * 
 	 * @param exceptionClazz
 	 *          the class of the exception to be thrown
