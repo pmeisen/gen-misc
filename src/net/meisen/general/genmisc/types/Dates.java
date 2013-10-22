@@ -16,7 +16,7 @@ public class Dates {
 
 	/**
 	 * @param date
-	 *          the {@link Date} to be truncated
+	 *            the {@link Date} to be truncated
 	 * @return the truncated {@link Date}, i.e. no time information
 	 */
 	public static Date truncateDate(final Date date) {
@@ -32,13 +32,13 @@ public class Dates {
 	}
 
 	/**
-	 * This function calculates the difference between two {@link Date} objects in
-	 * minutes
+	 * This function calculates the difference between two {@link Date} objects
+	 * in minutes
 	 * 
 	 * @param date1
-	 *          the {@link Date} object to be subtracted from
+	 *            the {@link Date} object to be subtracted from
 	 * @param date2
-	 *          the {@link Date} object to subtract
+	 *            the {@link Date} object to subtract
 	 * @return the difference of the two {@link Date} objects in minutes
 	 */
 	public static int getDateDiffInMinutes(final Date date1, final Date date2) {
@@ -46,27 +46,51 @@ public class Dates {
 	}
 
 	/**
-	 * Creates a <code>Date</code> instance based on the passed <code>date</code>
-	 * and <code>format</code>.
+	 * Creates a <code>Date</code> instance based on the passed
+	 * <code>date</code> and <code>format</code>.
 	 * 
 	 * @param date
-	 *          the date to be parsed to a <code>Date</code> instance
+	 *            the date to be parsed to a <code>Date</code> instance
 	 * @param format
-	 *          the format of the <code>date</code>
+	 *            the format of the <code>date</code>
 	 * @return the <code>Date</code> instance representing the passed
 	 *         <code>date</code>
 	 * 
 	 * @throws ParseException
-	 *           if the <code>date</code> cannot be parsed by the specified
-	 *           <code>format</code>
+	 *             if the <code>date</code> cannot be parsed by the specified
+	 *             <code>format</code>
 	 * 
 	 * @see Date
 	 * @see DateFormat
 	 * @see SimpleDateFormat
 	 */
-	public static Date createDateFromString(final String date, final String format)
-			throws ParseException {
+	public static Date createDateFromString(final String date,
+			final String format) throws ParseException {
 		final DateFormat formatter = new SimpleDateFormat(format);
 		return formatter.parse(date);
+	}
+
+	/**
+	 * Formats the <code>date</code> according to the specified
+	 * <code>format</code>.
+	 * 
+	 * @param date
+	 *            the date to be formatted
+	 * @param format
+	 *            the format of be applied to the <code>date</code>
+	 * 
+	 * @return the formatted date
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if the Format cannot format the given object
+	 * 
+	 * @see Date
+	 * @see DateFormat
+	 * @see SimpleDateFormat
+	 */
+	public static String formatDate(final Date date, final String format)
+			throws IllegalArgumentException {
+		final DateFormat formatter = new SimpleDateFormat(format);
+		return formatter.format(date);
 	}
 }

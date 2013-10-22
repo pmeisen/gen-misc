@@ -14,10 +14,10 @@ import org.junit.runners.Suite;
  * 
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ TestClasses.class, TestStrings.class, TestStreams.class,
-		TestFiles.class, TestCollections.class, TestResourceInfo.class,
-		TestResource.class, TestMultiMap.class, TestManifest.class,
-		TestVersion.class, TestExceptionCatalog.class,
+@Suite.SuiteClasses({ TestDates.class, TestClasses.class, TestStrings.class,
+		TestStreams.class, TestFiles.class, TestCollections.class,
+		TestResourceInfo.class, TestResource.class, TestMultiMap.class,
+		TestManifest.class, TestVersion.class, TestExceptionCatalog.class,
 		TestLocalizedExceptionCatalog.class, TestDefaultExceptionRegistry.class })
 public class AllTests {
 	// nothing more to do here
