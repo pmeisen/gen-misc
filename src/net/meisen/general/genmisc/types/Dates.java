@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Utility class when working with dates
@@ -13,6 +14,12 @@ import java.util.Date;
  * 
  */
 public class Dates {
+	/**
+	 * The <code>TimeZone</code> used when none is provided.
+	 * 
+	 * @see TimeZone
+	 */
+	public static final String GENERAL_TIMEZONE = "UTC";
 
 	/**
 	 * @param date
@@ -47,6 +54,52 @@ public class Dates {
 
 	/**
 	 * Creates a <code>Date</code> instance based on the passed
+	 * <code>date</code> and <code>format</code> for the current default
+	 * <code>TimeZone</code> (see {@link TimeZone#getDefault()}).
+	 * 
+	 * @param date
+	 *            the date to be parsed to a <code>Date</code> instance
+	 * @param format
+	 *            the format of the <code>date</code>
+	 * @return the <code>Date</code> instance representing the passed
+	 *         <code>date</code>
+	 * 
+	 * @throws ParseException
+	 *             if the <code>date</code> cannot be parsed by the specified
+	 *             <code>format</code>
+	 * 
+	 * @see Date
+	 * @see DateFormat
+	 * @see SimpleDateFormat
+	 * @see TimeZone
+	 */
+	public static Date createDateFromString(final String date,
+			final String format) throws ParseException {
+		return parseDate(date, format, TimeZone.getDefault().getID());
+	}
+
+	/**
+	 * Formats the <code>date</code> according to the specified
+	 * <code>format</code> in the current TimeZone.
+	 * 
+	 * @param date
+	 *            the date to be formatted
+	 * @param format
+	 *            the format of the <code>date</code>
+	 * 
+	 * @return the formatted Date
+	 * 
+	 * @see Date
+	 * @see DateFormat
+	 * @see SimpleDateFormat
+	 */
+	public static String createStringFromDate(final Date date,
+			final String format) {
+		return formatDate(date, format, TimeZone.getDefault().getID());
+	}
+
+	/**
+	 * Creates a <code>Date</code> instance based on the passed
 	 * <code>date</code> and <code>format</code>.
 	 * 
 	 * @param date
@@ -64,15 +117,87 @@ public class Dates {
 	 * @see DateFormat
 	 * @see SimpleDateFormat
 	 */
-	public static Date createDateFromString(final String date,
-			final String format) throws ParseException {
+	public static Date parseDate(final String date, final String format)
+			throws ParseException {
+		return parseDate(date, format, GENERAL_TIMEZONE);
+	}
+
+	/**
+	 * Creates a <code>Date</code> instance based on the passed
+	 * <code>date</code> and <code>format</code>.
+	 * 
+	 * @param date
+	 *            the date to be parsed to a <code>Date</code> instance
+	 * @param format
+	 *            the format of the <code>date</code>
+	 * @param timezone
+	 *            the <code>TimeZone</code> used to format the date, i.e. the
+	 *            date can be different in each TimeZone
+	 * @return the <code>Date</code> instance representing the passed
+	 *         <code>date</code>
+	 * 
+	 * @throws ParseException
+	 *             if the <code>date</code> cannot be parsed by the specified
+	 *             <code>format</code>
+	 * 
+	 * @see Date
+	 * @see DateFormat
+	 * @see SimpleDateFormat
+	 */
+	public static Date parseDate(final String date, final String format,
+			final String timezone) throws ParseException {
 		final DateFormat formatter = new SimpleDateFormat(format);
-		return formatter.parse(date);
+
+		// get the TimeZone
+		final TimeZone tz = TimeZone.getTimeZone(timezone);
+		formatter.setTimeZone(tz);
+
+		final TimeZone curTz = TimeZone.getDefault();
+		TimeZone.setDefault(tz);
+
+		final Date parsedDate = formatter.parse(date);
+		TimeZone.setDefault(curTz);
+
+		return parsedDate;
 	}
 
 	/**
 	 * Formats the <code>date</code> according to the specified
 	 * <code>format</code>.
+	 * 
+	 * @param date
+	 *            the date to be formatted
+	 * @param format
+	 *            the format of be applied to the <code>date</code>
+	 * @param timezone
+	 *            the <code>TimeZone</code> used to format the date, i.e. the
+	 *            date can be different in each TimeZone
+	 * 
+	 * @return the formatted date
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if the Format cannot format the given object
+	 * 
+	 * @see Date
+	 * @see DateFormat
+	 * @see SimpleDateFormat
+	 * @see TimeZone
+	 */
+	public static String formatDate(final Date date, final String format,
+			final String timezone) {
+		final DateFormat formatter = new SimpleDateFormat(format);
+
+		// set the TimeZone
+		final TimeZone tz = TimeZone.getTimeZone(timezone);
+		formatter.setTimeZone(tz);
+
+		// format it
+		return formatter.format(date);
+	}
+
+	/**
+	 * Formats the <code>date</code> according to the specified
+	 * <code>format</code>. The formatting is done in {@link #GENERAL_TIMEZONE}.
 	 * 
 	 * @param date
 	 *            the date to be formatted
@@ -90,7 +215,39 @@ public class Dates {
 	 */
 	public static String formatDate(final Date date, final String format)
 			throws IllegalArgumentException {
-		final DateFormat formatter = new SimpleDateFormat(format);
-		return formatter.format(date);
+		return formatDate(date, format, GENERAL_TIMEZONE);
+	}
+
+	/**
+	 * Get the current <code>Date</code> of the system in the general defined
+	 * <code>TimeZone</code>.
+	 * 
+	 * @return the current <code>Date</code> of the system in the general
+	 *         defined <code>TimeZone</code>
+	 */
+	public static Date now() {
+		return now(GENERAL_TIMEZONE);
+	}
+
+	/**
+	 * Get the current <code>Date</code> of the system in the defined
+	 * <code>TimeZone</code>.
+	 * 
+	 * @param timezone
+	 *            the <code>TimeZone</code> to get the date in
+	 * 
+	 * @return the current <code>Date</code> of the system in the defined
+	 *         <code>TimeZone</code>
+	 */
+	public static Date now(final String timezone) {
+		final String format = "ddMMyyyy HH:mm:ss,SSS";
+		final Date now = new Date();
+
+		final String nowString = formatDate(now, format);
+		try {
+			return parseDate(nowString, format);
+		} catch (final ParseException e) {
+			throw new IllegalStateException("Unreachable code was reached.", e);
+		}
 	}
 }
