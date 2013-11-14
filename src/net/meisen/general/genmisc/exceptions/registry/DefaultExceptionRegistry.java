@@ -191,7 +191,7 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 			throw new IllegalArgumentException(
 					"The catalog for the exceptionClass '"
 							+ exceptionClazz
-							+ "' cannot be found, please register it within the registertry prior to using it.");
+							+ "' cannot be found, please register it within the registry prior to using it.");
 		} else if (locale != null && catalog instanceof ILocalizedExceptionCatalog) {
 			final ILocalizedExceptionCatalog localizedCatalog = (ILocalizedExceptionCatalog) catalog;
 			message = localizedCatalog.getMessage(number, locale);
