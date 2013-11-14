@@ -54,7 +54,8 @@ public class TestDates {
 	public void testNow() {
 
 		// now should return the current time in the default TimeZone
-		assertEquals(new Date(), Dates.now(TimeZone.getDefault().getID()));
+		assertEquals((new Date()).getTime(),
+				Dates.now(TimeZone.getDefault().getID()).getTime(), 500);
 
 		// now in UTC
 		final String utcNow = Dates.formatDate(Dates.now(),
