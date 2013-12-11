@@ -68,7 +68,8 @@ public class Files {
 			final Properties props = Streams.readPropertiesFromStream(in);
 
 			for (Entry<Object, Object> entry : props.entrySet()) {
-				MIMETYPES.put(entry.getKey().toString(), entry.getValue().toString());
+				MIMETYPES.put(entry.getKey().toString(), entry.getValue()
+						.toString());
 			}
 		} catch (final IOException e) {
 			System.err.println(Files.class.getName()
@@ -87,10 +88,10 @@ public class Files {
 	 * directory
 	 * 
 	 * @param pathName
-	 *          the path to be checked
-	 * @return <code>null</code> if the check was not successful or if the passed
-	 *         path name was <code>null</code>, otherwise the canonical path (see
-	 *         {@link Files#getCanonicalPath(String)})
+	 *            the path to be checked
+	 * @return <code>null</code> if the check was not successful or if the
+	 *         passed path name was <code>null</code>, otherwise the canonical
+	 *         path (see {@link Files#getCanonicalPath(String)})
 	 */
 	public static String checkDirectory(final String pathName) {
 		try {
@@ -105,14 +106,14 @@ public class Files {
 	 * directory
 	 * 
 	 * @param pathName
-	 *          the path to be checked
+	 *            the path to be checked
 	 * @param createIfNotExists
-	 *          tries to create the directory if it does not exist
-	 * @return <code>null</code> if the check was not successful or if the passed
-	 *         path name was <code>null</code>, otherwise the canonical path (see
-	 *         {@link Files#getCanonicalPath(String)})
+	 *            tries to create the directory if it does not exist
+	 * @return <code>null</code> if the check was not successful or if the
+	 *         passed path name was <code>null</code>, otherwise the canonical
+	 *         path (see {@link Files#getCanonicalPath(String)})
 	 * @throws IOException
-	 *           if the folder could not be created and if asked for it
+	 *             if the folder could not be created and if asked for it
 	 */
 	public static String checkDirectory(final String pathName,
 			boolean createIfNotExists) throws IOException {
@@ -151,7 +152,7 @@ public class Files {
 	 * directory, therefore a file will be deleted as well.
 	 * 
 	 * @param dir
-	 *          the directory to delete
+	 *            the directory to delete
 	 * @return <code>true</code> if all deletions were successful, if a deletion
 	 *         fails, the method stops attempting to delete and returns
 	 *         <code>false</code>
@@ -178,7 +179,7 @@ public class Files {
 	 * Deletes a <code>Collection</code> of files and directories
 	 * 
 	 * @param files
-	 *          the <code>Collection</code> of files to be deleted
+	 *            the <code>Collection</code> of files to be deleted
 	 * 
 	 * @return <code>true</code> if all deletions were successful, if a deletion
 	 *         fails, the method stops attempting to delete and returns
@@ -209,7 +210,7 @@ public class Files {
 	 * Deletes a <code>Collection</code> of files and directories
 	 * 
 	 * @param files
-	 *          the <code>Collection</code> of files to be deleted
+	 *            the <code>Collection</code> of files to be deleted
 	 * 
 	 * @return <code>true</code> if all deletions were successful, if a deletion
 	 *         fails, the method stops attempting to delete and returns
@@ -236,33 +237,34 @@ public class Files {
 	 * Returns all files of the specified directory and all files in sub-folders
 	 * 
 	 * @param dir
-	 *          the directory to get the files from
+	 *            the directory to get the files from
 	 * @param fileList
-	 *          the list of files the new files should be appended to, if
-	 *          <code>null</code> a new list will be created
+	 *            the list of files the new files should be appended to, if
+	 *            <code>null</code> a new list will be created
 	 * @return the {@link List} of all files within the directory or a
 	 *         subdirectory
 	 */
-	public static List<File> getFilelist(final File dir, List<File> fileList) {
+	public static List<File> getFilelist(final File dir,
+			final List<File> fileList) {
 		return getFilelist(dir, fileList, (FileFilter) null);
 	}
 
 	/**
-	 * Returns all files of the specified directory and all files in sub-folders,
-	 * which have a specified file-name.
+	 * Returns all files of the specified directory and all files in
+	 * sub-folders, which have a specified file-name.
 	 * 
 	 * @param dir
-	 *          the directory to delete
+	 *            the directory to delete
 	 * @param fileList
-	 *          the list of files the new files should be appended to, if
-	 *          <code>null</code> a new list will be created
+	 *            the list of files the new files should be appended to, if
+	 *            <code>null</code> a new list will be created
 	 * @param searchFileName
-	 *          the file-name to search for
+	 *            the file-name to search for
 	 * @return the {@link List} of all files within the directory or a
 	 *         subdirectory having the specified <code>searchFileName</code>
 	 */
-	public static List<File> getFilelist(final File dir, List<File> fileList,
-			final String searchFileName) {
+	public static List<File> getFilelist(final File dir,
+			final List<File> fileList, final String searchFileName) {
 
 		// a null file can never be found
 		if (searchFileName == null) {
@@ -282,22 +284,22 @@ public class Files {
 	}
 
 	/**
-	 * Returns all files of the specified directory and all files in sub-folders,
-	 * which have a specified file-name.
+	 * Returns all files of the specified directory and all files in
+	 * sub-folders, which have a specified file-name.
 	 * 
 	 * @param dir
-	 *          the directory to delete
+	 *            the directory to get the files from
 	 * @param fileList
-	 *          the list of files the new files should be appended to, if
-	 *          <code>null</code> a new list will be created
+	 *            the list of files the new files should be appended to, if
+	 *            <code>null</code> a new list will be created
 	 * @param searchPattern
-	 *          the <code>Pattern</code> the files have to apply to
+	 *            the <code>Pattern</code> the files have to apply to
 	 * 
 	 * @return the {@link List} of all files within the directory or a
 	 *         subdirectory matching the specified <code>Pattern</code>
 	 */
-	public static List<File> getFilelist(final File dir, List<File> fileList,
-			final Pattern searchPattern) {
+	public static List<File> getFilelist(final File dir,
+			final List<File> fileList, final Pattern searchPattern) {
 
 		// a null file can never be found
 		if (searchPattern == null) {
@@ -323,23 +325,24 @@ public class Files {
 	}
 
 	/**
-	 * Checks if a file has the specified <code>cmpFileName</code>. The comparison
-	 * is not as easy as it might look like. The reason for this are the different
-	 * OS with different case-sensitive and insensitive file-name rules. Therefore
-	 * this function tries to answer equality based on the OS rule, i.e.:<br />
+	 * Checks if a file has the specified <code>cmpFileName</code>. The
+	 * comparison is not as easy as it might look like. The reason for this are
+	 * the different OS with different case-sensitive and insensitive file-name
+	 * rules. Therefore this function tries to answer equality based on the OS
+	 * rule, i.e.:<br />
 	 * <br />
 	 * 
 	 * <b>Windows OS:</b><br />
 	 * The file C:\sample.file equals the file-name Sample.file or SaMpLe.file <br />
 	 * <br />
 	 * <b>Linux:</b><br />
-	 * The file C:\sample.file equals the file-name sample.file but not any other
-	 * case
+	 * The file C:\sample.file equals the file-name sample.file but not any
+	 * other case
 	 * 
 	 * @param file
-	 *          the {@link File} to be checked
+	 *            the {@link File} to be checked
 	 * @param cmpFileName
-	 *          the file-name to check for
+	 *            the file-name to check for
 	 * @return <code>true</code> if the file-name is equal, otherwise
 	 *         <code>false</code>
 	 */
@@ -364,17 +367,18 @@ public class Files {
 	}
 
 	/**
-	 * Returns all files of the specified directory and all files in sub-folders,
-	 * which are accepted by the passed filter
+	 * Returns all files of the specified directory and all files in
+	 * sub-folders, which are accepted by the passed filter
 	 * 
 	 * @param dir
-	 *          the directory to delete
+	 *            the directory to delete
 	 * @param fileList
-	 *          the list of files the new files should be appended to, if
-	 *          <code>null</code> a new list will be created
+	 *            the list of files the new files should be appended to, if
+	 *            <code>null</code> a new list will be created
 	 * @param filter
-	 *          a {@link FileFilter} which can be used to filter the returned file
-	 *          list, can be <code>null</code> if all files should be returned
+	 *            a {@link FileFilter} which can be used to filter the returned
+	 *            file list, can be <code>null</code> if all files should be
+	 *            returned
 	 * @return the {@link List} of all files within the directory or a
 	 *         subdirectory
 	 */
@@ -411,8 +415,9 @@ public class Files {
 	 * sub-directories
 	 * 
 	 * @param dir
-	 *          the directory to get the {@link File} instances from
-	 * @return the {@link List} of {@link File} instances in the passed directory
+	 *            the directory to get the {@link File} instances from
+	 * @return the {@link List} of {@link File} instances in the passed
+	 *         directory
 	 */
 	public static List<File> getCurrentFilelist(final File dir) {
 		final List<File> fileList = new ArrayList<File>();
@@ -440,8 +445,9 @@ public class Files {
 	 * Gets all the direct sub-directories of a directory
 	 * 
 	 * @param dir
-	 *          the directory to get the sub-directories for
-	 * @return the {@link List} of {@link File} instances in the passed directory
+	 *            the directory to get the sub-directories for
+	 * @return the {@link List} of {@link File} instances in the passed
+	 *         directory
 	 */
 	public static List<File> getCurrentSubDirectories(final File dir) {
 		final List<File> dirList = new ArrayList<File>();
@@ -469,7 +475,7 @@ public class Files {
 	 * the sub-directories) of a specific directory
 	 * 
 	 * @param dir
-	 *          the directory to determine the content from
+	 *            the directory to determine the content from
 	 * @return the list of the content
 	 */
 	public static List<File> getDirectoryContent(final File dir) {
@@ -505,16 +511,17 @@ public class Files {
 	}
 
 	/**
-	 * This function checks if the specified file exists and if it can be accessed
+	 * This function checks if the specified file exists and if it can be
+	 * accessed
 	 * 
 	 * @param fileNameAndPath
-	 *          the absolute path including the filename to the file
+	 *            the absolute path including the filename to the file
 	 * @param checkWrite
-	 *          <code>true</code> if write access should be checked also,
-	 *          otherwise <code>false</code>
+	 *            <code>true</code> if write access should be checked also,
+	 *            otherwise <code>false</code>
 	 * @return the canonical file (see {@link File#getCanonicalPath()}, if the
-	 *         file cannot be resolved or cannot be accessed <code>null</code> is
-	 *         returned
+	 *         file cannot be resolved or cannot be accessed <code>null</code>
+	 *         is returned
 	 */
 	public static String checkFile(final String fileNameAndPath,
 			boolean checkWrite) {
@@ -525,16 +532,17 @@ public class Files {
 	}
 
 	/**
-	 * This function checks if the specified file exists and if it can be accessed
+	 * This function checks if the specified file exists and if it can be
+	 * accessed
 	 * 
 	 * @param file
-	 *          the file to be checked
+	 *            the file to be checked
 	 * @param checkWrite
-	 *          <code>true</code> if write access should be checked also,
-	 *          otherwise <code>false</code>
+	 *            <code>true</code> if write access should be checked also,
+	 *            otherwise <code>false</code>
 	 * @return the canonical file (see {@link File#getCanonicalPath()}, if the
-	 *         file cannot be resolved or cannot be accessed <code>null</code> is
-	 *         returned
+	 *         file cannot be resolved or cannot be accessed <code>null</code>
+	 *         is returned
 	 */
 	public static String checkFile(final File file, boolean checkWrite) {
 		if (file == null)
@@ -557,10 +565,10 @@ public class Files {
 	 * {@link File#getCanonicalPath()}
 	 * 
 	 * @param pathName
-	 *          the path name to convert
+	 *            the path name to convert
 	 * @return the converted path with ending {@link File#separatorChar},
-	 *         <code>null</code> if the path name could not be converted or if it
-	 *         was <code>null</code>
+	 *         <code>null</code> if the path name could not be converted or if
+	 *         it was <code>null</code>
 	 */
 	public static String getCanonicalPath(final String pathName) {
 		if (pathName == null)
@@ -574,10 +582,10 @@ public class Files {
 	 * {@link File#getCanonicalPath()}
 	 * 
 	 * @param path
-	 *          the file to be converted
+	 *            the file to be converted
 	 * @return the converted path with ending {@link File#separatorChar},
-	 *         <code>null</code> if the path name could not be converted or if it
-	 *         was <code>null</code>
+	 *         <code>null</code> if the path name could not be converted or if
+	 *         it was <code>null</code>
 	 */
 	public static String getCanonicalPath(final File path) {
 		if (path == null)
@@ -594,8 +602,8 @@ public class Files {
 
 	/**
 	 * This function is used to resolve an absolute or relative path (latter is
-	 * resolved if passed). If the passed path is absolute nothing is changed and
-	 * the {@link URI} of the passed path is returned, if the passed file is
+	 * resolved if passed). If the passed path is absolute nothing is changed
+	 * and the {@link URI} of the passed path is returned, if the passed file is
 	 * relative it is resolved against the passed root directory (i.e.
 	 * <code>rootDir</code>).
 	 * 
@@ -604,10 +612,10 @@ public class Files {
 	 * root-directory exists</b>
 	 * 
 	 * @param path
-	 *          the relative or absolute path
+	 *            the relative or absolute path
 	 * @param rootDir
-	 *          the root directory used to resolve the <code>path</code> if it is
-	 *          relative
+	 *            the root directory used to resolve the <code>path</code> if it
+	 *            is relative
 	 * @return the absolute path of the passed <code>path</code>
 	 */
 	public static URI getAbsoluteFileURI(final String path, String rootDir) {
@@ -663,20 +671,20 @@ public class Files {
 	 * </ul>
 	 * 
 	 * @param files
-	 *          the files to copy
+	 *            the files to copy
 	 * @param destDir
-	 *          the destination directory
+	 *            the destination directory
 	 * @param truncater
-	 *          the path the specified files should be truncated by
+	 *            the path the specified files should be truncated by
 	 * @throws IOException
-	 *           if a file cannot be read or written
+	 *             if a file cannot be read or written
 	 */
 	public static void copyFiles(final Collection<File> files,
 			final File destDir, final File truncater) throws IOException {
 
 		if (truncater == null || !truncater.isDirectory()) {
-			throw new IllegalArgumentException("The passed truncater '" + truncater
-					+ "' is null or not a directory.");
+			throw new IllegalArgumentException("The passed truncater '"
+					+ truncater + "' is null or not a directory.");
 		}
 
 		final String truncaterPath = getCanonicalPath(truncater);
@@ -690,7 +698,8 @@ public class Files {
 
 			// truncate the part
 			final String filePath = getCanonicalPath(file.getParent());
-			final File destFolder = new File(destDir, filePath.replaceAll(regEx, ""));
+			final File destFolder = new File(destDir, filePath.replaceAll(
+					regEx, ""));
 			checkDirectory(getCanonicalPath(destFolder), true);
 
 			// determine the destination
@@ -705,14 +714,14 @@ public class Files {
 	 * Copies all the specified files into the destination directory
 	 * 
 	 * @param files
-	 *          the files to be copied
+	 *            the files to be copied
 	 * @param destDir
-	 *          the destination directory
+	 *            the destination directory
 	 * @throws IOException
-	 *           if a file cannot be read or written
+	 *             if a file cannot be read or written
 	 */
-	public static void copyFiles(final Collection<File> files, final File destDir)
-			throws IOException {
+	public static void copyFiles(final Collection<File> files,
+			final File destDir) throws IOException {
 		for (final File file : files) {
 
 			// determine the destination
@@ -727,11 +736,11 @@ public class Files {
 	 * Copies the <code>sourceDir</code> to the <code>destDir</code>
 	 * 
 	 * @param sourceDir
-	 *          the source directory to be copied
+	 *            the source directory to be copied
 	 * @param destDir
-	 *          the destination directory to copy to
+	 *            the destination directory to copy to
 	 * @throws IOException
-	 *           if an error occurs
+	 *             if an error occurs
 	 */
 	public static void copyDirectory(final File sourceDir, final File destDir)
 			throws IOException {
@@ -765,11 +774,11 @@ public class Files {
 	 * Copies the <code>sourceFile</code> to the <code>destFile</code>
 	 * 
 	 * @param sourceFile
-	 *          the file to be copied
+	 *            the file to be copied
 	 * @param destFile
-	 *          the destination file to copy to
+	 *            the destination file to copy to
 	 * @throws IOException
-	 *           if an error occurs
+	 *             if an error occurs
 	 */
 	public static void copyFile(final File sourceFile, final File destFile)
 			throws IOException {
@@ -786,11 +795,11 @@ public class Files {
 	 * closed by this method and has to be recreated if used any further.
 	 * 
 	 * @param sourceStream
-	 *          the input stream which should be copied
+	 *            the input stream which should be copied
 	 * @param destFile
-	 *          the output file
+	 *            the output file
 	 * @throws IOException
-	 *           if the file cannot be accessed
+	 *             if the file cannot be accessed
 	 */
 	public static void copyStreamToFile(final InputStream sourceStream,
 			final File destFile) throws IOException {
@@ -814,12 +823,12 @@ public class Files {
 	 * Zips a specific directory and all it sub-directories
 	 * 
 	 * @param sourceDir
-	 *          the source directory, which should be zipped
+	 *            the source directory, which should be zipped
 	 * @param zipFile
-	 *          the zip-file to be created
+	 *            the zip-file to be created
 	 * @throws IOException
-	 *           if the directory cannot be accessed or the zip-file cannot be
-	 *           created
+	 *             if the directory cannot be accessed or the zip-file cannot be
+	 *             created
 	 */
 	public static void zipDirectory(final File sourceDir, final File zipFile)
 			throws IOException {
@@ -867,13 +876,13 @@ public class Files {
 	 * Writes a string to a <code>File</code>
 	 * 
 	 * @param file
-	 *          the <code>File</code> to write the <code>content</code> to
+	 *            the <code>File</code> to write the <code>content</code> to
 	 * @param content
-	 *          the content to write to the <code>file</code>
+	 *            the content to write to the <code>file</code>
 	 * @param encoding
-	 *          the encoding used by the file to write to
+	 *            the encoding used by the file to write to
 	 * @throws IOException
-	 *           if the content could not be written to the file
+	 *             if the content could not be written to the file
 	 */
 	public static void writeToFile(final File file, final String content,
 			final String encoding) throws IOException {
@@ -885,13 +894,13 @@ public class Files {
 	 * Writes a string to a <code>File</code>
 	 * 
 	 * @param file
-	 *          the file to write the <code>content</code> to
+	 *            the file to write the <code>content</code> to
 	 * @param content
-	 *          the content to write to the <code>file</code>
+	 *            the content to write to the <code>file</code>
 	 * @param encoding
-	 *          the encoding used by the file to write to
+	 *            the encoding used by the file to write to
 	 * @throws IOException
-	 *           if the content could not be written to the file
+	 *             if the content could not be written to the file
 	 */
 	public static void writeToFile(final String file, final String content,
 			final String encoding) throws IOException {
@@ -901,8 +910,10 @@ public class Files {
 		if (Charset.isSupported(encoding)) {
 			ow = new OutputStreamWriter(fos, encoding);
 		} else {
-			System.err.println("The specified encoding '" + encoding
-					+ "' is not supported, the default encoding will be used instead.");
+			System.err
+					.println("The specified encoding '"
+							+ encoding
+							+ "' is not supported, the default encoding will be used instead.");
 
 			ow = new OutputStreamWriter(fos);
 		}
@@ -917,13 +928,13 @@ public class Files {
 	 * Reads a <code>file</code> as string
 	 * 
 	 * @param file
-	 *          the file (complete path) to open
+	 *            the file (complete path) to open
 	 * @return the content of the file as string
 	 * 
 	 * @throws FileNotFoundException
-	 *           if the specified file could not be found
+	 *             if the specified file could not be found
 	 * @throws IOException
-	 *           if the file could not be read
+	 *             if the file could not be read
 	 */
 	public static String readFromFile(final String file)
 			throws FileNotFoundException, IOException {
@@ -934,13 +945,13 @@ public class Files {
 	 * Reads a {@link File} as string
 	 * 
 	 * @param file
-	 *          the file (complete path) to open
+	 *            the file (complete path) to open
 	 * @return the content of the file as string
 	 * 
 	 * @throws FileNotFoundException
-	 *           if the specified file could not be found
+	 *             if the specified file could not be found
 	 * @throws IOException
-	 *           if the file could not be read
+	 *             if the file could not be read
 	 */
 	public static String readFromFile(final File file)
 			throws FileNotFoundException, IOException {
@@ -957,11 +968,11 @@ public class Files {
 
 	/**
 	 * Removes the extension (if there is one) from the specified
-	 * <code>File</code>. It is not checked if the passed <code>file</code> really
-	 * refers to a <code>File</code> or a <code>Directory</code>.
+	 * <code>File</code>. It is not checked if the passed <code>file</code>
+	 * really refers to a <code>File</code> or a <code>Directory</code>.
 	 * 
 	 * @param file
-	 *          the <code>File</code> to trim the extension from
+	 *            the <code>File</code> to trim the extension from
 	 * @return the filename without any extension (i.e. anything behind the last
 	 *         .), <code>null</code> if <code>file</code> was <code>null</code>
 	 */
@@ -980,7 +991,7 @@ public class Files {
 	 * <code>separatorChar</code> is removed).
 	 * 
 	 * @param fileName
-	 *          the name of the file to trim the extension from
+	 *            the name of the file to trim the extension from
 	 * @return the filename without any extension (i.e. anything behind the last
 	 *         .), <code>null</code> if <code>fileName</code> was
 	 *         <code>null</code>
@@ -1001,7 +1012,8 @@ public class Files {
 		// make sure that we have a filename and not something else, like a
 		// full path
 		if (postFileName.matches("^.*[\\Q" + fs + "\\E].+$")) {
-			postFileName = postFileName.substring(postFileName.lastIndexOf(fs) + 1);
+			postFileName = postFileName
+					.substring(postFileName.lastIndexOf(fs) + 1);
 		}
 
 		// check if we still have an ending FileSeparator -> Drive
@@ -1024,10 +1036,10 @@ public class Files {
 	 * contain any UTF-8 characters, otherwise have a look at the see section.
 	 * 
 	 * @param file
-	 *          the property <code>File</code> to be read
+	 *            the property <code>File</code> to be read
 	 * @return the <code>Properties</code> read from the <code>File</code>
 	 * @throws IOException
-	 *           if the <code>File</code> could not be read
+	 *             if the <code>File</code> could not be read
 	 * 
 	 * @see UnicodeReader
 	 */
@@ -1040,9 +1052,9 @@ public class Files {
 	 * Copies a <code>Resource</code> to a <code>File</code>.
 	 * 
 	 * @param resource
-	 *          the path of the <code>Resource</code> to be copied
+	 *            the path of the <code>Resource</code> to be copied
 	 * @param destFile
-	 *          the destination
+	 *            the destination
 	 * @return <code>true</code> if the <code>Resource</code> was copied,
 	 *         otherwise <code>false</code>
 	 * @throws IOException
@@ -1059,9 +1071,9 @@ public class Files {
 	 * Copies a <code>Resource</code> to a <code>File</code>.
 	 * 
 	 * @param resource
-	 *          the path of the <code>Resource</code> to be copied
+	 *            the path of the <code>Resource</code> to be copied
 	 * @param destFile
-	 *          the destination as <code>File</code>
+	 *            the destination as <code>File</code>
 	 * @return <code>true</code> if the <code>Resource</code> was copied,
 	 *         otherwise <code>false</code>
 	 * @throws IOException
@@ -1076,10 +1088,10 @@ public class Files {
 	 * Copies a <code>Resource</code> to a <code>File</code>.
 	 * 
 	 * @param resource
-	 *          the <code>ResourceInfo</code> of the <code>Resource</code> to be
-	 *          copied
+	 *            the <code>ResourceInfo</code> of the <code>Resource</code> to
+	 *            be copied
 	 * @param destFile
-	 *          the destination <code>File</code>
+	 *            the destination <code>File</code>
 	 * @return <code>true</code> if the <code>Resource</code> was copied,
 	 *         otherwise <code>false</code>
 	 * @throws IOException
@@ -1107,9 +1119,10 @@ public class Files {
 	 * Determines the extension of the specified <code>File</code>
 	 * 
 	 * @param file
-	 *          the <code>File</code> to get the extension from
-	 * @return the extension of the passed <code>File</code>, or the empty string
-	 *         if no extension was specified, will never return <code>null</code>
+	 *            the <code>File</code> to get the extension from
+	 * @return the extension of the passed <code>File</code>, or the empty
+	 *         string if no extension was specified, will never return
+	 *         <code>null</code>
 	 */
 	public static String getExtension(final File file) {
 		if (file == null) {
@@ -1123,9 +1136,10 @@ public class Files {
 	 * Determines the extension of the name of the file
 	 * 
 	 * @param fileName
-	 *          the name of a file to get the extension from
-	 * @return the extension of the passed <code>File</code>, or the empty string
-	 *         if no extension was specified, will never return <code>null</code>
+	 *            the name of a file to get the extension from
+	 * @return the extension of the passed <code>File</code>, or the empty
+	 *         string if no extension was specified, will never return
+	 *         <code>null</code>
 	 */
 	public static String getExtension(final String fileName) {
 
@@ -1146,7 +1160,7 @@ public class Files {
 	 * extension of the file and not the content.
 	 * 
 	 * @param file
-	 *          the <code>File</code> to determine the mime-type of
+	 *            the <code>File</code> to determine the mime-type of
 	 * @return the mime-type of the specified file, or the default mime-type if
 	 *         not determinable
 	 * 
@@ -1161,13 +1175,13 @@ public class Files {
 	}
 
 	/**
-	 * Determines the mime-type of the passed file-name, based on the extension of
-	 * the file and not the content.
+	 * Determines the mime-type of the passed file-name, based on the extension
+	 * of the file and not the content.
 	 * 
 	 * @param fileName
-	 *          the file-name to determine the mime-type for
-	 * @return the mime-type of the specified file-name, or the default mime-type
-	 *         if not determinable
+	 *            the file-name to determine the mime-type for
+	 * @return the mime-type of the specified file-name, or the default
+	 *         mime-type if not determinable
 	 * 
 	 * @see Files#DEFAULT_MIMETYPE
 	 */
@@ -1200,15 +1214,15 @@ public class Files {
 	 * <code>file.encoding</code>) will be used.
 	 * 
 	 * @param file
-	 *          the file to guess the encoding for
+	 *            the file to guess the encoding for
 	 * @param defaultEncoding
-	 *          the default encoding used when not guessable, can be
-	 *          <code>null</code>
+	 *            the default encoding used when not guessable, can be
+	 *            <code>null</code>
 	 * 
 	 * @return the guessed encoding
 	 * 
 	 * @throws IOException
-	 *           if the file cannot be accessed
+	 *             if the file cannot be accessed
 	 * 
 	 * @see System#getProperties()
 	 */
@@ -1224,15 +1238,15 @@ public class Files {
 	 * <code>file.encoding</code>) will be used.
 	 * 
 	 * @param file
-	 *          the file to guess the encoding for
+	 *            the file to guess the encoding for
 	 * @param defaultEncoding
-	 *          the default encoding used when not guessable, can be
-	 *          <code>null</code>
+	 *            the default encoding used when not guessable, can be
+	 *            <code>null</code>
 	 * 
 	 * @return the guessed encoding
 	 * 
 	 * @throws IOException
-	 *           if the file cannot be accessed
+	 *             if the file cannot be accessed
 	 * 
 	 * @see System#getProperties()
 	 */
@@ -1240,5 +1254,88 @@ public class Files {
 			final String defaultEncoding) throws IOException {
 		final InputStream inStream = new FileInputStream(file);
 		return Streams.guessEncoding(inStream, defaultEncoding);
+	}
+
+	/**
+	 * Checks if the {@code file} is somewhere in the {@code directory}.
+	 * <i>Somewhere</i> means that it might be in a sub-folder.
+	 * 
+	 * @param file
+	 *            the file to be checked, cannot be {@code null}
+	 * @param directory
+	 *            the directory should be in
+	 * 
+	 * @return {@code true} if the {@code file} is directly or in a
+	 *         sub-directory of the specified {@code directory}, otherwise
+	 *         {@code false}
+	 */
+	public static boolean isInDirectory(final String file,
+			final String directory) {
+		return isInDirectory(new File(file), new File(directory));
+	}
+
+	/**
+	 * Checks if the {@code file} is somewhere in the {@code directory}.
+	 * <i>Somewhere</i> means that it might be in a sub-folder.
+	 * 
+	 * @param file
+	 *            the file to be checked, cannot be {@code null}
+	 * @param directory
+	 *            the directory should be in
+	 * 
+	 * @return {@code true} if the {@code file} is directly or in a
+	 *         sub-directory of the specified {@code directory}, otherwise
+	 *         {@code false}
+	 */
+	public static boolean isInDirectory(final File file, final String directory) {
+		return isInDirectory(file, new File(directory));
+	}
+
+	/**
+	 * Checks if the {@code file} is somewhere in the {@code directory}.
+	 * <i>Somewhere</i> means that it might be in a sub-folder.
+	 * 
+	 * @param file
+	 *            the file to be checked, cannot be {@code null}
+	 * @param directory
+	 *            the directory should be in
+	 * 
+	 * @return {@code true} if the {@code file} is directly or in a
+	 *         sub-directory of the specified {@code directory}, otherwise
+	 *         {@code false}
+	 */
+	public static boolean isInDirectory(final String file, final File directory) {
+		return isInDirectory(new File(file), directory);
+	}
+
+	/**
+	 * Checks if the {@code file} is somewhere in the {@code directory}.
+	 * <i>Somewhere</i> means that it might be in a sub-folder.
+	 * 
+	 * @param file
+	 *            the file (can be a file or a directory) to be checked, cannot
+	 *            be {@code null}
+	 * @param directory
+	 *            the directory should be in
+	 * 
+	 * @return {@code true} if the {@code file} is directly or in a
+	 *         sub-directory of the specified {@code directory}, otherwise
+	 *         {@code false}
+	 */
+	public static boolean isInDirectory(final File file, final File directory) {
+
+		// the file and directory should exist and should be of correct type
+		if (!file.exists() || !directory.exists()) {
+			return false;
+		} else if (!directory.isDirectory()) {
+			return false;
+		}
+
+		// next get the canonical representations
+		final String canFile = getCanonicalPath(file);
+		final String canDir = getCanonicalPath(directory);
+
+		// check the prefix
+		return canFile.startsWith(canDir);
 	}
 }

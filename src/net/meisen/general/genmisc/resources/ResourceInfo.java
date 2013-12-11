@@ -27,7 +27,8 @@ import net.meisen.general.genmisc.types.Objects;
 public class ResourceInfo {
 
 	/**
-	 * Marker used within a resource to mark a resource to be stored within a jar
+	 * Marker used within a resource to mark a resource to be stored within a
+	 * jar
 	 */
 	public final static String INJARMARKER = ".jar!";
 
@@ -50,16 +51,18 @@ public class ResourceInfo {
 	 */
 	private String fullPath;
 
+	private String rootPath;
+
 	/**
 	 * Collects information about a resource. The resource can be located on the
-	 * file-system or relative on the class-path or the file-system, whereby later
-	 * has higher priority
+	 * file-system or relative on the class-path or the file-system, whereby
+	 * later has higher priority
 	 * 
 	 * @param path
-	 *          the path of to the resource
+	 *            the path of to the resource
 	 * @param isFile
-	 *          <code>true</code> if the path represents a file, otherwise
-	 *          <code>false</code>
+	 *            <code>true</code> if the path represents a file, otherwise
+	 *            <code>false</code>
 	 */
 	public ResourceInfo(final String path, final boolean isFile) {
 		this(path, null, isFile);
@@ -67,24 +70,34 @@ public class ResourceInfo {
 
 	/**
 	 * Collects information about a resource. The resource can be located on the
-	 * file-system or relative on the class-path or the file-system, whereby later
-	 * has higher priority
+	 * file-system or relative on the class-path or the file-system, whereby
+	 * later has higher priority
 	 * 
 	 * @param path
-	 *          the relative path to the resource
+	 *            the relative path to the resource
 	 * @param rootPath
-	 *          the root path used for the resource <code>true</code> if the path
-	 *          represents a file, otherwise <code>false</code>
+	 *            the root path used for the resource
 	 * @param isFile
-	 *          <code>true</code> if the path represents a file, otherwise
-	 *          <code>false</code>
+	 *            <code>true</code> if the path represents a file, otherwise
+	 *            <code>false</code>
 	 */
 	public ResourceInfo(final String path, final String rootPath,
 			final boolean isFile) {
 		final String root = rootPath == null ? "" : rootPath;
 
 		// check if the file exists
-		final File file = "".equals(root) ? new File(path) : new File(root, path);
+		final File rootDir;
+		final File file;
+		if ("".equals(root)) {
+			rootDir = null;
+			file = new File(path);
+		} else if (Files.isInDirectory(path, rootPath)) {
+			rootDir = new File(root);
+			file = new File(path);
+		} else {
+			rootDir = new File(root);
+			file = new File(root, path);
+		}
 
 		// we have an path to a jar which marks a file within the jar
 		if (path.contains(INJARMARKER) || root.contains(INJARMARKER)
@@ -93,8 +106,10 @@ public class ResourceInfo {
 			// if we have a root lets put it together
 			final String urlPath;
 			if (root.endsWith(".jar") || root.contains(INJARMARKER)) {
-				urlPath = root + (root.endsWith(".jar") ? "!" : "")
-						+ (path.endsWith("/") || path.endsWith("\\") ? "" : "/") + path;
+				urlPath = root
+						+ (root.endsWith(".jar") ? "!" : "")
+						+ (path.endsWith("/") || path.endsWith("\\") ? "" : "/")
+						+ path;
 			} else {
 				urlPath = root + path;
 			}
@@ -105,18 +120,19 @@ public class ResourceInfo {
 			if (url != null) {
 
 				// set the defined stuff
-				setUrl(url, isFile);
+				setUrl(url, rootDir, isFile);
 			} else {
 				throw new IllegalArgumentException("The path '" + urlPath
 						+ "' cannot be interpreted as resource path.");
 			}
 		}
 		// check if its a directory or a file which exists and is absolute
-		else if (file.exists() && file.canRead()
+		else if (file.exists()
+				&& file.canRead()
 				&& ((isFile && file.isFile()) || (!isFile && file.isDirectory()))) {
 
 			// set the directory information
-			setFile(file, isFile);
+			setFile(file, rootDir, isFile);
 		}
 		// it's not a file and not a full-qualified path, so it must be on the
 		// class-path
@@ -129,8 +145,8 @@ public class ResourceInfo {
 			transformedClassPath += path;
 
 			// get the class-path value
-			transformedClassPath = transformPathToClassPath(transformedClassPath,
-					isFile);
+			transformedClassPath = transformPathToClassPath(
+					transformedClassPath, isFile);
 
 			// check if the file is in a jar or on the class-path
 			final URL url = ResourceInfo.class.getClassLoader().getResource(
@@ -152,11 +168,11 @@ public class ResourceInfo {
 						f = new File(url.getFile());
 					}
 
-					setFile(f, isFile);
+					setFile(f, rootDir, isFile);
 				}
 				// it is within a jar
 				else if ("jar".equalsIgnoreCase(protocol)) {
-					setUrl(url, isFile);
+					setUrl(url, rootDir, isFile);
 				} else {
 					throw new IllegalStateException(
 							"This error should never been thrown - invalid protocol '"
@@ -172,15 +188,20 @@ public class ResourceInfo {
 	 * Specifies the <code>File</code> of the <code>ResourceInfo</code>
 	 * 
 	 * @param file
-	 *          the <code>File</code> to be set for the <code>ResourceInfo</code>
+	 *            the <code>File</code> to be set for the
+	 *            <code>ResourceInfo</code>
+	 * @param root
+	 *            the root of the file if one was specified
 	 * @param isFile
-	 *          <code>true</code> if the passed <code>File</code> is a file and
-	 *          not a directory, otherwise <code>false</code>
+	 *            <code>true</code> if the passed <code>File</code> is a file
+	 *            and not a directory, otherwise <code>false</code>
 	 */
-	protected void setFile(final File file, final boolean isFile) {
+	protected void setFile(final File file, final File root,
+			final boolean isFile) {
 
 		if (file.exists()) {
 			fullPath = Files.getCanonicalPath(file);
+			rootPath = root == null ? null : Files.getCanonicalPath(root);
 			jarPath = null;
 			inJarPath = null;
 
@@ -201,12 +222,14 @@ public class ResourceInfo {
 	 * <code>ResourceInfo</code> from
 	 * 
 	 * @param url
-	 *          the <code>URL</code> to get the <code>ResourceInfo</code> for
+	 *            the <code>URL</code> to get the <code>ResourceInfo</code> for
+	 * @param root
+	 *            the root of the file if one was specified
 	 * @param isFile
-	 *          <code>true</code> if the passed <code>File</code> is a file and
-	 *          not a directory, otherwise <code>false</code>
+	 *            <code>true</code> if the passed <code>File</code> is a file
+	 *            and not a directory, otherwise <code>false</code>
 	 */
-	protected void setUrl(final URL url, final boolean isFile) {
+	protected void setUrl(final URL url, final File root, final boolean isFile) {
 
 		// check if we have a valid url
 		if (url == null) {
@@ -221,14 +244,18 @@ public class ResourceInfo {
 				// fall-back to the path
 				fullyResolvedPath = url.getPath();
 			}
-			fullyResolvedPath = fullyResolvedPath.replaceFirst("^\\Qfile:/", "");
+			fullyResolvedPath = fullyResolvedPath
+					.replaceFirst("^\\Qfile:/", "");
 			final String protocol = url.getProtocol();
 
 			if ("jar".equals(protocol)) {
-				final String jarFilePath = fullyResolvedPath.substring(0,
-						fullyResolvedPath.indexOf(INJARMARKER) + INJARMARKER.length() - 1);
-				final String pathInJar = fullyResolvedPath.substring(fullyResolvedPath
-						.indexOf(INJARMARKER) + INJARMARKER.length());
+				final String jarFilePath = fullyResolvedPath.substring(
+						0,
+						fullyResolvedPath.indexOf(INJARMARKER)
+								+ INJARMARKER.length() - 1);
+				final String pathInJar = fullyResolvedPath
+						.substring(fullyResolvedPath.indexOf(INJARMARKER)
+								+ INJARMARKER.length());
 				final File jarFile = new File(jarFilePath);
 
 				if (jarFile.exists()) {
@@ -236,12 +263,14 @@ public class ResourceInfo {
 					// set the information
 					jarPath = Files.getCanonicalPath(jarFile);
 					inJarPath = transformPathToClassPath(pathInJar, isFile);
-					type = isFile ? ResourceType.IN_JAR_FILE : ResourceType.IN_JAR_PATH;
+					type = isFile ? ResourceType.IN_JAR_FILE
+							: ResourceType.IN_JAR_PATH;
 					fullPath = url.toString();
 
 					// check if the jar file really contains the resource
 					try {
-						final JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+						final JarFile jar = new JarFile(URLDecoder.decode(
+								jarPath, "UTF-8"));
 
 						// we create a regex used to match the name
 						final String pattern = "(?i)\\Q" + inJarPath + "\\E/?";
@@ -270,18 +299,18 @@ public class ResourceInfo {
 							setEmpty();
 						}
 					} catch (final UnsupportedEncodingException e) {
-						throw new IllegalStateException("Cannot read jar at '" + jarPath
-								+ "'", e);
+						throw new IllegalStateException("Cannot read jar at '"
+								+ jarPath + "'", e);
 					} catch (final IOException e) {
-						throw new IllegalStateException("Cannot read jar at '" + jarPath
-								+ "'", e);
+						throw new IllegalStateException("Cannot read jar at '"
+								+ jarPath + "'", e);
 					}
 				} else {
 					setEmpty();
 				}
 			} else if ("file".equals(protocol)) {
 				final File file = new File(url.getFile());
-				setFile(file, isFile);
+				setFile(file, root, isFile);
 			}
 		}
 	}
@@ -301,10 +330,10 @@ public class ResourceInfo {
 	 * URL, which can be used to retrieve data.
 	 * 
 	 * @param path
-	 *          the path which should be transformed to the full qualified URL
+	 *            the path which should be transformed to the full qualified URL
 	 * @return the transformed URL, or <code>null</code> if the path cannot be
-	 *         transformed to a Jar path, which means that the passed path is not
-	 *         a valid path to a resource within a specified jar
+	 *         transformed to a Jar path, which means that the passed path is
+	 *         not a valid path to a resource within a specified jar
 	 */
 	protected static URL transformToJarPath(final String path) {
 
@@ -364,10 +393,10 @@ public class ResourceInfo {
 	 * "/", ...), and no URL encoding.
 	 * 
 	 * @param path
-	 *          the path to be transformed
+	 *            the path to be transformed
 	 * @param isFile
-	 *          <code>true</code> if the passed path points to a file, otherwise
-	 *          <code>false</code>
+	 *            <code>true</code> if the passed path points to a file,
+	 *            otherwise <code>false</code>
 	 * @return the transformed path which can be used as class-path
 	 */
 	protected static String transformPathToClassPath(final String path,
@@ -436,9 +465,9 @@ public class ResourceInfo {
 
 	/**
 	 * The path to the resource within the jar-file. The method will return
-	 * <code>null</code> if the resource is a file located on the file-system. The
-	 * path is not URL encoded, i.e. special characters like white-spaces are
-	 * resolved.
+	 * <code>null</code> if the resource is a file located on the file-system.
+	 * The path is not URL encoded, i.e. special characters like white-spaces
+	 * are resolved.
 	 * 
 	 * @return the path of the resource within the jar file
 	 */
@@ -455,6 +484,15 @@ public class ResourceInfo {
 	 */
 	public String getFullPath() {
 		return fullPath;
+	}
+
+	/**
+	 * Get the root path which was used to create the {@code ResourceInfo}.
+	 * 
+	 * @return the root path, can be {@code null}
+	 */
+	public String getRootPath() {
+		return rootPath;
 	}
 
 	/**
@@ -504,35 +542,65 @@ public class ResourceInfo {
 
 	@Override
 	public int hashCode() {
-		return Objects.generateHashCode(7, 13, inJarPath, jarPath, fullPath, type);
+		return Objects.generateHashCode(7, 13, inJarPath, jarPath, fullPath,
+				type);
 	}
 
 	/**
-	 * Transform a <code>Collection</code> of <code>String</code> instances into a
-	 * <code>Collection</code> of <code>ResourceInfo</code> instances.
+	 * Transform a <code>Collection</code> of <code>String</code> instances into
+	 * a <code>Collection</code> of <code>ResourceInfo</code> instances.
 	 * 
-	 * @param files
-	 *          the <code>Collection</code> to be transformed
+	 * @param fileNames
+	 *            the <code>Collection</code> to be transformed
 	 * 
 	 * @return the transformed <code>Collection</code>, the order may be changed
 	 */
 	public static Collection<ResourceInfo> transformFromFileNameCollection(
-			final Collection<? extends String> files) {
-		final List<ResourceInfo> resInfos = new ArrayList<ResourceInfo>();
+			final Collection<? extends String> fileNames) {
+		return transformFromFileNameCollection((String) null, fileNames);
+	}
 
-		// transform the list
-		if (files != null) {
-			for (final String fileName : files) {
-				final File file = new File(fileName);
-				final ResourceInfo resInfo = new ResourceInfo(fileName, null,
-						file.isFile());
+	/**
+	 * Transform a <code>Collection</code> of <code>String</code> instances into
+	 * a <code>Collection</code> of <code>ResourceInfo</code> instances.
+	 * 
+	 * @param rootPath
+	 *            the root of all the files
+	 * @param fileNames
+	 *            the <code>Collection</code> to be transformed
+	 * 
+	 * @return the transformed <code>Collection</code>, the order may be changed
+	 */
+	public static Collection<ResourceInfo> transformFromFileNameCollection(
+			final File rootPath, final Collection<? extends String> fileNames) {
+		return transformFromFileNameCollection(
+				Files.getCanonicalPath(rootPath), fileNames);
+	}
 
-				resInfos.add(resInfo);
+	/**
+	 * Transform a <code>Collection</code> of <code>String</code> instances into
+	 * a <code>Collection</code> of <code>ResourceInfo</code> instances.
+	 * 
+	 * @param rootPath
+	 *            the root of all the files
+	 * @param fileNames
+	 *            the <code>Collection</code> to be transformed
+	 * 
+	 * @return the transformed <code>Collection</code>, the order may be changed
+	 */
+	public static Collection<ResourceInfo> transformFromFileNameCollection(
+			final String rootPath, final Collection<? extends String> fileNames) {
+		final List<File> files = new ArrayList<File>();
+
+		// transform the list to files
+		if (fileNames != null) {
+			for (final String fileName : fileNames) {
+				files.add(new File(fileName));
 			}
 		}
 
-		return resInfos;
-
+		// use the other implementation
+		return transformFromFileCollection(rootPath, files);
 	}
 
 	/**
@@ -540,21 +608,56 @@ public class ResourceInfo {
 	 * <code>Collection</code> of <code>ResourceInfo</code> instances.
 	 * 
 	 * @param files
-	 *          the <code>Collection</code> to be transformed
+	 *            the <code>Collection</code> to be transformed
 	 * 
 	 * @return the transformed <code>Collection</code>, the order may be changed
 	 */
 	public static Collection<ResourceInfo> transformFromFileCollection(
 			final Collection<? extends File> files) {
+		return transformFromFileCollection((String) null, files);
+	}
+
+	/**
+	 * Transform a <code>Collection</code> of <code>String</code> instances into
+	 * a <code>Collection</code> of <code>ResourceInfo</code> instances.
+	 * 
+	 * @param rootPath
+	 *            the root of all the files
+	 * @param files
+	 *            the <code>Collection</code> to be transformed
+	 * 
+	 * @return the transformed <code>Collection</code>, the order may be changed
+	 */
+	public static Collection<ResourceInfo> transformFromFileCollection(
+			final File rootPath, final Collection<? extends File> files) {
+		return transformFromFileCollection(Files.getCanonicalPath(rootPath),
+				files);
+	}
+
+	/**
+	 * Transform a <code>Collection</code> of <code>String</code> instances into
+	 * a <code>Collection</code> of <code>ResourceInfo</code> instances.
+	 * 
+	 * @param rootPath
+	 *            the root of all the files
+	 * @param files
+	 *            the <code>Collection</code> to be transformed
+	 * 
+	 * @return the transformed <code>Collection</code>, the order may be changed
+	 */
+	public static Collection<ResourceInfo> transformFromFileCollection(
+			final String rootPath, final Collection<? extends File> files) {
 		final List<ResourceInfo> resInfos = new ArrayList<ResourceInfo>();
 
-		// transform the list
 		if (files != null) {
 			for (final File file : files) {
-				final ResourceInfo resInfo = new ResourceInfo(
-						Files.getCanonicalPath(file), null, file.isFile());
 
-				resInfos.add(resInfo);
+				if (rootPath == null || Files.isInDirectory(file, rootPath)) {
+					final ResourceInfo resInfo = new ResourceInfo(
+							Files.getCanonicalPath(file), rootPath,
+							file.isFile());
+					resInfos.add(resInfo);
+				}
 			}
 		}
 

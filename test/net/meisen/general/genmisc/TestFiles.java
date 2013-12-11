@@ -1,6 +1,8 @@
 package net.meisen.general.genmisc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,11 +107,7 @@ public class TestFiles {
 		testFile.mkdirs();
 
 		assertEquals(Files.removeExtension(testFile), testFile.getName());
-
-		Files.deleteDir(testFile);
-
-		testFile.createNewFile();
-		testFile.delete();
+		assertTrue(Files.deleteDir(testFile));
 	}
 
 	/**
@@ -166,7 +164,7 @@ public class TestFiles {
 		assertEquals(p.get("prop3"), "Whatever");
 
 		// remove the file
-		assertEquals(file.delete(), true);
+		assertTrue(file.delete());
 	}
 
 	/**
@@ -191,5 +189,41 @@ public class TestFiles {
 		// check the content
 		final String readContent = Files.readFromFile(fileName);
 		assertEquals(readContent, content);
+
+		assertTrue(file.delete());
+	}
+
+	/**
+	 * Tests the implementation of <code>File.isInDirectory(File, File)</code>,
+	 * <code>File.isInDirectory(File, String)</code>,
+	 * <code>File.isInDirectory(String, String)</code>.
+	 * 
+	 * @throws IOException
+	 *             if the test-file could not be created
+	 */
+	@Test
+	public void testIsInDirectory() throws IOException {
+		final File file = new File(tmpDir, UUID.randomUUID().toString() + "."
+				+ "test");
+
+		assertFalse(Files.isInDirectory(file, file));
+		assertFalse(Files.isInDirectory(file.getAbsolutePath(),
+				tmpDir.getParent()));
+		assertFalse(Files.isInDirectory(file.getAbsolutePath(),
+				tmpDir.getParentFile()));
+
+		// create a new file
+		assertTrue(file.createNewFile());
+
+		// check the file
+		assertFalse(Files.isInDirectory(file, file));
+		assertTrue(Files.isInDirectory(file, tmpDir));
+		assertTrue(Files.isInDirectory(file.getAbsolutePath(),
+				tmpDir.getParent()));
+		assertTrue(Files.isInDirectory(file.getAbsolutePath(),
+				tmpDir.getParentFile()));
+
+		// delete the test-file
+		assertTrue(file.delete());
 	}
 }

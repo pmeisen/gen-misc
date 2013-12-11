@@ -457,7 +457,7 @@ public class Resource {
 
 				if (file.isDirectory()) {
 					final List<File> files = Files.getFilelist(file, null, pattern);
-					retval.addAll(ResourceInfo.transformFromFileCollection(files));
+					retval.addAll(ResourceInfo.transformFromFileCollection(file, files));
 				} else {
 					retval.addAll(getResourcesFromJarFile(file, pattern));
 				}
