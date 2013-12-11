@@ -496,6 +496,16 @@ public class ResourceInfo {
 	}
 
 	/**
+	 * Gets the relative path of the resource to the rootPath.
+	 * 
+	 * @return the relative path to the root
+	 */
+	public String getRelativePathToRoot() {
+		return rootPath == null ? fullPath : fullPath.replaceFirst("^\\Q"
+				+ rootPath + "\\E", "");
+	}
+
+	/**
 	 * Existence check for a specific resource
 	 * 
 	 * @return <code>true</code> if the resource exists, otherwise

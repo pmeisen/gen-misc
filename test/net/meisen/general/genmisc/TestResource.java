@@ -422,7 +422,7 @@ public class TestResource {
 		// check the resources
 		final Collection<ResourceInfo> files = Resource.getResources(
 				testFileName, true, false);
-		System.out.println(files);
+		
 		// assertEquals("Expected to find exactly 4 files.", 4, files.size());
 		assertTrue("The dummyRes '" + dummyRes.getCanonicalPath()
 				+ "' was not found.", files.contains(new ResourceInfo(dummyRes
