@@ -145,9 +145,9 @@ public class Files {
 	}
 
 	/**
-	 * Deletes all files and sub-directories under the specified directory.
-	 * 
-	 * <b>Note</b><br/>
+	 * Deletes all files and sub-directories under the specified directory. <br/>
+	 * <br/>
+	 * <b>Note:</b><br/>
 	 * The function doesn't check if the passed <code>dir</code> is really a
 	 * directory, therefore a file will be deleted as well.
 	 * 
