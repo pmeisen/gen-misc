@@ -23,6 +23,7 @@ import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import net.meisen.general.genmisc.resources.Resource;
@@ -803,6 +804,26 @@ public class Files {
 	 */
 	public static void copyStreamToFile(final InputStream sourceStream,
 			final File destFile) throws IOException {
+		copyStreamToFile(sourceStream, destFile, true);
+	}
+
+	/**
+	 * Creates a file based on a <code>InputStream</code>.
+	 * 
+	 * @param sourceStream
+	 *            the input stream which should be copied
+	 * @param destFile
+	 *            the output file
+	 * @param closeStream
+	 *            defines if the {@code sourceStream} should be closed after it
+	 *            is successfully copied; {@code true} to close the
+	 *            {@code sourceStream}, otherwise {@code false}
+	 * 
+	 * @throws IOException
+	 *             if the file cannot be accessed
+	 */
+	public static void copyStreamToFile(final InputStream sourceStream,
+			final File destFile, final boolean closeStream) throws IOException {
 
 		// use bytes stream to support all file types
 		final OutputStream out = new FileOutputStream(destFile);
@@ -815,8 +836,75 @@ public class Files {
 		}
 
 		// write the information
-		Streams.closeIO(sourceStream);
+		if (closeStream) {
+			Streams.closeIO(sourceStream);
+		}
 		Streams.closeIO(out);
+	}
+
+	/**
+	 * Unzippes the specified {@code zipFile} to the specified
+	 * {@code outputDest}.
+	 * 
+	 * @param zipFile
+	 *            the file to be unzipped
+	 * @param outputDest
+	 *            the destination to locate to
+	 * 
+	 * @throws IOException
+	 *             if the file cannot be unzipped
+	 */
+	public static void unzip(final File zipFile, final File outputDest)
+			throws IOException {
+		unzip(new FileInputStream(zipFile), outputDest);
+	}
+
+	/**
+	 * Unzippes the specified {@code zipStream} to the specified
+	 * {@code outputDest}.
+	 * 
+	 * @param zipStream
+	 *            the stream to be unzipped
+	 * @param outputDest
+	 *            the destination to locate to
+	 * 
+	 * @throws IOException
+	 *             if the file cannot be unzipped
+	 */
+	public static void unzip(final InputStream zipStream, final File outputDest)
+			throws IOException {
+		if (zipStream == null || outputDest == null) {
+			return;
+		} else if (!outputDest.exists()) {
+			outputDest.mkdir();
+		}
+
+		// get the zip file content
+		final ZipInputStream zis = new ZipInputStream(zipStream);
+
+		// iterate over the entries
+		ZipEntry ze = zis.getNextEntry();
+		while (ze != null) {
+			final String fileName = ze.getName();
+			final File newFile = new File(outputDest + File.separator
+					+ fileName);
+
+			if (fileName.endsWith("/")) {
+				newFile.mkdirs();
+			} else {
+				// create the folder structure at the location
+				newFile.getParentFile().mkdirs();
+
+				// now copy the file to the location
+				copyStreamToFile(zis, newFile, false);
+			}
+
+			// get the next entry
+			ze = zis.getNextEntry();
+		}
+
+		zis.closeEntry();
+		zis.close();
 	}
 
 	/**
@@ -833,39 +921,46 @@ public class Files {
 	public static void zipDirectory(final File sourceDir, final File zipFile)
 			throws IOException {
 
-		// get all the files to be zipped
-		final List<File> files = getFilelist(sourceDir, null);
-
 		// create a buffer for the files
 		final byte[] readBuffer = new byte[1024];
 		int bytesIn = 0;
+
+		// get all the files to be zipped
+		final List<File> files = getDirectoryContent(sourceDir);
+		final String fullPath = getCanonicalPath(sourceDir.getPath());
 
 		// open the ZipStream
 		final ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(
 				zipFile));
 		for (final File file : files) {
 
-			// create a stream for the file
-			final FileInputStream fis = new FileInputStream(file);
-
 			// create the entry
-			final String fullPath = getCanonicalPath(sourceDir.getPath());
-			final String entry = file.getPath().replaceAll(
+			final String entry = getCanonicalPath(file).replaceAll(
 					"^" + Pattern.quote(fullPath), "");
 
 			// create a new zip entry
-			final ZipEntry anEntry = new ZipEntry(entry);
+			final ZipEntry anEntry;
+
+			if (file.isFile()) {
+
+				// create a stream for the file
+				final FileInputStream fis = new FileInputStream(file);
+
+				// now write the content of the file to the ZipOutputStream
+				while ((bytesIn = fis.read(readBuffer)) != -1) {
+					zos.write(readBuffer, 0, bytesIn);
+				}
+
+				// close the Stream
+				Streams.closeIO(fis);
+
+				anEntry = new ZipEntry(entry);
+			} else {
+				anEntry = new ZipEntry(entry + "/");
+			}
 
 			// place the zip entry in the ZipOutputStream object
 			zos.putNextEntry(anEntry);
-
-			// now write the content of the file to the ZipOutputStream
-			while ((bytesIn = fis.read(readBuffer)) != -1) {
-				zos.write(readBuffer, 0, bytesIn);
-			}
-
-			// close the Stream
-			Streams.closeIO(fis);
 		}
 
 		// finalize the zip archive

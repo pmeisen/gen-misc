@@ -2,16 +2,20 @@ package net.meisen.general.genmisc;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
 import org.junit.Test;
 
 import net.meisen.general.genmisc.types.Files;
+import net.meisen.general.genmisc.types.Streams;
 
 /**
  * Tests the <code>Files</code> implementation
@@ -23,6 +27,113 @@ public class TestFiles {
 
 	private final static File tmpDir = new File(
 			System.getProperty("java.io.tmpdir"));
+
+	/**
+	 * Utilities for the test.
+	 * 
+	 * @author pmeisen
+	 * 
+	 */
+	public static final class Util {
+
+		/**
+		 * Helper to use the unzipping implementation to unzip the specified
+		 * {@code resource} of the classpath.
+		 * 
+		 * @param resource
+		 *            the location of the resource to be unzipped on the
+		 *            classpath
+		 * 
+		 * @return the created directory with the unzipped content
+		 * 
+		 * @throws IOException
+		 *             if the file cannot be unzipped
+		 */
+		public static File testUnzipHelper(final String resource)
+				throws IOException {
+
+			// create a temporary directory
+			final File tmpTestDir = new File(tmpDir, UUID.randomUUID()
+					.toString());
+			tmpTestDir.mkdir();
+
+			// get the archive to unzip
+			final InputStream stream = Util.class.getClassLoader()
+					.getResourceAsStream(resource);
+			assertNotNull(stream);
+
+			// test the unzipping
+			Files.unzip(stream, tmpTestDir);
+
+			// cleanUp
+			Streams.closeIO(stream);
+
+			return tmpTestDir;
+		}
+
+		/**
+		 * Validates the unzipped content of the zip-archiv located at
+		 * {@code net/meisen/general/genmisc/zipArchives/filesAndDirs.zip}.
+		 * 
+		 * @param tmpTestDir
+		 *            the directory to be validated
+		 */
+		public static void validateUnzippedFilesAndDir(final File tmpTestDir) {
+
+			final File emptyDir = new File(tmpTestDir, "emptyDir");
+			final File onlyFiles = new File(tmpTestDir, "onlyFiles");
+			final File fullDir = new File(tmpTestDir, "fullDir");
+			final File subEmptyDir = new File(tmpTestDir, "fullDir/emptyDir");
+			final File subDir = new File(tmpTestDir, "fullDir/anotherDir");
+
+			List<File> files = Files.getCurrentFilelist(tmpTestDir);
+			List<File> subs = Files.getCurrentSubDirectories(tmpTestDir);
+			assertEquals(5, files.size());
+			assertEquals(3, subs.size());
+			assertTrue(files.contains(new File(tmpTestDir, "File1.txt")));
+			assertTrue(files.contains(new File(tmpTestDir, "File2.txt")));
+			assertTrue(files.contains(new File(tmpTestDir, "File3.txt")));
+			assertTrue(files.contains(new File(tmpTestDir, "File4.txt")));
+			assertTrue(files.contains(new File(tmpTestDir, "File5.txt")));
+			assertTrue(subs.contains(emptyDir));
+			assertTrue(subs.contains(onlyFiles));
+			assertTrue(subs.contains(fullDir));
+
+			files = Files.getCurrentFilelist(emptyDir);
+			subs = Files.getCurrentSubDirectories(emptyDir);
+			assertEquals(0, files.size());
+			assertEquals(0, subs.size());
+
+			files = Files.getCurrentFilelist(onlyFiles);
+			subs = Files.getCurrentSubDirectories(onlyFiles);
+			assertEquals(5, files.size());
+			assertEquals(0, subs.size());
+			assertTrue(files.contains(new File(onlyFiles, "File1.txt")));
+			assertTrue(files.contains(new File(onlyFiles, "File2.txt")));
+			assertTrue(files.contains(new File(onlyFiles, "File3.txt")));
+			assertTrue(files.contains(new File(onlyFiles, "File4.txt")));
+			assertTrue(files.contains(new File(onlyFiles, "File5.txt")));
+
+			files = Files.getCurrentFilelist(fullDir);
+			subs = Files.getCurrentSubDirectories(fullDir);
+			assertEquals(1, files.size());
+			assertEquals(2, subs.size());
+			assertTrue(files.contains(new File(fullDir, "file.txt")));
+			assertTrue(subs.contains(new File(fullDir, "anotherDir")));
+			assertTrue(subs.contains(new File(fullDir, "emptDir")));
+
+			files = Files.getCurrentFilelist(subEmptyDir);
+			subs = Files.getCurrentSubDirectories(subEmptyDir);
+			assertEquals(0, files.size());
+			assertEquals(0, subs.size());
+
+			files = Files.getCurrentFilelist(subDir);
+			subs = Files.getCurrentSubDirectories(subDir);
+			assertEquals(1, files.size());
+			assertEquals(0, subs.size());
+			assertTrue(files.contains(new File(subDir, "file.txt")));
+		}
+	}
 
 	/**
 	 * Tests if the deletion of a none existing directory returns
@@ -225,5 +336,156 @@ public class TestFiles {
 
 		// delete the test-file
 		assertTrue(file.delete());
+	}
+
+	/**
+	 * Tests the unzipping of an empty archive.
+	 * 
+	 * @throws IOException
+	 *             if the zip cannot be read or unzipped
+	 */
+	@Test
+	public void testUnzipEmptyArchive() throws IOException {
+
+		// unzip and check the result
+		final File tmpTestDir = Util
+				.testUnzipHelper("net/meisen/general/genmisc/zipArchives/empty.zip");
+
+		final List<File> files = Files.getCurrentFilelist(tmpTestDir);
+		final List<File> subs = Files.getCurrentSubDirectories(tmpTestDir);
+
+		assertEquals(0, files.size());
+		assertEquals(0, subs.size());
+
+		// cleanUp
+		assertTrue(Files.deleteDir(tmpTestDir));
+	}
+
+	/**
+	 * Tests the unzipping of an archive with a singel file (in the root).
+	 * 
+	 * @throws IOException
+	 *             if the zip cannot be read or unzipped
+	 */
+	@Test
+	public void testUnzipSingleFile() throws IOException {
+
+		// unzip and check the result
+		final File tmpTestDir = Util
+				.testUnzipHelper("net/meisen/general/genmisc/zipArchives/singleFile.zip");
+
+		final List<File> files = Files.getCurrentFilelist(tmpTestDir);
+		final List<File> subs = Files.getCurrentSubDirectories(tmpTestDir);
+
+		assertEquals(1, files.size());
+		assertEquals(0, subs.size());
+		assertTrue(files.contains(new File(tmpTestDir, "singleFile.txt")));
+
+		// cleanUp
+		assertTrue(Files.deleteDir(tmpTestDir));
+	}
+
+	/**
+	 * Tests the unzipping of an archive with multiple files (in the root).
+	 * 
+	 * @throws IOException
+	 *             if the zip cannot be read or unzipped
+	 */
+	@Test
+	public void testUnzipMultipleFile() throws IOException {
+
+		// unzip and check the result
+		final File tmpTestDir = Util
+				.testUnzipHelper("net/meisen/general/genmisc/zipArchives/multipleFiles.zip");
+
+		final List<File> files = Files.getCurrentFilelist(tmpTestDir);
+		final List<File> subs = Files.getCurrentSubDirectories(tmpTestDir);
+
+		assertEquals(5, files.size());
+		assertEquals(0, subs.size());
+		assertTrue(files.contains(new File(tmpTestDir, "File1.txt")));
+		assertTrue(files.contains(new File(tmpTestDir, "File2.txt")));
+		assertTrue(files.contains(new File(tmpTestDir, "File3.txt")));
+		assertTrue(files.contains(new File(tmpTestDir, "File4.txt")));
+		assertTrue(files.contains(new File(tmpTestDir, "File5.txt")));
+
+		// cleanUp
+		assertTrue(Files.deleteDir(tmpTestDir));
+	}
+
+	/**
+	 * Tests the unzipping of an archive with files and an empty directory (in
+	 * the root).
+	 * 
+	 * @throws IOException
+	 *             if the zip cannot be read or unzipped
+	 */
+	@Test
+	public void testUnzipFilesAndEmptyDir() throws IOException {
+
+		// unzip and check the result
+		final File tmpTestDir = Util
+				.testUnzipHelper("net/meisen/general/genmisc/zipArchives/filesAndEmptyDir.zip");
+
+		final List<File> files = Files.getCurrentFilelist(tmpTestDir);
+		final List<File> subs = Files.getCurrentSubDirectories(tmpTestDir);
+
+		assertEquals(5, files.size());
+		assertEquals(1, subs.size());
+		assertTrue(files.contains(new File(tmpTestDir, "File1.txt")));
+		assertTrue(files.contains(new File(tmpTestDir, "File2.txt")));
+		assertTrue(files.contains(new File(tmpTestDir, "File3.txt")));
+		assertTrue(files.contains(new File(tmpTestDir, "File4.txt")));
+		assertTrue(files.contains(new File(tmpTestDir, "File5.txt")));
+		assertTrue(subs.contains(new File(tmpTestDir, "emptyDir")));
+
+		// cleanUp
+		assertTrue(Files.deleteDir(tmpTestDir));
+	}
+
+	/**
+	 * Tests the unzipping of a more comples archive.
+	 * 
+	 * @throws IOException
+	 *             if the zip cannot be read or unzipped
+	 */
+	@Test
+	public void testUnzipFilesAndDir() throws IOException {
+
+		// unzip and check the result
+		final File tmpTestDir = Util
+				.testUnzipHelper("net/meisen/general/genmisc/zipArchives/filesAndDirs.zip");
+
+		Util.validateUnzippedFilesAndDir(tmpTestDir);
+
+		// cleanUp
+		assertTrue(Files.deleteDir(tmpTestDir));
+	}
+
+	/**
+	 * Tests the zipping of a directory.
+	 * 
+	 * @throws IOException
+	 *             if the directory cannot be accessed
+	 */
+	@Test
+	public void testZip() throws IOException {
+		final File tmpTestDir = Util
+				.testUnzipHelper("net/meisen/general/genmisc/zipArchives/filesAndDirs.zip");
+		final File zippedFile = new File(tmpDir, "archiv.zip");
+
+		// zip everything
+		Files.zipDirectory(tmpTestDir, zippedFile);
+
+		// remove the directory and unzip it again
+		assertTrue(Files.deleteDir(tmpTestDir));
+		Files.unzip(zippedFile, tmpTestDir);
+
+		// validate it
+		Util.validateUnzippedFilesAndDir(tmpTestDir);
+
+		// cleanUp
+		assertTrue(Files.deleteDir(tmpTestDir));
+		assertTrue(zippedFile.delete());
 	}
 }
