@@ -6,17 +6,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
-import org.junit.Test;
-
 import net.meisen.general.genmisc.types.Files;
 import net.meisen.general.genmisc.types.Streams;
+
+import org.junit.Test;
 
 /**
  * Tests the <code>Files</code> implementation
