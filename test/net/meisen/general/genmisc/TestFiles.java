@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -77,8 +78,12 @@ public class TestFiles {
 		 * 
 		 * @param tmpTestDir
 		 *            the directory to be validated
+		 * 
+		 * @throws IOException
+		 *             if the a file cannot be validated
 		 */
-		public static void validateUnzippedFilesAndDir(final File tmpTestDir) {
+		public static void validateUnzippedFilesAndDir(final File tmpTestDir)
+				throws IOException {
 
 			final File emptyDir = new File(tmpTestDir, "emptyDir");
 			final File onlyFiles = new File(tmpTestDir, "onlyFiles");
@@ -98,6 +103,11 @@ public class TestFiles {
 			assertTrue(subs.contains(emptyDir));
 			assertTrue(subs.contains(onlyFiles));
 			assertTrue(subs.contains(fullDir));
+
+			// check the content of File3.txt
+			final String content = Files.readFromFile(new File(tmpTestDir,
+					"File4.txt"), "UTF8");
+			assertEquals("sƒ‹÷‹ƒ÷", content);
 
 			files = Files.getCurrentFilelist(emptyDir);
 			subs = Files.getCurrentSubDirectories(emptyDir);
@@ -485,7 +495,7 @@ public class TestFiles {
 		Util.validateUnzippedFilesAndDir(tmpTestDir);
 
 		// cleanUp
-		assertTrue(Files.deleteDir(tmpTestDir));
+		// assertTrue(Files.deleteDir(tmpTestDir));
 		assertTrue(zippedFile.delete());
 	}
 }

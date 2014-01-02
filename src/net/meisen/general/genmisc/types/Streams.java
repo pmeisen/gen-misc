@@ -160,11 +160,13 @@ public class Streams {
 	}
 
 	/**
-	 * Reads a string form a stream
+	 * Reads a string form a stream using the system's default encoding (i.e.
+	 * charset).
 	 * 
 	 * @param stream
 	 *            the {@link InputStream} to read from, the stream is not closed
 	 *            after reading (i.e. call {@link InputStream#close()}
+	 *            
 	 * @return the {@link String} read from the {@link InputStream}
 	 * 
 	 * @throws IOException
@@ -172,8 +174,28 @@ public class Streams {
 	 */
 	public static String readFromStream(final InputStream stream)
 			throws IOException {
+		return readFromStream(stream, null);
+	}
 
-		final InputStreamReader ir = new InputStreamReader(stream);
+	/**
+	 * Reads a string form a stream using the specified encoding (i.e. charset).
+	 * If {@code encoding} is {@code null} the default encoding is used.
+	 * 
+	 * @param stream
+	 *            the {@link InputStream} to read from, the stream is not closed
+	 *            after reading (i.e. call {@link InputStream#close()}
+	 * @param encoding
+	 *            the encoding of the stream
+	 *            
+	 * @return the {@link String} read from the {@link InputStream}
+	 * 
+	 * @throws IOException
+	 *             if the {@link InputStream} throws such an exception
+	 */
+	public static String readFromStream(final InputStream stream,
+			final String encoding) throws IOException {
+		final InputStreamReader ir = encoding == null ? new InputStreamReader(
+				stream) : new InputStreamReader(stream, encoding);
 		final BufferedReader reader = new BufferedReader(ir);
 
 		try {
@@ -187,6 +209,9 @@ public class Streams {
 				buf = new char[1024];
 			}
 
+			if (encoding == null) {
+
+			}
 			return data.toString();
 		} catch (final IOException e) {
 			throw e;

@@ -938,10 +938,8 @@ public class Files {
 			final String entry = getCanonicalPath(file).replaceAll(
 					"^" + Pattern.quote(fullPath), "");
 
-			// create a new zip entry
-			final ZipEntry anEntry;
-
 			if (file.isFile()) {
+				zos.putNextEntry(new ZipEntry(entry));
 
 				// create a stream for the file
 				final FileInputStream fis = new FileInputStream(file);
@@ -953,14 +951,9 @@ public class Files {
 
 				// close the Stream
 				Streams.closeIO(fis);
-
-				anEntry = new ZipEntry(entry);
 			} else {
-				anEntry = new ZipEntry(entry + "/");
+				zos.putNextEntry(new ZipEntry(entry + "/"));
 			}
-
-			// place the zip entry in the ZipOutputStream object
-			zos.putNextEntry(anEntry);
 		}
 
 		// finalize the zip archive
@@ -1037,7 +1030,7 @@ public class Files {
 	}
 
 	/**
-	 * Reads a {@link File} as string
+	 * Reads a {@link File} as string using the system's default encoding.
 	 * 
 	 * @param file
 	 *            the file (complete path) to open
@@ -1050,10 +1043,31 @@ public class Files {
 	 */
 	public static String readFromFile(final File file)
 			throws FileNotFoundException, IOException {
+		return readFromFile(file, null);
+	}
+
+	/**
+	 * Reads a {@link File} as string. If the {@code encoding} is {@code null}
+	 * the default encoding is used.
+	 * 
+	 * @param file
+	 *            the file (complete path) to open
+	 * @param encoding
+	 *            the encoding of the file
+	 * 
+	 * @return the content of the file as string
+	 * 
+	 * @throws FileNotFoundException
+	 *             if the specified file could not be found
+	 * @throws IOException
+	 *             if the file could not be read
+	 */
+	public static String readFromFile(final File file, final String encoding)
+			throws FileNotFoundException, IOException {
 
 		// get the stream to the file and read it
 		final FileInputStream stream = new FileInputStream(file);
-		final String data = Streams.readFromStream(stream);
+		final String data = Streams.readFromStream(stream, encoding);
 
 		// close the stream
 		Streams.closeIO(stream);
