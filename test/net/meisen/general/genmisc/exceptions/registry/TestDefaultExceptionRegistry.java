@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 
+import net.meisen.general.genmisc.exceptions.ForwardedException;
 import net.meisen.general.genmisc.exceptions.catalog.DefaultLocalizedExceptionCatalog;
 import net.meisen.general.genmisc.exceptions.catalog.IExceptionCatalog;
 import net.meisen.general.genmisc.exceptions.catalog.InvalidCatalogEntryException;
@@ -32,7 +33,7 @@ public class TestDefaultExceptionRegistry {
 	 * Tests the creation of constructors with different constructors.
 	 * 
 	 * @throws InvalidCatalogEntryException
-	 *           if the bundle cannot be loaded
+	 *             if the bundle cannot be loaded
 	 */
 	@Test
 	public void testDifferentConstructors() throws InvalidCatalogEntryException {
@@ -65,8 +66,8 @@ public class TestDefaultExceptionRegistry {
 		}
 
 		try {
-			registry.throwException(FullException.class, 1000, new Locale("de"),
-					new IllegalStateException("Dummy"));
+			registry.throwException(FullException.class, 1000,
+					new Locale("de"), new IllegalStateException("Dummy"));
 			fail("Exception was not thrown.");
 		} catch (final FullException e) {
 			assertNotNull(e.getCause());
@@ -75,7 +76,8 @@ public class TestDefaultExceptionRegistry {
 		}
 
 		try {
-			registry.throwException(OnlyMessageException.class, 1001, new Locale("en"));
+			registry.throwException(OnlyMessageException.class, 1001,
+					new Locale("en"));
 			fail("Exception was not thrown.");
 		} catch (final OnlyMessageException e) {
 			assertNull(e.getCause());
@@ -83,8 +85,8 @@ public class TestDefaultExceptionRegistry {
 		}
 
 		try {
-			registry.throwException(OnlyMessageAndThrowableException.class, 1002,
-					new Locale("fr"));
+			registry.throwException(OnlyMessageAndThrowableException.class,
+					1002, new Locale("fr"));
 			fail("Exception was not thrown.");
 		} catch (final OnlyMessageAndThrowableException e) {
 			assertNull(e.getCause());
@@ -110,9 +112,9 @@ public class TestDefaultExceptionRegistry {
 	 * Tests the replacement of parameters
 	 * 
 	 * @throws InvalidCatalogEntryException
-	 *           if a catalog entry is invalid
+	 *             if a catalog entry is invalid
 	 * @throws ParseException
-	 *           if the date cannot be parsed
+	 *             if the date cannot be parsed
 	 */
 	@Test
 	public void testParameterReplacement() throws InvalidCatalogEntryException,
@@ -124,8 +126,8 @@ public class TestDefaultExceptionRegistry {
 		registry.addExceptionCatalog(FullException.class, catalog);
 
 		try {
-			registry
-					.throwException(FullException.class, 1001, new Locale("en"), 1001);
+			registry.throwException(FullException.class, 1001,
+					new Locale("en"), 1001);
 			fail("Exception was not thrown.");
 		} catch (final FullException e) {
 			assertNull(e.getCause());
@@ -133,22 +135,24 @@ public class TestDefaultExceptionRegistry {
 		}
 
 		try {
-			registry.throwException(FullException.class, 1000, new Locale("de"),
-					Dates.createDateFromString("20.01.1981 08:07:00",
-							"dd.MM.yyyy HH:mm:ss"));
+			registry.throwException(FullException.class, 1000,
+					new Locale("de"), Dates.createDateFromString(
+							"20.01.1981 08:07:00", "dd.MM.yyyy HH:mm:ss"));
 			fail("Exception was not thrown.");
 		} catch (final FullException e) {
 			assertNull(e.getCause());
-			assertEquals("Dieser Fehler wurde um 08:07 geschmissen", e.getMessage());
+			assertEquals("Dieser Fehler wurde um 08:07 geschmissen",
+					e.getMessage());
 		}
 
 		try {
-			registry.throwException(FullException.class, 1000, new Locale("de"),
-					(Date) null);
+			registry.throwException(FullException.class, 1000,
+					new Locale("de"), (Date) null);
 			fail("Exception was not thrown.");
 		} catch (final FullException e) {
 			assertNull(e.getCause());
-			assertEquals("Dieser Fehler wurde um null geschmissen", e.getMessage());
+			assertEquals("Dieser Fehler wurde um null geschmissen",
+					e.getMessage());
 		}
 	}
 
@@ -169,7 +173,8 @@ public class TestDefaultExceptionRegistry {
 			registry.addExceptionCatalogByName(FullException.class, "sample");
 			fail("Exception was not thrown.");
 		} catch (final IllegalArgumentException e) {
-			assertEquals("Could not find the catalog clazz 'sample'.", e.getMessage());
+			assertEquals("Could not find the catalog clazz 'sample'.",
+					e.getMessage());
 		}
 
 		// no catalog class
@@ -181,6 +186,33 @@ public class TestDefaultExceptionRegistry {
 			assertEquals("The catalog clazz '" + getClass().getName()
 					+ "' is not an concrete implementation of '"
 					+ IExceptionCatalog.class.getName() + "'.", e.getMessage());
+		}
+	}
+
+	/**
+	 * Tests the usage of {@code ForwardedException} and
+	 * {@code ForwardedRuntimeException}.
+	 * 
+	 * @throws InvalidCatalogEntryException
+	 *             if the catalog cannot be initialzed
+	 */
+	@Test
+	public void testForwards() throws InvalidCatalogEntryException {
+		final DefaultExceptionRegistry registry = new DefaultExceptionRegistry();
+		final DefaultLocalizedExceptionCatalog catalog = new DefaultLocalizedExceptionCatalog(
+				"net/meisen/general/genmisc/exceptions/catalog/localizedCatalog/testParametrizedExceptions");
+
+		registry.addExceptionCatalog(FullException.class, catalog);
+
+		ForwardedException fwdEx;
+		fwdEx = new ForwardedException(FullException.class, 1001, new Locale(
+				"en"), 1001);
+
+		try {
+			registry.<FullException> throwException(fwdEx);
+		} catch (final FullException e) {
+			assertNull(e.getCause());
+			assertEquals("This error has number 1001", e.getMessage());
 		}
 	}
 }
