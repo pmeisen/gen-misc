@@ -200,6 +200,7 @@ public class ForwardedRuntimeException extends RuntimeException implements
 			final Class<? extends RuntimeException> exceptionClazz,
 			final Integer number, final Locale locale, final Throwable reason,
 			final Object... parameter) {
+		super("Please use a ExceptionRegistry to resolve this error.");
 		this.data = new ExceptionData<RuntimeException>(exceptionClazz, number,
 				locale, reason, parameter);
 	}

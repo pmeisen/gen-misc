@@ -192,6 +192,7 @@ public class ForwardedException extends Exception implements
 	public ForwardedException(final Class<? extends Exception> exceptionClazz,
 			final Integer number, final Locale locale, final Throwable reason,
 			final Object... parameter) {
+		super("Please use a ExceptionRegistry to resolve this error.");
 		this.data = new ExceptionData<Exception>(exceptionClazz, number,
 				locale, reason, parameter);
 	}
