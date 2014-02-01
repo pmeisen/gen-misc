@@ -21,8 +21,11 @@ import java.util.jar.JarInputStream;
 public class Classes {
 
 	/**
+	 * Determines the class of the generic type of the generic object.
+	 * 
 	 * @param genericObject
 	 *            an instance of the generic class
+	 * 
 	 * @return the {@link Class} of the generic type of the generic object
 	 *         passed
 	 */
@@ -31,8 +34,11 @@ public class Classes {
 	}
 
 	/**
+	 * Determines the class of the generic type of the generic class.
+	 * 
 	 * @param genericClass
 	 *            the generic class
+	 * 
 	 * @return the {@link Class} of the generic type of the generic object
 	 *         passed
 	 */
@@ -43,24 +49,69 @@ public class Classes {
 	}
 
 	/**
+	 * Determines the class specified by the {@code className}.
+	 * 
 	 * @param className
 	 *            the name of the class to be generated
+	 * 
 	 * @return the {@link Class} associated to this name or <code>null</code> if
 	 *         the class could not be found
 	 */
-	public static Class<?> getClass(String className) {
-		return getClass(null, className);
+	public static Class<?> getClass(final String className) {
+		return getClass(null, className, true);
 	}
 
 	/**
+	 * Determines the class specified by the {@code className}.
+	 * 
+	 * @param className
+	 *            the name of the class to be generated
+	 * @param expected
+	 *            {@code true} if the class is expected to be available,
+	 *            otherwise {@ode false}; if the first is the case an
+	 *            error message is printed if the class cannot be found
+	 * 
+	 * @return the {@link Class} associated to this name or <code>null</code> if
+	 *         the class could not be found
+	 */
+	public static Class<?> getClass(final String className,
+			final boolean expected) {
+		return getClass(null, className, expected);
+	}
+
+	/**
+	 * Determines the class specified by the {@code className}.
+	 * 
 	 * @param loader
 	 *            the <code>ClassLoader</code> to be used to load the class
 	 * @param className
 	 *            the name of the class to be generated
+	 * 
 	 * @return the {@link Class} associated to this name or <code>null</code> if
 	 *         the class could not be found
 	 */
-	public static Class<?> getClass(final ClassLoader loader, String className) {
+	public static Class<?> getClass(final ClassLoader loader,
+			final String className) {
+		return getClass(loader, className, true);
+	}
+
+	/**
+	 * Determines the class specified by the {@code className}.
+	 * 
+	 * @param loader
+	 *            the <code>ClassLoader</code> to be used to load the class
+	 * @param className
+	 *            the name of the class to be generated
+	 * @param expected
+	 *            {@code true} if the class is expected to be available,
+	 *            otherwise {@ode false}; if the first is the case an
+	 *            error message is printed if the class cannot be found
+	 * 
+	 * @return the {@link Class} associated to this name or <code>null</code> if
+	 *         the class could not be found
+	 */
+	public static Class<?> getClass(final ClassLoader loader, String className,
+			final boolean expected) {
 		className = (className != null ? className.trim() : null);
 
 		try {
@@ -70,8 +121,10 @@ public class Classes {
 				return Class.forName(className, true, loader);
 			}
 		} catch (final Exception e) {
-			System.err.println("Cannot generate the specified class '"
-					+ className + "'");
+			if (expected) {
+				System.err.println("Cannot generate the specified class '"
+						+ className + "'");
+			}
 			return null;
 		}
 	}
