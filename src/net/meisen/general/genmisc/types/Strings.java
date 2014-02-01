@@ -1,9 +1,13 @@
 package net.meisen.general.genmisc.types;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utility class for string manipulation
@@ -12,6 +16,56 @@ import java.util.List;
  * 
  */
 public class Strings {
+	private static final Pattern integerPattern;
+	private static final Pattern doublePattern;
+
+	static {
+		// @formatter:off
+		final String Digits = "(\\p{Digit}+)";
+		final String HexDigits = "(\\p{XDigit}+)";
+
+		/*
+		 * an exponent is 'e' or 'E' followed by an optionally signed decimal
+		 * integer.
+		 */
+		final String Exp = "[eE][+-]?" + Digits;
+		final String fpRegex = ("[\\x00-\\x20]*" + // Optional leading
+				                "[+-]?(" +         // Optional sign character
+				                "NaN|" +           // "NaN" string
+				                "Infinity|" +      // "Infinity" string
+
+				/*
+				 * A decimal floating-point string representing a finite
+				 * positive number without a leading sign has at most five basic
+				 * pieces: Digits . Digits ExponentPart FloatTypeSuffix
+				 * 
+				 * Since this method allows integer-only strings as input in
+				 * addition to strings of floating-point literals, the two
+				 * sub-patterns below are simplifications of the grammar
+				 * productions from the Java Language Specification, 2nd
+				 * edition, section 3.10.2.
+				 */
+				// Digits ._opt Digits_opt ExponentPart_opt FloatTypeSuffix_opt
+				"(((" + Digits + "(\\.)?(" + Digits + "?)(" + Exp + ")?)|" +
+
+		        // . Digits ExponentPart_opt FloatTypeSuffix_opt
+				"(\\.(" + Digits + ")(" + Exp + ")?)|" +
+
+				// Hexadecimal strings
+				"((" +
+				// 0[xX] HexDigits ._opt BinaryExponent FloatTypeSuffix_opt
+				"(0[xX]" + HexDigits + "(\\.)?)|" +
+
+				// 0[xX] HexDigits_opt . HexDigits BinaryExponent
+				// FloatTypeSuffix_opt
+				"(0[xX]" + HexDigits + "?(\\.)" + HexDigits + ")" +
+
+				")[pP][+-]?" + Digits + "))" + "[fFdD]?))" + "[\\x00-\\x20]*");
+		// @formatter:on
+
+		doublePattern = Pattern.compile(fpRegex);
+		integerPattern = Pattern.compile("(\\+|\\-)?\\d+");
+	}
 
 	/**
 	 * Synonym for the concate method, see
@@ -145,5 +199,194 @@ public class Strings {
 			chunks.add(input.substring(startIndex, endIndex));
 		}
 		return chunks;
+	}
+
+	/**
+	 * Checks if the specified string can be transformed to an integer and does
+	 * so if possible. If impossible a {@code null} will be returned. The method
+	 * also allows a leading {@code +} sign.
+	 * 
+	 * @param i
+	 *            the string to be transformed
+	 * 
+	 * @return the integer represented by the string, otherwise {@code null}
+	 */
+	public static Integer isInteger(final String i) {
+		if (i == null) {
+			return null;
+		}
+
+		String modInt = i.trim();
+		if ("".equals(modInt)) {
+			return null;
+		} else {
+			final Matcher m = integerPattern.matcher(modInt);
+
+			if (m.matches()) {
+				if ("+".equals(m.group(1))) {
+					modInt = modInt.replace("+", "");
+				}
+
+				final Integer parsedInt;
+				try {
+					parsedInt = Integer.valueOf(modInt);
+					return parsedInt;
+				} catch (final NumberFormatException e) {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		}
+	}
+
+	/**
+	 * Checks if the specified string can be transformed to a long and does so
+	 * if possible. If impossible a {@code null} will be returned.
+	 * 
+	 * @param l
+	 *            the string to be transformed
+	 * 
+	 * @return the long represented by the string, otherwise {@code null}
+	 */
+	public static Long isLong(final String l) {
+		if (l == null) {
+			return null;
+		}
+
+		String modLong = l.trim();
+		if ("".equals(modLong)) {
+			return null;
+		} else {
+			final Matcher m = integerPattern.matcher(modLong);
+
+			if (m.matches()) {
+				if ("+".equals(m.group(1))) {
+					modLong = modLong.replace("+", "");
+				}
+
+				final Long parsedLong;
+				try {
+					parsedLong = Long.valueOf(modLong);
+					return parsedLong;
+				} catch (final NumberFormatException e) {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		}
+	}
+
+	/**
+	 * Checks if the specified string can be transformed to a {@code BigInteger}
+	 * and does so if possible. If impossible a {@code null} will be returned.
+	 * 
+	 * @param bigInt
+	 *            the string to be transformed
+	 * 
+	 * @return the {@code BigInteger} represented by the string, otherwise
+	 *         {@code null}
+	 */
+	public static BigInteger isBigInteger(final String bigInt) {
+		if (bigInt == null) {
+			return null;
+		}
+
+		String modBigInt = bigInt.trim();
+		if ("".equals(modBigInt)) {
+			return null;
+		} else {
+			final Matcher m = integerPattern.matcher(modBigInt);
+
+			if (m.matches()) {
+				if ("+".equals(m.group(1))) {
+					modBigInt = modBigInt.replace("+", "");
+				}
+
+				try {
+					return new BigInteger(modBigInt);
+				} catch (final NumberFormatException e) {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		}
+	}
+
+	/**
+	 * Checks if the specified string can be transformed to a double and does so
+	 * if possible. If impossible a {@code null} will be returned.
+	 * 
+	 * @param d
+	 *            the string to be transformed
+	 * 
+	 * @return the double represented by the string, otherwise {@code null}
+	 */
+	public static Double isDouble(final String d) {
+		if (d == null) {
+			return null;
+		}
+
+		String modDouble = d.trim();
+		if ("".equals(modDouble)) {
+			return null;
+		} else {
+			final Matcher m = doublePattern.matcher(modDouble);
+
+			if (m.matches()) {
+				if ("+".equals(m.group(1))) {
+					modDouble = modDouble.replace("+", "");
+				}
+
+				final Double pD;
+				try {
+					pD = Double.valueOf(modDouble);
+				} catch (final NumberFormatException e) {
+					return null;
+				}
+				if (pD.isInfinite() || pD.isNaN()) {
+					return null;
+				} else {
+					return pD;
+				}
+			} else {
+				return null;
+			}
+		}
+	}
+
+	/**
+	 * Checks if the specified string can be transformed to a {@code BigDecimal}
+	 * and does so if possible. If impossible a {@code null} will be returned.
+	 * 
+	 * @param bigDec
+	 *            the string to be transformed
+	 * 
+	 * @return the {@code BigDecimal} represented by the string, otherwise
+	 *         {@code null}
+	 */
+	public static BigDecimal isBigDecimal(final String bigDec) {
+		if (bigDec == null) {
+			return null;
+		}
+
+		String modBigDec = bigDec.trim();
+		if ("".equals(modBigDec)) {
+			return null;
+		} else {
+
+			if ('+' == modBigDec.charAt(0)) {
+				modBigDec = modBigDec.replace("+", "");
+			}
+
+			try {
+				return new BigDecimal(modBigDec);
+			} catch (final NumberFormatException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
 	}
 }

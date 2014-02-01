@@ -18,7 +18,8 @@ import org.junit.runners.Suite;
 		TestStreams.class, TestFiles.class, TestCollections.class,
 		TestResourceInfo.class, TestResource.class, TestMultiMap.class,
 		TestManifest.class, TestVersion.class, TestExceptionCatalog.class,
-		TestLocalizedExceptionCatalog.class, TestDefaultExceptionRegistry.class })
+		TestLocalizedExceptionCatalog.class,
+		TestDefaultExceptionRegistry.class, TestNumbers.class })
 public class AllTests {
 	// nothing more to do here
 }
