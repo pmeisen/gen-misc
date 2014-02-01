@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -388,5 +389,21 @@ public class Strings {
 				return null;
 			}
 		}
+	}
+
+	/**
+	 * Synonym for {@link Dates#isDate(String)}.
+	 * 
+	 * @param d
+	 *            the text to be checked
+	 * 
+	 * @return the parsed {@code Date} or {@code null} if parsing wasn't
+	 *         possible
+	 * 
+	 * @see Dates#isDate(String)
+	 * @see Dates#isDate(String, String[])
+	 */
+	public static Date isDate(final String d) {
+		return Dates.isDate(d);
 	}
 }

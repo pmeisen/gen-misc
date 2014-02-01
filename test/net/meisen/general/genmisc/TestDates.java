@@ -1,6 +1,7 @@
 package net.meisen.general.genmisc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -85,5 +86,32 @@ public class TestDates {
 		assertEquals(Dates.createStringFromDate(date, "yyyy"), "1981");
 		assertEquals(Dates.createStringFromDate(date, "HH:mm:ss"), "08:07:42");
 		assertEquals(Dates.createStringFromDate(date, "SSS"), "666");
+	}
+
+	/**
+	 * Tests the implementation of {@code Dates#isDate(String)}.
+	 * 
+	 * @throws ParseException
+	 *             if the comparison date cannot be created
+	 */
+	@Test
+	public void testIsDate() throws ParseException {
+
+		// tests null
+		assertNull(Dates.isDate(null));
+
+		// tests German dates
+		assertEquals(Dates.createDateFromString("20.01.1981", "dd.MM.yyyy"),
+				Dates.isDate("20.01.1981"));
+		assertEquals(Dates.createDateFromString("20.1.1981", "dd.MM.yyyy"),
+				Dates.isDate("20.1.1981 00:00:00"));
+		assertEquals(Dates.createDateFromString("10.05.2012 10:00:00",
+				"dd.MM.yyyy HH:mm:ss"), Dates.isDate("10.5.2012 10:00:00"));
+
+		// tests US dates
+		assertEquals(Dates.createDateFromString("22.08.2013", "dd.MM.yyyy"),
+				Dates.isDate("22/08/2013"));
+		assertEquals(Dates.createDateFromString("22.08.2013 12:22:16",
+				"dd.MM.yyyy HH:mm:ss"), Dates.isDate("22/08/2013 12:22:16"));
 	}
 }
