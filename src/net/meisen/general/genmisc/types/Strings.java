@@ -385,7 +385,6 @@ public class Strings {
 			try {
 				return new BigDecimal(modBigDec);
 			} catch (final NumberFormatException e) {
-				e.printStackTrace();
 				return null;
 			}
 		}
