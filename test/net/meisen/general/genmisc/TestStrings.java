@@ -85,7 +85,7 @@ public class TestStrings {
 	}
 
 	/**
-	 * Tests the implementation of {@ode Strings#isInteger(String)}.
+	 * Tests the implementation of {@code Strings#isInteger(String)}.
 	 */
 	@Test
 	public void testIsInteger() {
@@ -107,7 +107,7 @@ public class TestStrings {
 	}
 
 	/**
-	 * Tests the implementation of {@ode Strings#isLong(String)}.
+	 * Tests the implementation of {@code Strings#isLong(String)}.
 	 */
 	@Test
 	public void testIsLong() {
@@ -131,7 +131,7 @@ public class TestStrings {
 	}
 
 	/**
-	 * Tests the implementation of {@ode Strings#isBigInteger(String)}.
+	 * Tests the implementation of {@code Strings#isBigInteger(String)}.
 	 */
 	@Test
 	public void testIsBigInteger() {
@@ -159,7 +159,7 @@ public class TestStrings {
 	}
 
 	/**
-	 * Tests the implementation of {@ode Strings#isDouble(String)}.
+	 * Tests the implementation of {@code Strings#isDouble(String)}.
 	 */
 	@Test
 	public void testIsDouble() {
@@ -183,7 +183,7 @@ public class TestStrings {
 	}
 
 	/**
-	 * Tests the implementation of {@ode Strings#isBigDecimal(String)}.
+	 * Tests the implementation of {@code Strings#isBigDecimal(String)}.
 	 */
 	@Test
 	public void testIsBigDecimal() {

@@ -68,7 +68,7 @@ public class Classes {
 	 *            the name of the class to be generated
 	 * @param expected
 	 *            {@code true} if the class is expected to be available,
-	 *            otherwise {@ode false}; if the first is the case an
+	 *            otherwise {@code false}; if the first is the case an
 	 *            error message is printed if the class cannot be found
 	 * 
 	 * @return the {@link Class} associated to this name or <code>null</code> if
@@ -104,7 +104,7 @@ public class Classes {
 	 *            the name of the class to be generated
 	 * @param expected
 	 *            {@code true} if the class is expected to be available,
-	 *            otherwise {@ode false}; if the first is the case an
+	 *            otherwise {@code false}; if the first is the case an
 	 *            error message is printed if the class cannot be found
 	 * 
 	 * @return the {@link Class} associated to this name or <code>null</code> if
