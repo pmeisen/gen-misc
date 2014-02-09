@@ -101,4 +101,151 @@ public class Numbers {
 
 		return result;
 	}
+
+	/**
+	 * Cast the value to an integer.
+	 * 
+	 * @param b
+	 *            the value to be casted
+	 * @return the result
+	 */
+	public static int castToInt(final byte b) {
+		return (int) b;
+	}
+
+	/**
+	 * Cast the value to an integer.
+	 * 
+	 * @param s
+	 *            the value to be casted
+	 * @return the result
+	 */
+	public static int castToInt(final short s) {
+		return (short) s;
+	}
+
+	/**
+	 * Cast the value to an integer.
+	 * 
+	 * @param l
+	 *            the value to be casted
+	 * @return the result
+	 * 
+	 * @throws ArithmeticException
+	 *             if the value doesn't fit into an integer
+	 */
+	public static int castToInt(final long l) {
+		if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
+			throw new ArithmeticException("Cannot convert the long value '" + l
+					+ "' to an integer.");
+		} else {
+			return (int) l;
+		}
+	}
+
+	/**
+	 * Cast the value to a short.
+	 * 
+	 * @param b
+	 *            the value to be casted
+	 * @return the result
+	 */
+	public static short castToShort(final byte b) {
+		return (short) b;
+	}
+
+	/**
+	 * Cast the value to a short.
+	 * 
+	 * @param i
+	 *            the value to be casted
+	 * @return the result
+	 * 
+	 * @throws ArithmeticException
+	 *             if the value doesn't fit into a short
+	 */
+	public static short castToShort(final int i) {
+		if (i < Short.MIN_VALUE || i > Short.MAX_VALUE) {
+			throw new ArithmeticException("Cannot convert the integer value '"
+					+ i + "' to a short.");
+		} else {
+			return (short) i;
+		}
+	}
+
+	/**
+	 * Cast the value to a short.
+	 * 
+	 * @param l
+	 *            the value to be casted
+	 * @return the result
+	 * 
+	 * @throws ArithmeticException
+	 *             if the value doesn't fit into a short
+	 */
+	public static short castToShort(final long l) {
+		if (l < Short.MIN_VALUE || l > Short.MAX_VALUE) {
+			throw new ArithmeticException("Cannot convert the long value '" + l
+					+ "' to a short.");
+		} else {
+			return (short) l;
+		}
+	}
+
+	/**
+	 * Cast the value to a byte.
+	 * 
+	 * @param s
+	 *            the value to be casted
+	 * @return the result
+	 * 
+	 * @throws ArithmeticException
+	 *             if the value doesn't fit into a byte
+	 */
+	public static byte castToByte(final short s) {
+		if (s < Byte.MIN_VALUE || s > Byte.MAX_VALUE) {
+			throw new ArithmeticException("Cannot convert the short value '"
+					+ s + "' to a byte.");
+		} else {
+			return (byte) s;
+		}
+	}
+
+	/**
+	 * Cast the value to a byte.
+	 * 
+	 * @param i
+	 *            the value to be casted
+	 * @return the result
+	 * 
+	 * @throws ArithmeticException
+	 *             if the value doesn't fit into a byte
+	 */
+	public static byte castToByte(final int i) {
+		if (i < Short.MIN_VALUE || i > Short.MAX_VALUE) {
+			throw new ArithmeticException("Cannot convert the integer value '"
+					+ i + "' to a byte.");
+		} else {
+			return (byte) i;
+		}
+	}
+
+	/**
+	 * Cast the value to a byte.
+	 * 
+	 * @param l
+	 *            the value to be casted
+	 * @return the result
+	 * 
+	 * @throws ArithmeticException
+	 *             if the value doesn't fit into a byte
+	 */
+	public static byte castToByte(final long l) {
+		if (l < Short.MIN_VALUE || l > Short.MAX_VALUE) {
+			throw new ArithmeticException("Cannot convert the long value '" + l
+					+ "' to a byte.");
+		} else {
+			return (byte) l;
+		}
+	}
 }

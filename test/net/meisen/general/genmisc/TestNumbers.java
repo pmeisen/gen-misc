@@ -8,7 +8,9 @@ import java.math.BigInteger;
 
 import net.meisen.general.genmisc.types.Numbers;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * Tests the implementations of {@code Numbers}.
@@ -17,6 +19,12 @@ import org.junit.Test;
  * 
  */
 public class TestNumbers {
+
+	/**
+	 * Rule to evaluate exceptions
+	 */
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	/**
 	 * Tests the mapping to integers.
@@ -74,5 +82,158 @@ public class TestNumbers {
 
 		assertNull(Numbers.mapToDataType(new BigDecimal(Long.MAX_VALUE + "."
 				+ Long.MAX_VALUE), Double.class));
+	}
+
+	/**
+	 * Tests the conversion from {@code Byte}, {@code Short}, and {@code Long}
+	 * values to {@code Integer}.
+	 */
+	@Test
+	public void testToIntCasts() {
+
+		// test from byte
+		assertEquals(100, Numbers.castToInt(((byte) 100)));
+		assertEquals(Byte.MAX_VALUE, Numbers.castToInt(Byte.MAX_VALUE));
+		assertEquals(Byte.MIN_VALUE, Numbers.castToInt(Byte.MIN_VALUE));
+
+		// test from short
+		assertEquals(100, Numbers.castToInt(((short) 100)));
+		assertEquals(Short.MAX_VALUE, Numbers.castToInt(Short.MAX_VALUE));
+		assertEquals(Short.MIN_VALUE, Numbers.castToInt(Short.MIN_VALUE));
+
+		// test from long
+		assertEquals(100, Numbers.castToInt(100l));
+		assertEquals(100000000, Numbers.castToInt(100000000l));
+		assertEquals(Integer.MAX_VALUE,
+				Numbers.castToInt((long) Integer.MAX_VALUE));
+		assertEquals(Integer.MIN_VALUE,
+				Numbers.castToInt((long) Integer.MIN_VALUE));
+	}
+
+	/**
+	 * Tests the {@code ArithmeticException} to be thrown when the value doesn't
+	 * fit into an {@code Integer}.
+	 */
+	@Test
+	public void testToIntCastExceptions() {
+		thrown.expect(ArithmeticException.class);
+		thrown.expectMessage("Cannot convert the long value '" + Long.MAX_VALUE
+				+ "' to an integer.");
+
+		Numbers.castToInt(Long.MAX_VALUE);
+	}
+
+	/**
+	 * Tests the conversion from {@code Byte}, {@code Integer}, and {@code Long}
+	 * values to {@code Short}.
+	 */
+	@Test
+	public void testToShortCasts() {
+
+		// test from byte
+		assertEquals(100, Numbers.castToShort(((byte) 100)));
+		assertEquals(Byte.MAX_VALUE, Numbers.castToShort(Byte.MAX_VALUE));
+		assertEquals(Byte.MIN_VALUE, Numbers.castToShort(Byte.MIN_VALUE));
+
+		// test from short
+		assertEquals(100, Numbers.castToShort(((int) 100)));
+		assertEquals(Byte.MAX_VALUE, Numbers.castToShort((int) Byte.MAX_VALUE));
+		assertEquals(Byte.MIN_VALUE, Numbers.castToShort((int) Byte.MIN_VALUE));
+
+		// test from long
+		assertEquals(100, Numbers.castToShort(100l));
+		assertEquals(30000, Numbers.castToShort(30000l));
+		assertEquals(Short.MAX_VALUE,
+				Numbers.castToShort((long) Short.MAX_VALUE));
+		assertEquals(Short.MIN_VALUE,
+				Numbers.castToShort((long) Short.MIN_VALUE));
+	}
+
+	/**
+	 * Tests the {@code ArithmeticException} to be thrown when the value doesn't
+	 * fit into a {@code Short}.
+	 */
+	@Test
+	public void testToShortCastExceptions1() {
+		thrown.expect(ArithmeticException.class);
+		thrown.expectMessage("Cannot convert the long value '" + Long.MAX_VALUE
+				+ "' to a short.");
+
+		Numbers.castToShort(Long.MAX_VALUE);
+	}
+
+	/**
+	 * Tests the {@code ArithmeticException} to be thrown when the value doesn't
+	 * fit into a {@code Short}.
+	 */
+	@Test
+	public void testToShortCastExceptions2() {
+		thrown.expect(ArithmeticException.class);
+		thrown.expectMessage("Cannot convert the integer value '"
+				+ Integer.MAX_VALUE + "' to a short.");
+
+		Numbers.castToShort(Integer.MAX_VALUE);
+	}
+
+	/**
+	 * Tests the conversion from {@code Short}, {@code Integer}, and
+	 * {@code Long} values to {@code Byte}.
+	 */
+	@Test
+	public void testToByteCasts() {
+
+		// test from short
+		assertEquals(50, Numbers.castToByte(((short) 50)));
+		assertEquals(Byte.MAX_VALUE, Numbers.castToByte((short) Byte.MAX_VALUE));
+		assertEquals(Byte.MIN_VALUE, Numbers.castToByte((short) Byte.MIN_VALUE));
+
+		// test from integer
+		assertEquals(100, Numbers.castToByte((100)));
+		assertEquals(Byte.MAX_VALUE, Numbers.castToByte((int) Byte.MAX_VALUE));
+		assertEquals(Byte.MIN_VALUE, Numbers.castToByte((int) Byte.MIN_VALUE));
+
+		// test from long
+		assertEquals(100, Numbers.castToByte(100l));
+		assertEquals(Byte.MAX_VALUE, Numbers.castToByte((long) Byte.MAX_VALUE));
+		assertEquals(Byte.MIN_VALUE, Numbers.castToByte((long) Byte.MIN_VALUE));
+	}
+
+	/**
+	 * Tests the {@code ArithmeticException} to be thrown when the value doesn't
+	 * fit into a {@code Byte}.
+	 */
+	@Test
+	public void testToByteCastExceptions1() {
+		thrown.expect(ArithmeticException.class);
+		thrown.expectMessage("Cannot convert the long value '" + Long.MAX_VALUE
+				+ "' to a byte.");
+
+		Numbers.castToByte(Long.MAX_VALUE);
+	}
+
+	/**
+	 * Tests the {@code ArithmeticException} to be thrown when the value doesn't
+	 * fit into a {@code Byte}.
+	 */
+	@Test
+	public void testToByteCastExceptions2() {
+		thrown.expect(ArithmeticException.class);
+		thrown.expectMessage("Cannot convert the integer value '"
+				+ Integer.MAX_VALUE + "' to a byte.");
+
+		Numbers.castToByte(Integer.MAX_VALUE);
+	}
+
+	/**
+	 * Tests the {@code ArithmeticException} to be thrown when the value doesn't
+	 * fit into a {@code Byte}.
+	 */
+	@Test
+	public void testToByteCastExceptions3() {
+		thrown.expect(ArithmeticException.class);
+		thrown.expectMessage("Cannot convert the short value '"
+				+ Short.MAX_VALUE + "' to a byte.");
+
+		Numbers.castToByte(Short.MAX_VALUE);
 	}
 }
