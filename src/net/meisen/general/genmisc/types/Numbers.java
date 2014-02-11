@@ -222,7 +222,7 @@ public class Numbers {
 	 *             if the value doesn't fit into a byte
 	 */
 	public static byte castToByte(final int i) {
-		if (i < Short.MIN_VALUE || i > Short.MAX_VALUE) {
+		if (i < Byte.MIN_VALUE || i > Byte.MAX_VALUE) {
 			throw new ArithmeticException("Cannot convert the integer value '"
 					+ i + "' to a byte.");
 		} else {
@@ -241,7 +241,7 @@ public class Numbers {
 	 *             if the value doesn't fit into a byte
 	 */
 	public static byte castToByte(final long l) {
-		if (l < Short.MIN_VALUE || l > Short.MAX_VALUE) {
+		if (l < Byte.MIN_VALUE || l > Byte.MAX_VALUE) {
 			throw new ArithmeticException("Cannot convert the long value '" + l
 					+ "' to a byte.");
 		} else {
