@@ -47,7 +47,25 @@ public class Dates {
 
 	/**
 	 * Checks if the presented {@code text} can be understood as {@code Date}
-	 * using the specified {@code patterns}.
+	 * using the patterns defined by {@link #PATTERNS}.
+	 * 
+	 * @param text
+	 *            the text to be checked
+	 * @param timezone
+	 *            the timezone to parse the date in
+	 * 
+	 * @return the parsed {@code Date} or {@code null} if parsing wasn't
+	 *         possible
+	 */
+	public static Date isDate(final String text, final String timezone) {
+		return isDate(text, timezone, PATTERNS);
+	}
+
+	/**
+	 * Checks if the presented {@code text} can be understood as {@code Date}
+	 * using the specified {@code patterns}. The date will be parsed to the
+	 * locale timezone, use {@link #isDate(String, String, String[])} to specify
+	 * the timezone.
 	 * 
 	 * @param text
 	 *            the text to be checked
@@ -59,6 +77,26 @@ public class Dates {
 	 *         possible
 	 */
 	public static Date isDate(final String text, final String[] patterns) {
+		return isDate(text, TimeZone.getDefault().getID(), patterns);
+	}
+
+	/**
+	 * Checks if the presented {@code text} can be understood as {@code Date}
+	 * using the specified {@code patterns}. T
+	 * 
+	 * @param text
+	 *            the text to be checked
+	 * @param timezone
+	 *            the timezone to parse the date to
+	 * @param patterns
+	 *            the patterns to be checked against, if {@code null} the
+	 *            default patterns defined by {@link #PATTERNS} will be used
+	 * 
+	 * @return the parsed {@code Date} or {@code null} if parsing wasn't
+	 *         possible
+	 */
+	public static Date isDate(final String text, final String timezone,
+			final String[] patterns) {
 		if (text == null) {
 			return null;
 		} else if ("".equals(text)) {
@@ -78,7 +116,7 @@ public class Dates {
 				}
 
 				try {
-					return formatter.parse(text);
+					return parseDate(text, pattern, timezone);
 				} catch (final ParseException e) {
 					// nothing ignore it
 				}
@@ -213,7 +251,12 @@ public class Dates {
 	 */
 	public static Date parseDate(final String date, final String format,
 			final String timezone) throws ParseException {
-		final DateFormat formatter = new SimpleDateFormat(format);
+		final DateFormat formatter;
+		if (format == null) {
+			formatter = new SimpleDateFormat();
+		} else {
+			formatter = new SimpleDateFormat(format);
+		}
 
 		// get the TimeZone
 		final TimeZone tz = TimeZone.getTimeZone(timezone);
