@@ -251,6 +251,11 @@ public class Dates {
 	 */
 	public static Date parseDate(final String date, final String format,
 			final String timezone) throws ParseException {
+
+		// get the default TimeZone
+		final TimeZone curTz = TimeZone.getDefault();
+
+		// create the formatter
 		final DateFormat formatter;
 		if (format == null) {
 			formatter = new SimpleDateFormat();
@@ -258,15 +263,24 @@ public class Dates {
 			formatter = new SimpleDateFormat(format);
 		}
 
-		// get the TimeZone
+		// set the timezone to the one we need for parsing
 		final TimeZone tz = TimeZone.getTimeZone(timezone);
 		formatter.setTimeZone(tz);
 
-		final TimeZone curTz = TimeZone.getDefault();
-		TimeZone.setDefault(tz);
+		Date parsedDate;
+		try {
+			TimeZone.setDefault(tz);
+			parsedDate = formatter.parse(date);
+		} catch (final ParseException e) {
+			throw e;
+		} catch (final Exception e) {
+			throw new ParseException("Parsing faile because of: "
+					+ e.getMessage(), 0);
+		} finally {
 
-		final Date parsedDate = formatter.parse(date);
-		TimeZone.setDefault(curTz);
+			// reset the timezone again
+			TimeZone.setDefault(curTz);
+		}
 
 		return parsedDate;
 	}

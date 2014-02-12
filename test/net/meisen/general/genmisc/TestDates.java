@@ -1,6 +1,7 @@
 package net.meisen.general.genmisc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import java.text.ParseException;
@@ -113,5 +114,20 @@ public class TestDates {
 				Dates.isDate("22/08/2013"));
 		assertEquals(Dates.createDateFromString("22.08.2013 12:22:16",
 				"dd.MM.yyyy HH:mm:ss"), Dates.isDate("22/08/2013 12:22:16"));
+	}
+
+	/**
+	 * Test the resetting of the timezone.
+	 * 
+	 * @throws ParseException
+	 *             if the parsing failed
+	 */
+	@Test
+	public void testResetOfTimezoneWithIsDate() throws ParseException {
+		final TimeZone tz = TimeZone.getDefault();
+		assertFalse(tz.getID().equals(Dates.GENERAL_TIMEZONE));
+		assertNull(Dates.isDate("noonewill", Dates.GENERAL_TIMEZONE));
+		assertEquals(TimeZone.getDefault().getID(), tz.getID());
+
 	}
 }
