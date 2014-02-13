@@ -108,7 +108,9 @@ public class TestDates {
 				Dates.isDate("20.1.1981 00:00:00"));
 		assertEquals(Dates.createDateFromString("10.05.2012 10:00:00",
 				"dd.MM.yyyy HH:mm:ss"), Dates.isDate("10.5.2012 10:00:00"));
-
+		assertEquals(Dates.createDateFromString("29.04.2010 00:00:01",
+				"dd.MM.yyyy HH:mm:ss"), Dates.isDate("29.04.2010 00:00:01"));
+		
 		// tests US dates
 		assertEquals(Dates.createDateFromString("22.08.2013", "dd.MM.yyyy"),
 				Dates.isDate("22/08/2013"));

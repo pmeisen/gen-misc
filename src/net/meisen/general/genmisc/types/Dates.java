@@ -26,10 +26,10 @@ public class Dates {
 	 * 
 	 * @see #isDate(String)
 	 */
-	public static final String[] PATTERNS = new String[] { null,
+	public static final String[] PATTERNS = new String[] {
 			"dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy", "yyyy-MM-dd HH:mm:ss",
 			"yyyy-MM-dd", "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy",
-			"yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd" };
+			"yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd", null };
 
 	/**
 	 * Checks if the presented {@code text} can be understood as {@code Date}
@@ -106,7 +106,6 @@ public class Dates {
 			// we have to validate the format of the String
 			final SimpleDateFormat formatter = new SimpleDateFormat();
 			for (final String pattern : (patterns == null ? PATTERNS : patterns)) {
-
 				if (pattern != null) {
 					try {
 						formatter.applyPattern(pattern);
