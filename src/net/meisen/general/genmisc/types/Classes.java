@@ -68,8 +68,8 @@ public class Classes {
 	 *            the name of the class to be generated
 	 * @param expected
 	 *            {@code true} if the class is expected to be available,
-	 *            otherwise {@code false}; if the first is the case an
-	 *            error message is printed if the class cannot be found
+	 *            otherwise {@code false}; if the first is the case an error
+	 *            message is printed if the class cannot be found
 	 * 
 	 * @return the {@link Class} associated to this name or <code>null</code> if
 	 *         the class could not be found
@@ -104,8 +104,8 @@ public class Classes {
 	 *            the name of the class to be generated
 	 * @param expected
 	 *            {@code true} if the class is expected to be available,
-	 *            otherwise {@code false}; if the first is the case an
-	 *            error message is printed if the class cannot be found
+	 *            otherwise {@code false}; if the first is the case an error
+	 *            message is printed if the class cannot be found
 	 * 
 	 * @return the {@link Class} associated to this name or <code>null</code> if
 	 *         the class could not be found
@@ -120,7 +120,7 @@ public class Classes {
 			} else {
 				return Class.forName(className, true, loader);
 			}
-		} catch (final Exception e) {
+		} catch (final Throwable e) {
 			if (expected) {
 				System.err.println("Cannot generate the specified class '"
 						+ className + "'");

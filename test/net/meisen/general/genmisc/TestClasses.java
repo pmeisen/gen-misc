@@ -1,6 +1,7 @@
 package net.meisen.general.genmisc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
@@ -48,6 +49,19 @@ public class TestClasses {
 				list.contains(Placeholder1.class));
 		assertTrue("Contains Placeholder2 class",
 				list.contains(Placeholder2.class));
+	}
+
+	/**
+	 * Tests the implementation of {@link Classes#getClass(String, boolean)}.
+	 */
+	@Test
+	public void testGetClass() {
+		assertNull(Classes.getClass("", false));
+		assertNull(Classes.getClass("invalid", false));
+		assertNull(Classes.getClass("INVALID", false));
+		assertNull(Classes.getClass("this.is.really.INVALID", false));
+		assertNull(Classes.getClass(this.getClass().getName().toLowerCase(),
+				false));
 	}
 
 	/**
