@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Array;
 
 /**
  * Utility class for objects
@@ -139,5 +140,120 @@ public class Objects {
 		Streams.closeIO(in);
 
 		return (T) obj;
+	}
+
+	/**
+	 * Cast array to the specified type.
+	 * 
+	 * @param objects
+	 *            the object-array to be casted
+	 * @param type
+	 *            the type to cast the objects to
+	 * 
+	 * @return the casted array
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T[] castArray(final Object[] objects, final Class<T> type) {
+		final T[] castedObjects = (T[]) Array.newInstance(type, objects.length);
+
+		// cast the object to the type specified
+		for (int i = 0; i < objects.length; i++) {
+			final T castedObject = (T) objects[i];
+			castedObjects[i] = castedObject;
+		}
+
+		return castedObjects;
+	}
+
+	/**
+	 * Casts the array to a byte array.
+	 * 
+	 * @param objects
+	 *            the array to be casted
+	 * 
+	 * @return the converted array
+	 */
+	public static byte[] castArrayToByte(final Object[] objects) {
+		final byte[] casted = new byte[objects.length];
+
+		// cast the object to the type specified
+		for (int i = 0; i < objects.length; i++) {
+			final Object castedObject = objects[i];
+
+			if (castedObject instanceof Number) {
+				casted[i] = Numbers.castToByte((Number) castedObject);
+			}
+		}
+
+		return casted;
+	}
+
+	/**
+	 * Casts the array to a short array.
+	 * 
+	 * @param objects
+	 *            the array to be casted
+	 * 
+	 * @return the converted array
+	 */
+	public static short[] castArrayToShort(final Object[] objects) {
+		final short[] casted = new short[objects.length];
+
+		// cast the object to the type specified
+		for (int i = 0; i < objects.length; i++) {
+			final Object castedObject = objects[i];
+
+			if (castedObject instanceof Number) {
+				casted[i] = Numbers.castToShort((Number) castedObject);
+			}
+		}
+
+		return casted;
+	}
+
+	/**
+	 * Casts the array to an int array.
+	 * 
+	 * @param objects
+	 *            the array to be casted
+	 * 
+	 * @return the converted array
+	 */
+	public static int[] castArrayToInt(final Object[] objects) {
+		final int[] casted = new int[objects.length];
+
+		// cast the object to the type specified
+		for (int i = 0; i < objects.length; i++) {
+			final Object castedObject = objects[i];
+
+			if (castedObject instanceof Number) {
+				casted[i] = Numbers.castToInt((Number) castedObject);
+			}
+		}
+
+		return casted;
+	}
+
+	/**
+	 * Casts the array to a long array.
+	 * 
+	 * @param objects
+	 *            the array to be casted
+	 * 
+	 * @return the converted array
+	 */
+	public static long[] castArrayToLong(final Object[] objects) {
+		final long[] casted = new long[objects.length];
+
+		// cast the object to the type specified
+		for (int i = 0; i < objects.length; i++) {
+			final Object castedObject = objects[i];
+
+			if (castedObject instanceof Number) {
+				casted[i] = Numbers.castToLong((Number) castedObject);
+			}
+		}
+
+		return casted;
 	}
 }

@@ -103,6 +103,52 @@ public class Numbers {
 	}
 
 	/**
+	 * Cast the {@code nr} to an {@code long}.
+	 * 
+	 * @param nr
+	 *            the {@code Number} to be casted
+	 * 
+	 * @return the long value
+	 */
+	public static long castToLong(final Number nr) {
+		if (nr == null) {
+			throw new NullPointerException(
+					"The number to be casted cannot be null.");
+		}
+
+		return nr.longValue();
+	}
+
+	/**
+	 * Cast the {@code nr} to an {@code int}.
+	 * 
+	 * @param nr
+	 *            the {@code Number} to be casted
+	 * 
+	 * @return the int value
+	 */
+	public static int castToInt(final Number nr) {
+		if (nr == null) {
+			throw new NullPointerException(
+					"The number to be casted cannot be null.");
+		}
+
+		// convert the type
+		final Class<?> clazz = nr.getClass();
+		if (Short.class.equals(clazz)) {
+			return castToInt(nr.shortValue());
+		} else if (Byte.class.equals(clazz)) {
+			return castToInt(nr.byteValue());
+		} else if (Integer.class.equals(clazz)) {
+			return castToInt(nr.intValue());
+		} else if (Long.class.equals(clazz)) {
+			return castToInt(nr.longValue());
+		} else {
+			return castToInt(nr.longValue());
+		}
+	}
+
+	/**
 	 * Cast the value to an integer.
 	 * 
 	 * @param b
@@ -118,6 +164,7 @@ public class Numbers {
 	 * 
 	 * @param s
 	 *            the value to be casted
+	 * 
 	 * @return the result
 	 */
 	public static int castToInt(final short s) {
@@ -140,6 +187,35 @@ public class Numbers {
 					+ "' to an integer.");
 		} else {
 			return (int) l;
+		}
+	}
+
+	/**
+	 * Cast the {@code nr} to an {@code short}.
+	 * 
+	 * @param nr
+	 *            the {@code Number} to be casted
+	 * 
+	 * @return the short value
+	 */
+	public static short castToShort(final Number nr) {
+		if (nr == null) {
+			throw new NullPointerException(
+					"The number to be casted cannot be null.");
+		}
+
+		// convert the type
+		final Class<?> clazz = nr.getClass();
+		if (Short.class.equals(clazz)) {
+			return castToShort(nr.shortValue());
+		} else if (Byte.class.equals(clazz)) {
+			return castToShort(nr.byteValue());
+		} else if (Integer.class.equals(clazz)) {
+			return castToShort(nr.intValue());
+		} else if (Long.class.equals(clazz)) {
+			return castToShort(nr.longValue());
+		} else {
+			return castToShort(nr.longValue());
 		}
 	}
 
@@ -189,6 +265,35 @@ public class Numbers {
 					+ "' to a short.");
 		} else {
 			return (short) l;
+		}
+	}
+
+	/**
+	 * Cast the {@code nr} to an {@code byte}.
+	 * 
+	 * @param nr
+	 *            the {@code Number} to be casted
+	 * 
+	 * @return the byte value
+	 */
+	public static byte castToByte(final Number nr) {
+		if (nr == null) {
+			throw new NullPointerException(
+					"The number to be casted cannot be null.");
+		}
+
+		// convert the type
+		final Class<?> clazz = nr.getClass();
+		if (Short.class.equals(clazz)) {
+			return castToByte(nr.shortValue());
+		} else if (Byte.class.equals(clazz)) {
+			return castToByte(nr.byteValue());
+		} else if (Integer.class.equals(clazz)) {
+			return castToByte(nr.intValue());
+		} else if (Long.class.equals(clazz)) {
+			return castToByte(nr.longValue());
+		} else {
+			return castToByte(nr.longValue());
 		}
 	}
 
