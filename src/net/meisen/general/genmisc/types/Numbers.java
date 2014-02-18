@@ -353,4 +353,96 @@ public class Numbers {
 			return (byte) l;
 		}
 	}
+
+	/**
+	 * Casts the array to a byte array.
+	 * 
+	 * @param objects
+	 *            the array to be casted
+	 * 
+	 * @return the converted array
+	 */
+	public static byte[] castArrayToByte(final Object[] objects) {
+		final byte[] casted = new byte[objects.length];
+
+		// cast the object to the type specified
+		for (int i = 0; i < objects.length; i++) {
+			final Object castedObject = objects[i];
+
+			if (castedObject instanceof Number) {
+				casted[i] = Numbers.castToByte((Number) castedObject);
+			}
+		}
+
+		return casted;
+	}
+
+	/**
+	 * Casts the array to a short array.
+	 * 
+	 * @param objects
+	 *            the array to be casted
+	 * 
+	 * @return the converted array
+	 */
+	public static short[] castArrayToShort(final Object[] objects) {
+		final short[] casted = new short[objects.length];
+
+		// cast the object to the type specified
+		for (int i = 0; i < objects.length; i++) {
+			final Object castedObject = objects[i];
+
+			if (castedObject instanceof Number) {
+				casted[i] = Numbers.castToShort((Number) castedObject);
+			}
+		}
+
+		return casted;
+	}
+
+	/**
+	 * Casts the array to an int array.
+	 * 
+	 * @param objects
+	 *            the array to be casted
+	 * 
+	 * @return the converted array
+	 */
+	public static int[] castArrayToInt(final Object[] objects) {
+		final int[] casted = new int[objects.length];
+
+		// cast the object to the type specified
+		for (int i = 0; i < objects.length; i++) {
+			final Object castedObject = objects[i];
+
+			if (castedObject instanceof Number) {
+				casted[i] = Numbers.castToInt((Number) castedObject);
+			}
+		}
+
+		return casted;
+	}
+
+	/**
+	 * Casts the array to a long array.
+	 * 
+	 * @param objects
+	 *            the array to be casted
+	 * 
+	 * @return the converted array
+	 */
+	public static long[] castArrayToLong(final Object[] objects) {
+		final long[] casted = new long[objects.length];
+
+		// cast the object to the type specified
+		for (int i = 0; i < objects.length; i++) {
+			final Object castedObject = objects[i];
+
+			if (castedObject instanceof Number) {
+				casted[i] = Numbers.castToLong((Number) castedObject);
+			}
+		}
+
+		return casted;
+	}
 }

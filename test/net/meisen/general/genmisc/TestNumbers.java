@@ -236,4 +236,23 @@ public class TestNumbers {
 
 		Numbers.castToByte(Short.MAX_VALUE);
 	}
+
+	/**
+	 * Tests the primitive cast.
+	 */
+	@Test
+	public void testPrimitiveCast() {
+		Object[] array;
+
+		// test the exact cast
+		array = new Integer[] { 1, 2, 3, 4, 5 };
+		final int[] res1 = Numbers.castArrayToInt(array);
+		assertEquals(5, res1.length);
+
+		array = new Short[] { 1, 2, 3 };
+		final int[] res2 = Numbers.castArrayToInt(array);
+		assertEquals(3, res2.length);
+		final short[] res3 = Numbers.castArrayToShort(array);
+		assertEquals(3, res3.length);
+	}
 }

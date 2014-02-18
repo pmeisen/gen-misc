@@ -45,23 +45,4 @@ public class TestObjects {
 			assertTrue(ArrayStoreException.class.equals(e.getClass()));
 		}
 	}
-
-	/**
-	 * Tests the primitive cast.
-	 */
-	@Test
-	public void testPrimitiveCast() {
-		Object[] array;
-
-		// test the exact cast
-		array = new Integer[] { 1, 2, 3, 4, 5 };
-		final int[] res1 = Objects.castArrayToInt(array);
-		assertEquals(5, res1.length);
-
-		array = new Short[] { 1, 2, 3 };
-		final int[] res2 = Objects.castArrayToInt(array);
-		assertEquals(3, res2.length);
-		final short[] res3 = Objects.castArrayToShort(array);
-		assertEquals(3, res3.length);
-	}
 }
