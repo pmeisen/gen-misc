@@ -72,14 +72,22 @@ public class Xml {
 	 */
 	public static Document createDocument(final InputStream xml,
 			final boolean namespaceAware) {
+
+		// get a factory to create a builder
 		final DocumentBuilderFactory docFactory = DocumentBuilderFactory
 				.newInstance();
 		docFactory.setNamespaceAware(namespaceAware);
 
-		// get the builder to build a document
 		try {
+
+			// get the builder to build a document and build it
 			final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			return docBuilder.parse(xml);
+			final Document doc = docBuilder.parse(xml);
+
+			// make sure the InputStream is closed
+			Streams.closeIO(xml);
+
+			return doc;
 		} catch (final Exception e) {
 			return null;
 		}
