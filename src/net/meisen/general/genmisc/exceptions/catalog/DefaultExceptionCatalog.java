@@ -39,14 +39,14 @@ public class DefaultExceptionCatalog extends HashMap<Integer, String> implements
 	 * Constructor to create the catalog based on <code>Properties</code>.
 	 * 
 	 * @param properties
-	 *          the <code>Properties</code> to be read
+	 *            the <code>Properties</code> to be read
 	 * @param encoding
-	 *          the encoding of the properties, if not set the default is used
+	 *            the encoding of the properties, if not set the default is used
 	 * 
 	 * @throws InvalidCatalogEntryException
-	 *           if an entry of the <code>properties</code> is invalid, i.e.
-	 *           mostly means that one of the keys cannot be interpreted as an
-	 *           integer
+	 *             if an entry of the <code>properties</code> is invalid, i.e.
+	 *             mostly means that one of the keys cannot be interpreted as an
+	 *             integer
 	 * 
 	 * @see Properties
 	 * @see #addEntries(Properties, String)
@@ -60,8 +60,8 @@ public class DefaultExceptionCatalog extends HashMap<Integer, String> implements
 	 * Creates a catalog based on the specified <code>entries</code>.
 	 * 
 	 * @param entries
-	 *          an array of <code>CatalogEntry</code> instances, which should be
-	 *          added to the catalog
+	 *            an array of <code>CatalogEntry</code> instances, which should
+	 *            be added to the catalog
 	 * 
 	 * @see CatalogEntry
 	 * @see #addEntries(CatalogEntry...)
@@ -74,10 +74,10 @@ public class DefaultExceptionCatalog extends HashMap<Integer, String> implements
 	 * Creates a catalog based on the passed <code>stream</code>.
 	 * 
 	 * @param stream
-	 *          the stream to retrieve the entries from
+	 *            the stream to retrieve the entries from
 	 * 
 	 * @throws InvalidCatalogEntryException
-	 *           if the stream cannot be read or contains invalid entries
+	 *             if the stream cannot be read or contains invalid entries
 	 * 
 	 * @see #addEntries(InputStream)
 	 */
@@ -87,23 +87,27 @@ public class DefaultExceptionCatalog extends HashMap<Integer, String> implements
 	}
 
 	/**
-	 * Creates a catalog based on the passed <code>File</code> (which has to be a
-	 * property file, i.e. a file with key-value-pairs).
+	 * Creates a catalog based on the passed <code>File</code> (which has to be
+	 * a property file, i.e. a file with key-value-pairs).
 	 * 
 	 * @param propertyFile
-	 *          the <code>File</code> to read the properties from
+	 *            the <code>File</code> to read the properties from
 	 * 
 	 * @throws InvalidCatalogEntryException
-	 *           if the file contains invalid entries, i.e. if the key of a
-	 *           property cannot be interpreted as an integer
+	 *             if the file contains invalid entries, i.e. if the key of a
+	 *             property cannot be interpreted as an integer
 	 */
 	public void addEntries(final File propertyFile)
 			throws InvalidCatalogEntryException {
 		try {
-			addEntries(new FileInputStream(propertyFile));
+			final FileInputStream fis = new FileInputStream(propertyFile);
+			addEntries(fis);
+			Streams.closeIO(fis);
 		} catch (final FileNotFoundException e) {
-			throw new InvalidCatalogEntryException("The specified propertyFile '"
-					+ Files.getCanonicalPath(propertyFile) + "' could not be found.");
+			throw new InvalidCatalogEntryException(
+					"The specified propertyFile '"
+							+ Files.getCanonicalPath(propertyFile)
+							+ "' could not be found.");
 		}
 	}
 
@@ -111,25 +115,26 @@ public class DefaultExceptionCatalog extends HashMap<Integer, String> implements
 	 * Adds the entries of the passed <code>stream</code> to the catalog.
 	 * 
 	 * @param stream
-	 *          the stream to retrieve the entries from
+	 *            the stream to retrieve the entries from
 	 * 
 	 * @throws InvalidCatalogEntryException
-	 *           if the stream cannot be read or contains invalid entries
+	 *             if the stream cannot be read or contains invalid entries
 	 */
 	public void addEntries(final InputStream stream)
 			throws InvalidCatalogEntryException {
 		final Properties properties = new Properties();
 
 		try {
-			// we have to read the stream multiple tymes so get it into a byte-array
+			// we have to read the stream multiple tymes so get it into a
+			// byte-array
 			final byte[] bytes = Streams.copyStreamToByteArray(stream);
 
 			// load the properties
 			properties.load(new ByteArrayInputStream(bytes));
 
 			// guess the encoding of the stream
-			final String encoding = Streams.guessEncoding(new ByteArrayInputStream(
-					bytes), null);
+			final String encoding = Streams.guessEncoding(
+					new ByteArrayInputStream(bytes), null);
 
 			// add the properties with the encoding we determined
 			addEntries(properties, encoding);
@@ -140,18 +145,20 @@ public class DefaultExceptionCatalog extends HashMap<Integer, String> implements
 	}
 
 	/**
-	 * Adds the entries of the passed <code>properties</code> to the catalog. The
-	 * <code>encoding</code> of the properties might be specified, if not the
-	 * default encoding is used.
+	 * Adds the entries of the passed <code>properties</code> to the catalog.
+	 * The <code>encoding</code> of the properties might be specified, if not
+	 * the default encoding is used.
 	 * 
 	 * @param properties
-	 *          the <code>properties</code> to be added, cannot be
-	 *          <code>null</code>
+	 *            the <code>properties</code> to be added, cannot be
+	 *            <code>null</code>
 	 * @param encoding
-	 *          the encoding used to read the properties, can be <code>null</code>
+	 *            the encoding used to read the properties, can be
+	 *            <code>null</code>
 	 * 
 	 * @throws InvalidCatalogEntryException
-	 *           if one of the properties' key cannot be interpreted as integer
+	 *             if one of the properties' key cannot be interpreted as
+	 *             integer
 	 */
 	public void addEntries(final Properties properties, final String encoding)
 			throws InvalidCatalogEntryException {
@@ -168,7 +175,8 @@ public class DefaultExceptionCatalog extends HashMap<Integer, String> implements
 			} else {
 				final String value = entry.getValue().toString();
 				try {
-					final String msg = new String(value.getBytes(), usedEncoding);
+					final String msg = new String(value.getBytes(),
+							usedEncoding);
 					addEntry((Integer) key, msg);
 				} catch (final UnsupportedEncodingException e) {
 					// will never happen
@@ -181,12 +189,12 @@ public class DefaultExceptionCatalog extends HashMap<Integer, String> implements
 	 * Method to transform the passed key into a valid integer
 	 * 
 	 * @param key
-	 *          the key to be transformed
+	 *            the key to be transformed
 	 * 
 	 * @return the integer retrieved from the key
 	 * 
 	 * @throws InvalidCatalogEntryException
-	 *           if the key cannot be transformed
+	 *             if the key cannot be transformed
 	 */
 	protected Integer getInt(final Object key)
 			throws InvalidCatalogEntryException {
@@ -216,7 +224,7 @@ public class DefaultExceptionCatalog extends HashMap<Integer, String> implements
 	 * Adds the passed <code>entries</code> to the catalog.
 	 * 
 	 * @param entries
-	 *          the <code>CatalogEntry</code> instances to be added
+	 *            the <code>CatalogEntry</code> instances to be added
 	 */
 	public void addEntries(final CatalogEntry... entries) {
 		if (entries == null) {
@@ -234,7 +242,7 @@ public class DefaultExceptionCatalog extends HashMap<Integer, String> implements
 	 * Adds the passed <code>entry</code> to the catalog.
 	 * 
 	 * @param entry
-	 *          the <code>CatalogEntry</code> instance to be added
+	 *            the <code>CatalogEntry</code> instance to be added
 	 */
 	public void addEntry(final CatalogEntry entry) {
 		addEntry(entry.getKey(), entry.getValue());
@@ -244,9 +252,9 @@ public class DefaultExceptionCatalog extends HashMap<Integer, String> implements
 	 * Adds the specified entry to the catalog.
 	 * 
 	 * @param number
-	 *          the number of the entry
+	 *            the number of the entry
 	 * @param message
-	 *          the message associated to the passed <code>number</code>
+	 *            the message associated to the passed <code>number</code>
 	 */
 	public void addEntry(final Integer number, final String message) {
 		put(number, message);

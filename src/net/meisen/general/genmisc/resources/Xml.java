@@ -1,6 +1,8 @@
 package net.meisen.general.genmisc.resources;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -12,6 +14,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import net.meisen.general.genmisc.types.Streams;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -25,10 +29,67 @@ import org.w3c.dom.Node;
 public class Xml {
 
 	/**
+	 * Creates a {@code Document} from the specified {@code xml}. Returns the
+	 * created {@code Document} if possible, otherwise - i.e. if the creation
+	 * failed - {@code null}.
+	 * 
+	 * @param xml
+	 *            the bytes which make up the xml
+	 * @param namespaceAware
+	 *            {@code true} to be namespace aware within the document,
+	 *            otherwise {@code false}, see
+	 *            {@link DocumentBuilderFactory#setNamespaceAware(boolean)}
+	 * 
+	 * @return the created {@code Document} or {@code null} if an error occurred
+	 * 
+	 * @see Document
+	 */
+	public static Document createDocument(final byte[] xml,
+			final boolean namespaceAware) {
+		final InputStream bais = new ByteArrayInputStream(xml);
+		final Document doc = createDocument(bais, namespaceAware);
+
+		Streams.closeIO(bais);
+
+		return doc;
+	}
+
+	/**
+	 * Creates a {@code Document} from the specified {@code xml}. Returns the
+	 * created {@code Document} if possible, otherwise - i.e. if the creation
+	 * failed - {@code null}.
+	 * 
+	 * @param xml
+	 *            the {@code InputStream} to read the xml from
+	 * @param namespaceAware
+	 *            {@code true} to be namespace aware within the document,
+	 *            otherwise {@code false}, see
+	 *            {@link DocumentBuilderFactory#setNamespaceAware(boolean)}
+	 * 
+	 * @return the created {@code Document} or {@code null} if an error occurred
+	 * 
+	 * @see Document
+	 */
+	public static Document createDocument(final InputStream xml,
+			final boolean namespaceAware) {
+		final DocumentBuilderFactory docFactory = DocumentBuilderFactory
+				.newInstance();
+		docFactory.setNamespaceAware(namespaceAware);
+
+		// get the builder to build a document
+		try {
+			final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			return docBuilder.parse(xml);
+		} catch (final Exception e) {
+			return null;
+		}
+	}
+
+	/**
 	 * Method to clone a <code>Document</code>.
 	 * 
 	 * @param doc
-	 *          the <code>Document</code> to be cloned
+	 *            the <code>Document</code> to be cloned
 	 * 
 	 * @return the clone of the <code>Document</code>
 	 */
@@ -55,7 +116,7 @@ public class Xml {
 	 * Creates a string out of the passed <code>Document</code>.
 	 * 
 	 * @param doc
-	 *          the <code>Document</code> to create the string of
+	 *            the <code>Document</code> to create the string of
 	 * 
 	 * @return the <code>Document</code> as string
 	 */
@@ -69,7 +130,7 @@ public class Xml {
 	 * Creates a byte-array out of the <code>Document</code>.
 	 * 
 	 * @param doc
-	 *          the <code>Document</code> to create the byte-array from
+	 *            the <code>Document</code> to create the byte-array from
 	 * 
 	 * @return the created byte-array
 	 */
@@ -80,16 +141,17 @@ public class Xml {
 	}
 
 	/**
-	 * Helper method used to transform a <code>Document</code> into the specified
-	 * <code>StreamResult</code>.
+	 * Helper method used to transform a <code>Document</code> into the
+	 * specified <code>StreamResult</code>.
 	 * 
 	 * @param doc
-	 *          the <code>Document</code> to be transformed
+	 *            the <code>Document</code> to be transformed
 	 * @param result
-	 *          the <code>StreamResult</code> to transform the
-	 *          <code>Document</code> to
+	 *            the <code>StreamResult</code> to transform the
+	 *            <code>Document</code> to
 	 */
-	protected static void transform(final Document doc, final StreamResult result) {
+	protected static void transform(final Document doc,
+			final StreamResult result) {
 		final TransformerFactory tf = TransformerFactory.newInstance();
 
 		try {

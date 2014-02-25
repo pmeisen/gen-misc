@@ -6,9 +6,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Test;
-
 import net.meisen.general.genmisc.types.Streams;
+
+import org.junit.Test;
 
 /**
  * The test specified for the <code>Streams</code>
@@ -38,7 +38,7 @@ public class TestStreams {
 	 * Tests the implementation of the encoding guesses for some files.
 	 * 
 	 * @throws IOException
-	 *           if the file cannot be accessed
+	 *             if the file cannot be accessed
 	 */
 	@Test
 	public void testGuessEncoding() throws IOException {
@@ -59,12 +59,12 @@ public class TestStreams {
 		is = getClass().getResourceAsStream("encodedFiles/Cp1252.txt");
 		enc = Streams.guessEncoding(is, null);
 		assertEquals("Cp1252", enc);
-		
+
 		// UTF8 with BOM
 		is = getClass().getResourceAsStream("encodedFiles/UTF8_BOM.txt");
 		enc = Streams.guessEncoding(is, null);
 		assertEquals("UTF-8", enc);
-		
+
 		// UTF8 without BOM
 		is = getClass().getResourceAsStream("encodedFiles/UTF8_noBOM.txt");
 		enc = Streams.guessEncoding(is, null);
@@ -76,7 +76,8 @@ public class TestStreams {
 		assertEquals("UTF-16BE", enc);
 
 		// UTF16 LittleEndian
-		is = getClass().getResourceAsStream("encodedFiles/UCS-2_LittleEndian.txt");
+		is = getClass().getResourceAsStream(
+				"encodedFiles/UCS-2_LittleEndian.txt");
 		enc = Streams.guessEncoding(is, null);
 		assertEquals("UTF-16LE", enc);
 	}

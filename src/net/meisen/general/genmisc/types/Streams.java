@@ -295,6 +295,7 @@ public class Streams {
 			buffer.write(data, 0, nRead);
 		}
 		buffer.flush();
+		Streams.closeIO(buffer);
 
 		return buffer.toByteArray();
 	}
