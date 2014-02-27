@@ -63,6 +63,59 @@ public class TestStrings {
 	}
 
 	/**
+	 * Tests the {@link Strings#reverse(String)} implementation.
+	 */
+	@Test
+	public void testReverse() {
+		assertNull(Strings.reverse(null));
+		assertEquals("", Strings.reverse(""));
+
+		assertEquals("Test", Strings.reverse("tseT"));
+		assertEquals("1", Strings.reverse("1"));
+		assertEquals("Otto", Strings.reverse("ottO"));
+	}
+
+	/**
+	 * Tests the implementation of {@link Strings#trim(String, String, String)}.
+	 */
+	@Test
+	public void testTrim() {
+		assertNull(Strings.trim(null, null, null));
+
+		assertEquals("allo", Strings.trim("Hallo", "H", null));
+		assertEquals("al", Strings.trim("Hallo", "H", "lo"));
+
+		assertEquals("allo", Strings.trim("Hallo", "H", "lol"));
+		assertEquals("Hallo", Strings.trim("Hallo", "Hu", "lol"));
+		assertEquals("Hal", Strings.trim("Hallo", "Hu", "lo"));
+		assertEquals("Hallo", Strings.trim("['Hallo']", "['", "']"));
+	}
+
+	/**
+	 * Tests the implementation of {@link Strings#trimSequence(String, String)}.
+	 */
+	@Test
+	public void testTrimSequence() {
+		assertNull(Strings.trimSequence(null, null));
+		assertNull(Strings.trimSequence(null, ""));
+
+		assertEquals("Hallo", Strings.trimSequence("%'Hallo'%", "%'"));
+	}
+
+	/**
+	 * Tests the implementation of
+	 * {@link Strings#smartTrimSequence(String, String)}.
+	 */
+	@Test
+	public void testSmartTrimSequence() {
+		assertNull(Strings.smartTrimSequence(null, null));
+		assertNull(Strings.smartTrimSequence(null, ""));
+
+		assertEquals("Hallo",
+				Strings.smartTrimSequence("({\"[({'Hallo'})]\"})", "({\"[({'"));
+	}
+
+	/**
 	 * Test the concatenation functionality
 	 * 
 	 * @see Strings#concate(String, Collection)

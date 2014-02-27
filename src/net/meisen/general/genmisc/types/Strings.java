@@ -69,6 +69,130 @@ public class Strings {
 	}
 
 	/**
+	 * Reverse the {@code input}.
+	 * 
+	 * @param input
+	 *            the string to be reversed
+	 * 
+	 * @return the reversed string
+	 */
+	public static String reverse(final String input) {
+		if (input == null) {
+			return null;
+		}
+
+		return new StringBuilder(input).reverse().toString();
+	}
+
+	/**
+	 * Reverses a string and reverses brackets in a way that open brackets are
+	 * closed.
+	 * 
+	 * @param input
+	 *            the string to be reversed
+	 * 
+	 * @return the reversed string
+	 */
+	public static String smartReverse(final String input) {
+		if (input == null) {
+			return null;
+		}
+
+		final int len = input.length();
+		final StringBuffer dest = new StringBuffer(len);
+
+		for (int i = len - 1; i >= 0; i--) {
+			final char cur = input.charAt(i);
+
+			if ('{' == cur) {
+				dest.append('}');
+			} else if ('(' == cur) {
+				dest.append(')');
+			} else if ('[' == cur) {
+				dest.append(']');
+			} else {
+				dest.append(cur);
+			}
+		}
+		return dest.toString();
+	}
+
+	/**
+	 * Removes a specific pre- and suffix sequence from the {@code input}. The
+	 * sequence is refersed at the end, that means that the string
+	 * {@code %'Hallo'%} can be trimmed to {@code Hallo} by calling
+	 * {@code removePreAndSuffixSequence("%'Hallo'%", "%'")}. If the string
+	 * doesn't start witht the specified sequence nothing is done.
+	 * 
+	 * @param input
+	 *            the input to be manipulated
+	 * @param sequence
+	 *            the sequence to be removed
+	 * 
+	 * @return the result
+	 */
+	public static String trimSequence(final String input, final String sequence) {
+		if (input == null || sequence == null) {
+			return null;
+		}
+
+		return trim(input, sequence, reverse(sequence));
+	}
+
+	/**
+	 * The smart trimming replaces brackets within the sequence so that those
+	 * are correctly removed. That means that {@code ['Hallo']} can be trimmed
+	 * to {@code Hallo} by calling
+	 * {@code removePreAndSuffixSequence(" '[Hallo]'}", "{'[")}
+	 * 
+	 * @param input
+	 *            the input to be trimmed
+	 * @param sequence
+	 *            the sequence (prefix wise), brackets will be smartly reversed
+	 * 
+	 * @return the trimmed string
+	 */
+	public static String smartTrimSequence(final String input,
+			final String sequence) {
+		if (input == null || sequence == null) {
+			return null;
+		}
+
+		return trim(input, sequence, smartReverse(sequence));
+	}
+
+	/**
+	 * Removes the specified prefix and suffix from the string.
+	 * 
+	 * @param input
+	 *            the string to be trimmed
+	 * @param prefix
+	 *            the prefix to be removed (can be {@code null} if just a suffix
+	 *            should be removed)
+	 * @param suffix
+	 *            the suffix to be removed (can be {@code null} if just a suffix
+	 *            should be removed)
+	 * 
+	 * @return the trimmed string
+	 */
+	public static String trim(final String input, final String prefix,
+			final String suffix) {
+		if (input == null) {
+			return null;
+		}
+
+		String result = input;
+		if (prefix != null && input.startsWith(prefix)) {
+			result = result.replaceAll("^" + Pattern.quote(prefix), "");
+		}
+		if (suffix != null && input.endsWith(suffix)) {
+			result = result.replaceAll(Pattern.quote(suffix) + "$", "");
+		}
+
+		return result;
+	}
+
+	/**
 	 * Synonym for the concate method, see
 	 * {@link Strings#concate(String, Object...)}.
 	 * 
