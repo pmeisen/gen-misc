@@ -255,4 +255,27 @@ public class TestNumbers {
 		final short[] res3 = Numbers.castArrayToShort(array);
 		assertEquals(3, res3.length);
 	}
+
+	/**
+	 * Tests the implementation of
+	 * {@code Numbers#determineCommonType(Number...)}.
+	 */
+	@Test
+	public void testDetermineCommonType() {
+		assertEquals(Short.class,
+				Numbers.determineCommonType((short) 5, (byte) 2));
+		assertEquals(Byte.class,
+				Numbers.determineCommonType((byte) 5, (byte) 2));
+		assertEquals(Long.class, Numbers.determineCommonType(5l, 1));
+		assertEquals(Integer.class, Numbers.determineCommonType(5, 1));
+		assertEquals(BigInteger.class,
+				Numbers.determineCommonType(BigInteger.valueOf(100l), 1));
+		assertEquals(BigDecimal.class,
+				Numbers.determineCommonType(BigInteger.valueOf(100l), 1d));
+		assertEquals(BigInteger.class, Numbers.determineCommonType(
+				BigInteger.valueOf(100l), BigInteger.valueOf(200l)));
+		assertEquals(Float.class, Numbers.determineCommonType(100.0f, 200.0f));
+		assertEquals(Float.class, Numbers.determineCommonType(5, 200.0f));
+		assertEquals(Float.class, Numbers.determineCommonType(200.0f, 5));
+	}
 }

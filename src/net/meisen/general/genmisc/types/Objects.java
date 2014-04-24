@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 
 /**
  * Utility class for objects
@@ -32,6 +33,8 @@ public class Objects {
 			return true;
 		} else if (o1 == null || o2 == null) {
 			return false;
+		} else if (o1 == o2) {
+			return true;
 		} else {
 			return o1.equals(o2);
 		}
@@ -163,5 +166,98 @@ public class Objects {
 		}
 
 		return castedObjects;
+	}
+
+	/**
+	 * An implementation which tries to compare every two objects, i.e. bringing
+	 * them into an intuitive order. The implementation uses several techniques:
+	 * <ol>
+	 * <li>use object specific comparisons, i.e. {@code o1 == o2} and
+	 * {@code equals}</li>
+	 * <li>check for the {@code Comparable} interface and use it if there is an
+	 * inheritance-relation (i.e. superclass or equal) between the objects</li>
+	 * <li>compare the classes of the objects, if those are unequal we have an
+	 * order</li>
+	 * <li>compare the classes and use those for comparison</li>
+	 * <li>use the string representation to find an order</li>
+	 * <li>use the hashCode to determine an order</li>
+	 * </ol>
+	 * 
+	 * @param o1
+	 *            the object to compare to {@code o2}
+	 * @param o2
+	 *            the object to compare to {@code o1}
+	 * 
+	 * @return {@code -1} if {@code o1 < o2}, {@code 0} if {@code o1 == o2} and
+	 *         {@code 1} if {@code o1 > o2}
+	 * 
+	 * @see Comparable
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static int compare(final Object o1, final Object o2) {
+
+		if (equals(o1, o2)) {
+			return 0;
+		} else if (o1 == null) {
+			return -1;
+		} else if (o2 == null) {
+			return 1;
+		} else {
+
+			// get the classes
+			final Class<?> o1Class = o1.getClass();
+			final Class<?> o2Class = o2.getClass();
+			if (o1 instanceof Comparable && o2 instanceof Comparable) {
+
+				// check if we have numbers here
+				final Comparable cmp1;
+				final Comparable cmp2;
+				if (o1 instanceof Number && o2 instanceof Number) {
+					final Class<? extends Number> ct = Numbers
+							.determineCommonType((Number) o1, (Number) o2);
+
+					final Number n1 = Numbers.mapToDataType(o1, ct);
+					final Number n2 = Numbers.mapToDataType(o2, ct);
+					if (n1 != null && n2 != null) {
+						cmp1 = (Comparable) n1;
+						cmp2 = (Comparable) n2;
+					} else {
+						cmp1 = Numbers.mapToDataType(o1, BigDecimal.class);
+						cmp2 = Numbers.mapToDataType(o2, BigDecimal.class);
+					}
+				} else if (o1Class.equals(o2Class)) {
+					cmp1 = (Comparable) o1;
+					cmp2 = (Comparable) o2;
+				} else {
+					cmp1 = null;
+					cmp2 = null;
+				}
+
+				// if we found something comparable let's use it
+				if (cmp1 != null && cmp2 != null) {
+					return cmp1.compareTo(cmp2) < 0 ? -1 : 1;
+				}
+			}
+
+			// so the values aren't null and not comparable, so we have to do
+			// some other comparison, which cannot lead to be equal
+			final int cmpClass = o1Class.getName().compareTo(o2Class.getName());
+			if (cmpClass != 0) {
+				return cmpClass < 0 ? -1 : 1;
+			}
+
+			// both classes are of the same type but still they aren't equal
+			// so let's use the string comparison of both
+			final String o1String = o1.toString();
+			final String o2String = o2.toString();
+			final int cmpString = o1String.compareTo(o2String);
+			if (cmpString != 0) {
+				return cmpString < 0 ? -1 : 1;
+			}
+
+			// so last but not least, we just cannot do a lot and this has
+			// probably side effects
+			return o1.hashCode() < o2.hashCode() ? -1 : 1;
+		}
 	}
 }

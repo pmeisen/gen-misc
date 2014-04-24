@@ -2,11 +2,27 @@ package net.meisen.general.genmisc.types;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Helper methods to deal with numbers.
  */
 public class Numbers {
+	private static Map<Class<? extends Number>, Integer> intHierarchy = new HashMap<Class<? extends Number>, Integer>();
+	private static Map<Class<? extends Number>, Integer> floatHierarchy = new HashMap<Class<? extends Number>, Integer>();
+
+	static {
+		int intFirst = 1;
+		intHierarchy.put(Byte.class, intFirst++);
+		intHierarchy.put(Short.class, intFirst++);
+		intHierarchy.put(Integer.class, intFirst++);
+		intHierarchy.put(Long.class, intFirst++);
+
+		int floatFirst = -1;
+		floatHierarchy.put(Float.class, floatFirst--);
+		floatHierarchy.put(Double.class, floatFirst--);
+	}
 
 	/**
 	 * Maps the specified value to the number specified by the {@code clazz}.
@@ -21,7 +37,6 @@ public class Numbers {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <D> D mapToDataType(final Object value, final Class<D> clazz) {
-
 		if (value == null) {
 			return null;
 		}
@@ -35,9 +50,8 @@ public class Numbers {
 
 			// check the result
 			if (result != null) {
-				final Class<?> srcClazz = number.getClass();
-				final Number cmpNumber = Numbers.castToNumber(result,
-						number.getClass());
+				final Class<? extends Number> srcClazz = number.getClass();
+				final Number cmpNumber = Numbers.castToNumber(result, srcClazz);
 
 				if (cmpNumber.equals(number)) {
 					return (D) result;
@@ -45,12 +59,28 @@ public class Numbers {
 				/*
 				 * There is a problem with the BigDecimal the equality depends
 				 * on how it is created, i.e. using new BigDecimal(...) or
-				 * BigDecimal.valueOf(...). The castToNumber method uses the
-				 * valueOf, therefore here we check the constructor.
+				 * BigDecimal.valueOf(...). Therefore we check all of them, if
+				 * one is assumed to be equal we assume it to be equal.
 				 */
-				else if (BigDecimal.class.equals(srcClazz)
-						&& new BigDecimal(result.doubleValue()).equals(number)) {
-					return (D) result;
+				else if (BigDecimal.class.equals(srcClazz)) {
+
+					if (intHierarchy.containsKey(number.getClass())) {
+						final long res = result.longValue();
+
+						if (BigDecimal.valueOf(res).equals(number)) {
+							return (D) result;
+						} else if (new BigDecimal(res).equals(number)) {
+							return (D) result;
+						}
+					} else {
+						final double res = result.doubleValue();
+
+						if (BigDecimal.valueOf(res).equals(number)) {
+							return (D) result;
+						} else if (new BigDecimal(res).equals(number)) {
+							return (D) result;
+						}
+					}
 				}
 			}
 		}
@@ -94,7 +124,11 @@ public class Numbers {
 		} else if (BigInteger.class.equals(clazz)) {
 			result = BigInteger.valueOf(number.longValue());
 		} else if (BigDecimal.class.equals(clazz)) {
-			result = BigDecimal.valueOf(number.doubleValue());
+			if (intHierarchy.containsKey(number.getClass())) {
+				result = BigDecimal.valueOf(number.longValue());
+			} else {
+				result = BigDecimal.valueOf(number.doubleValue());
+			}
 		} else {
 			return null;
 		}
@@ -444,5 +478,89 @@ public class Numbers {
 		}
 
 		return casted;
+	}
+
+	/**
+	 * Determines the common representation of the passed {@code Number}
+	 * instances.
+	 * 
+	 * @param n
+	 *            the numbers to determine the common type for
+	 * 
+	 * @return the common type of the numbers
+	 */
+	public static Class<? extends Number> determineCommonType(final Number... n) {
+
+		int weight = -1;
+		int signumWeight = 0;
+		Class<? extends Number> res = null;
+		for (final Number nr : n) {
+			if (nr == null) {
+				continue;
+			} else if (res == null) {
+				res = nr.getClass();
+				weight = determineWeight(nr);
+				signumWeight = (int) Math.signum(weight);
+			} else {
+				final int curWeight = determineWeight(nr);
+
+				/*
+				 * same type i.e. we stay within floats or integers
+				 */
+				if (signumWeight == Math.signum(curWeight)) {
+					if (Math.abs(curWeight) > Math.abs(weight)) {
+						res = nr.getClass();
+						weight = curWeight;
+					}
+				}
+				/*
+				 * a value > 0 means we are in the integers world and have to
+				 * change to the reals world
+				 */
+				else if (signumWeight > 0) {
+					if (weight == Integer.MAX_VALUE) {
+						// floating numbers and BigIntegers => BigDecimal
+						return BigDecimal.class;
+					} else {
+						res = nr.getClass();
+						weight = curWeight;
+					}
+				}
+				/*
+				 * reals world, and some integers values
+				 */
+				else {
+					if (curWeight == Integer.MAX_VALUE) {
+						// floating numbers and BigIntegers => BigDecimal
+						return BigDecimal.class;
+					}
+				}
+			}
+		}
+
+		return res;
+	}
+
+	private static int determineWeight(final Number nr) {
+
+		Integer weight = intHierarchy.get(nr.getClass());
+		if (weight == null) {
+			weight = floatHierarchy.get(nr.getClass());
+
+			if (weight == null) {
+				if (nr instanceof BigInteger) {
+					return Integer.MAX_VALUE;
+				} else if (nr instanceof BigDecimal) {
+					return Integer.MIN_VALUE;
+				} else {
+					throw new IllegalArgumentException("The class '"
+							+ nr.getClass() + "' is not supported.");
+				}
+			} else {
+				return weight.intValue();
+			}
+		} else {
+			return weight.intValue();
+		}
 	}
 }
