@@ -78,14 +78,16 @@ public class TestObjects {
 			double nd = rnd.nextDouble();
 			long nl = rnd.nextLong();
 
-			assertEquals(nf + "<" + ni, nf < ni, Objects.compare(nf, ni) == -1);
-			assertEquals(nf + "<" + nd, nf < nd, Objects.compare(nf, nd) == -1);
-			assertEquals(nf + "<" + nl, nf < nl, Objects.compare(nf, nl) == -1);
+			// @formatter:off
+			assertEquals(nf + "<" + ni, nf < ni, Objects.compare(nf, ni, true) == -1);
+			assertEquals(nf + "<" + nd, nf < nd, Objects.compare(nf, nd, true) == -1);
+			assertEquals(nf + "<" + nl, nf < nl, Objects.compare(nf, nl, true) == -1);
 
-			assertEquals(ni + "<" + nd, ni < nd, Objects.compare(ni, nd) == -1);
-			assertEquals(ni + "<" + nl, ni < nl, Objects.compare(ni, nl) == -1);
+			assertEquals(ni + "<" + nd, ni < nd, Objects.compare(ni, nd, true) == -1);
+			assertEquals(ni + "<" + nl, ni < nl, Objects.compare(ni, nl, true) == -1);
 
-			assertEquals(nd + "<" + nl, nd < nl, Objects.compare(nd, nl) == -1);
+			assertEquals(nd + "<" + nl, nd < nl, Objects.compare(nd, nl, true) == -1);
+			// @formatter:on
 		}
 
 		// check if the comparison is total, we do this by mass-testing

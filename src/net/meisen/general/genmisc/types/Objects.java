@@ -193,8 +193,41 @@ public class Objects {
 	 * 
 	 * @see Comparable
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static int compare(final Object o1, final Object o2) {
+		return compare(o1, o2, false);
+	}
+	
+	/**
+	 * An implementation which tries to compare every two objects, i.e. bringing
+	 * them into an intuitive order. The implementation uses several techniques:
+	 * <ol>
+	 * <li>use object specific comparisons, i.e. {@code o1 == o2} and
+	 * {@code equals}</li>
+	 * <li>check for the {@code Comparable} interface and use it if there is an
+	 * inheritance-relation (i.e. superclass or equal) between the objects</li>
+	 * <li>compare the classes of the objects, if those are unequal we have an
+	 * order</li>
+	 * <li>compare the classes and use those for comparison</li>
+	 * <li>use the string representation to find an order</li>
+	 * <li>use the hashCode to determine an order</li>
+	 * </ol>
+	 * 
+	 * @param o1
+	 *            the object to compare to {@code o2}
+	 * @param o2
+	 *            the object to compare to {@code o1}
+	 * @param numberAware
+	 *            {@code true} if {@code Number} instances should be compared
+	 *            according to their values, otherwise {@code false}
+	 * 
+	 * @return {@code -1} if {@code o1 < o2}, {@code 0} if {@code o1 == o2} and
+	 *         {@code 1} if {@code o1 > o2}
+	 * 
+	 * @see Comparable
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static int compare(final Object o1, final Object o2,
+			final boolean numberAware) {
 
 		if (equals(o1, o2)) {
 			return 0;
@@ -212,7 +245,7 @@ public class Objects {
 				// check if we have numbers here
 				final Comparable cmp1;
 				final Comparable cmp2;
-				if (o1 instanceof Number && o2 instanceof Number) {
+				if (numberAware && o1 instanceof Number && o2 instanceof Number) {
 					final Class<? extends Number> ct = Numbers
 							.determineCommonType((Number) o1, (Number) o2);
 
