@@ -67,10 +67,10 @@ public class TestObjects {
 		assertEquals(-1, Objects.compare("D", "F"));
 
 		// mixed numbers
-		assertEquals(-1, Objects.compare(5, 100l));
-		assertEquals(1, Objects.compare(100, 5l));
-		assertEquals(1, Objects.compare(1.05, 1));
-		assertEquals(1, Objects.compare(1.00000005, 1.0f));
+		assertEquals(-1, Objects.compare(5, 100l, true));
+		assertEquals(1, Objects.compare(100, 5l, true));
+		assertEquals(1, Objects.compare(1.05, 1, true));
+		assertEquals(1, Objects.compare(1.00000005, 1.0f, true));
 		final Random rnd = new Random();
 		for (int i = 0; i < 100000; i++) {
 			float nf = rnd.nextFloat();
