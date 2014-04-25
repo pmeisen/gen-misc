@@ -178,10 +178,14 @@ public class Objects {
 	 * inheritance-relation (i.e. superclass or equal) between the objects</li>
 	 * <li>compare the classes of the objects, if those are unequal we have an
 	 * order</li>
-	 * <li>compare the classes and use those for comparison</li>
 	 * <li>use the string representation to find an order</li>
 	 * <li>use the hashCode to determine an order</li>
 	 * </ol>
+	 * <b>Note:</b><br/>
+	 * Numbers are only compared if those are of the same type, use
+	 * {@link #compare(Object, Object, boolean)} to enable comparison of
+	 * {@code Number} instances across different number implementations.
+	 * 
 	 * 
 	 * @param o1
 	 *            the object to compare to {@code o2}
@@ -196,7 +200,7 @@ public class Objects {
 	public static int compare(final Object o1, final Object o2) {
 		return compare(o1, o2, false);
 	}
-	
+
 	/**
 	 * An implementation which tries to compare every two objects, i.e. bringing
 	 * them into an intuitive order. The implementation uses several techniques:
@@ -205,9 +209,11 @@ public class Objects {
 	 * {@code equals}</li>
 	 * <li>check for the {@code Comparable} interface and use it if there is an
 	 * inheritance-relation (i.e. superclass or equal) between the objects</li>
+	 * <li>if {@code numberAware} is set to {@code true} and the classes are
+	 * {@code Comparable} and {@code Number} instances compare the numbers
+	 * across the different types</li>
 	 * <li>compare the classes of the objects, if those are unequal we have an
 	 * order</li>
-	 * <li>compare the classes and use those for comparison</li>
 	 * <li>use the string representation to find an order</li>
 	 * <li>use the hashCode to determine an order</li>
 	 * </ol>
