@@ -22,6 +22,11 @@ public class Dates {
 	public static final String GENERAL_TIMEZONE = "UTC";
 
 	/**
+	 * The used full format to get all values of a date.
+	 */
+	public static final String FULL_FORMAT = "dd.MM.yyyy HH:mm:ss,SSS";
+
+	/**
 	 * Default patterns used to detect date formats within a string
 	 * 
 	 * @see #isDate(String)
@@ -371,6 +376,33 @@ public class Dates {
 			return parseDate(nowString, format);
 		} catch (final ParseException e) {
 			throw new IllegalStateException("Unreachable code was reached.", e);
+		}
+	}
+
+	/**
+	 * The method is used to map the {@code date} of the {@code fromTZ} to the
+	 * {@code toTZ}. The method assumes that the date currently represented is
+	 * recorded wrongly, i.e. it meant to be in the {@code toTZ} but is
+	 * represented in {@code fromTZ}. Therefore this method maps a date, so that
+	 * the printing of the date in the {@code fromTZ} before is the same as the
+	 * printing in the {@code toTZ} afterwards.
+	 * 
+	 * @param date
+	 *            the date to be mapped
+	 * @param fromTZ
+	 *            the timezone to map the date from
+	 * @param toTZ
+	 *            the timezone to map the date to
+	 * 
+	 * @return the mapped date
+	 */
+	public static Date mapToTimezone(final Date date, final String fromTZ,
+			final String toTZ) {
+		final String tmp = Dates.formatDate(date, FULL_FORMAT, fromTZ);
+		try {
+			return Dates.parseDate(tmp, FULL_FORMAT, toTZ);
+		} catch (final ParseException e) {
+			return null;
 		}
 	}
 }

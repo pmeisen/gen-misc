@@ -110,7 +110,7 @@ public class TestDates {
 				"dd.MM.yyyy HH:mm:ss"), Dates.isDate("10.5.2012 10:00:00"));
 		assertEquals(Dates.createDateFromString("29.04.2010 00:00:01",
 				"dd.MM.yyyy HH:mm:ss"), Dates.isDate("29.04.2010 00:00:01"));
-		
+
 		// tests US dates
 		assertEquals(Dates.createDateFromString("22.08.2013", "dd.MM.yyyy"),
 				Dates.isDate("22/08/2013"));
@@ -130,6 +130,24 @@ public class TestDates {
 		assertFalse(tz.getID().equals(Dates.GENERAL_TIMEZONE));
 		assertNull(Dates.isDate("noonewill", Dates.GENERAL_TIMEZONE));
 		assertEquals(TimeZone.getDefault().getID(), tz.getID());
+
+	}
+
+	/**
+	 * Tests the mapping of a date using
+	 * {@link Dates#mapToTimezone(Date, String, String)}.
+	 * 
+	 * @throws ParseException
+	 *             if the date cannot be parsed
+	 */
+	@Test
+	public void testMapping() throws ParseException {
+		Date dateGer = Dates.parseDate("20.01.1981 08:07:00,000",
+				Dates.FULL_FORMAT, "Europe/Berlin");
+		Date dateUs = Dates.mapToTimezone(dateGer, "Europe/Berlin",
+				"America/Los_Angeles");
+		assertEquals(Dates.parseDate("20.01.1981 08:07:00,000",
+				Dates.FULL_FORMAT, "America/Los_Angeles"), dateUs);
 
 	}
 }
