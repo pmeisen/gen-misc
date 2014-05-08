@@ -97,7 +97,7 @@ public class Version implements Serializable, Cloneable, Comparable<Version> {
 	 * 
 	 * @param toParse
 	 *            The String object to parse.
-	 * @return A new Version object.
+	 * @return a new Version object.
 	 * 
 	 * @throws IllegalArgumentException
 	 *             When there is an error parsing the String.
