@@ -155,7 +155,7 @@ public class TestStreams {
 			byteArray = Streams.longToByte(rndValue);
 			value = Streams.byteToLong(byteArray);
 
-			assertEquals(i, value);
+			assertEquals(rndValue, value);
 		}
 	}
 }
