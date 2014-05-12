@@ -1,11 +1,14 @@
 package net.meisen.general.genmisc.types;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -790,7 +793,8 @@ public class Streams {
 	 * @param o
 	 *            the object to be transformed
 	 * 
-	 * @return the byte array
+	 * @return the byte array or {@code null} if the object could not be
+	 *         serialized
 	 */
 	public static byte[] objectToByte(final Object o) {
 		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -805,6 +809,28 @@ public class Streams {
 		} finally {
 			Streams.closeIO(out);
 			Streams.closeIO(bos);
+		}
+	}
+
+	/**
+	 * Deserializes an object from the specified byte array.
+	 * 
+	 * @param bytes
+	 *            the byte array to read the object from
+	 * 
+	 * @return the read object or {@code null} if an error occurred
+	 */
+	public static Object byteToObject(final byte[] bytes) {
+		final ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+		ObjectInput in = null;
+		try {
+			in = new ObjectInputStream(bis);
+			return in.readObject();
+		} catch (final Exception e) {
+			return null;
+		} finally {
+			Streams.closeIO(bis);
+			Streams.closeIO(in);
 		}
 	}
 
