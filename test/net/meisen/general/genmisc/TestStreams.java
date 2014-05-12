@@ -1,10 +1,13 @@
 package net.meisen.general.genmisc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Random;
 
 import net.meisen.general.genmisc.types.Streams;
@@ -81,6 +84,32 @@ public class TestStreams {
 				"encodedFiles/UCS-2_LittleEndian.txt");
 		enc = Streams.guessEncoding(is, null);
 		assertEquals("UTF-16LE", enc);
+	}
+
+	/**
+	 * Tests the implementation of {@link Streams#combineBytes(byte[][])}.
+	 */
+	@Test
+	public void testCombineBytes() {
+
+		// null if null is passed
+		assertNull(Streams.combineBytes((byte[][]) null));
+
+		// if a null array is passed it is ignored
+		assertTrue(Arrays.equals(new byte[0],
+				Streams.combineBytes((byte[]) null)));
+
+		// test the combination
+		byte[] input;
+
+		input = new byte[] { 0x3, 0x2c };
+		assertTrue(Arrays.equals(input,
+				Streams.combineBytes((byte[]) null, input)));
+
+		assertTrue(Arrays.equals(
+				new byte[] { 0x3, 0x2c, 0x3, 0x2c },
+				Streams.combineBytes(new byte[] { 0x3, 0x2c }, new byte[] {
+						0x3, 0x2c })));
 	}
 
 	/**

@@ -764,4 +764,52 @@ public class Streams {
 			Streams.closeIO(bos);
 		}
 	}
+
+	/**
+	 * Combines the specified {@code bytes}. The method returns {@code null} if
+	 * and only if {@code null} is passed. If one of the byte-arrays is
+	 * {@code null} it is handled as empty array, i.e {@code new byte[0]]}.
+	 * 
+	 * @param bytes
+	 *            the arrays to be combined
+	 * 
+	 * @return the combined array
+	 */
+	public static byte[] combineBytes(final byte[]... bytes) {
+		if (bytes == null) {
+			return null;
+		}
+
+		// get the amount of bytes to be joined
+		final int length = bytes.length;
+
+		if (length == 0) {
+			return new byte[0];
+		} else {
+			int newSize = 0;
+			for (int i = 0; i < length; i++) {
+				if (bytes[i] == null) {
+					continue;
+				}
+
+				newSize += bytes[i].length;
+			}
+
+			// create the new array
+			final byte[] result = new byte[newSize];
+
+			// add the values
+			int nextPos = 0;
+			for (int i = 0; i < length; i++) {
+				if (bytes[i] == null) {
+					continue;
+				}
+
+				System.arraycopy(bytes[i], 0, result, nextPos, bytes[i].length);
+				nextPos += bytes[i].length;
+			}
+
+			return result;
+		}
+	}
 }
