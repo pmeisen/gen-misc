@@ -684,7 +684,7 @@ public class Streams {
 	 * @param bytes
 	 *            the bytes to be transformed to a long
 	 * 
-	 * @return the int represented by the bytes
+	 * @return the long represented by the bytes
 	 */
 	public static long byteToLong(final byte[] bytes) {
 		long l = 0;
@@ -739,6 +739,49 @@ public class Streams {
 	 */
 	public static byte[] stringToByte(final String s, final Charset charset) {
 		return s.getBytes(charset);
+	}
+
+	/**
+	 * Transforms the {@code bytes} to a string. The bytes should have been
+	 * generated using {@link #stringToByte(String)}.
+	 * 
+	 * @param bytes
+	 *            the bytes to be transformed
+	 * 
+	 * @return the string represented by the bytes
+	 */
+	public static String byteToString(final byte[] bytes) {
+		return byteToString(bytes, "UTF-8");
+	}
+
+	/**
+	 * Transforms the {@code bytes} to a string. The bytes should have been
+	 * generated using {@link #stringToByte(String)}.
+	 * 
+	 * @param bytes
+	 *            the bytes to be transformed
+	 * @param charset
+	 *            the charset of the bytes
+	 * 
+	 * @return the string represented by the bytes
+	 */
+	public static String byteToString(final byte[] bytes, final String charset) {
+		return byteToString(bytes, Charset.forName(charset));
+	}
+
+	/**
+	 * Transforms the {@code bytes} to a string. The bytes should have been
+	 * generated using {@link #stringToByte(String)}.
+	 * 
+	 * @param bytes
+	 *            the bytes to be transformed
+	 * @param charset
+	 *            the charset of the bytes
+	 * 
+	 * @return the string represented by the bytes
+	 */
+	public static String byteToString(final byte[] bytes, final Charset charset) {
+		return new String(bytes, charset);
 	}
 
 	/**

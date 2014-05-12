@@ -187,4 +187,27 @@ public class TestStreams {
 			assertEquals(rndValue, value);
 		}
 	}
+
+	/**
+	 * Tests the implementation of the string mappers, i.e.
+	 * {@link Streams#stringToByte(String)} and
+	 * {@link Streams#byteToString(byte[])}.
+	 */
+	@Test
+	public void testStringByte() {
+		byte[] byteArray;
+		String value;
+
+		byteArray = Streams.stringToByte("");
+		value = Streams.byteToString(byteArray);
+		assertEquals("", value);
+
+		byteArray = Streams.stringToByte("Hello");
+		value = Streams.byteToString(byteArray);
+		assertEquals("Hello", value);
+
+		byteArray = Streams.stringToByte("הüצüצהüß?\"");
+		value = Streams.byteToString(byteArray);
+		assertEquals("הüצüצהüß?\"", value);
+	}
 }
