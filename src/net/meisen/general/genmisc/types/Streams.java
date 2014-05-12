@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
@@ -166,7 +168,7 @@ public class Streams {
 	 * @param stream
 	 *            the {@link InputStream} to read from, the stream is not closed
 	 *            after reading (i.e. call {@link InputStream#close()}
-	 *            
+	 * 
 	 * @return the {@link String} read from the {@link InputStream}
 	 * 
 	 * @throws IOException
@@ -186,7 +188,7 @@ public class Streams {
 	 *            after reading (i.e. call {@link InputStream#close()}
 	 * @param encoding
 	 *            the encoding of the stream
-	 *            
+	 * 
 	 * @return the {@link String} read from the {@link InputStream}
 	 * 
 	 * @throws IOException
@@ -573,5 +575,88 @@ public class Streams {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Transforms a short to a byte array (little endian).
+	 * 
+	 * @param value
+	 *            the integer to be transformed
+	 * 
+	 * @return the byte array
+	 */
+	public static byte[] shortToByte(final short value) {
+		final byte[] array = new byte[2];
+
+		array[0] = (byte) ((value >>> 8) & 0xFF);
+		array[1] = (byte) ((value >>> 0) & 0xFF);
+
+		return array;
+	}
+
+	/**
+	 * Transforms an integer to a byte array.
+	 * 
+	 * @param value
+	 *            the integer to be transformed
+	 * 
+	 * @return the byte array
+	 */
+	public static byte[] intToByte(final int value) {
+		final byte[] array = new byte[4];
+
+		array[0] = (byte) ((value >>> 24) & 0xFF);
+		array[1] = (byte) ((value >>> 16) & 0xFF);
+		array[2] = (byte) ((value >>> 8) & 0xFF);
+		array[3] = (byte) ((value >>> 0) & 0xFF);
+
+		return array;
+	}
+
+	/**
+	 * Transforms a long to a byte array.
+	 * 
+	 * @param value
+	 *            the long to be transformed
+	 * 
+	 * @return the byte array
+	 */
+	public static byte[] longToByte(final int value) {
+		final byte[] array = new byte[8];
+
+		array[0] = (byte) ((value >>> 56) & 0xFF);
+		array[1] = (byte) ((value >>> 48) & 0xFF);
+		array[2] = (byte) ((value >>> 40) & 0xFF);
+		array[3] = (byte) ((value >>> 32) & 0xFF);
+		array[4] = (byte) ((value >>> 24) & 0xFF);
+		array[5] = (byte) ((value >>> 16) & 0xFF);
+		array[6] = (byte) ((value >>> 8) & 0xFF);
+		array[7] = (byte) ((value >>> 0) & 0xFF);
+
+		return array;
+	}
+
+	/**
+	 * Transforms a serializable object to a byte array.
+	 * 
+	 * @param o
+	 *            the object to be transformed
+	 * 
+	 * @return the byte array
+	 */
+	public static byte[] objectToByte(final Object o) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ObjectOutput out = null;
+		try {
+			out = new ObjectOutputStream(bos);
+			out.writeObject(o);
+
+			return bos.toByteArray();
+		} catch (final IOException e) {
+			return null;
+		} finally {
+			Streams.closeIO(out);
+			Streams.closeIO(bos);
+		}
 	}
 }
