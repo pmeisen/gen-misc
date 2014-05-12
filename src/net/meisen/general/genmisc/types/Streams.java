@@ -27,6 +27,9 @@ import net.meisen.general.genmisc.unicode.UnicodeReader;
  * 
  */
 public class Streams {
+	private static final int SIZEOF_SHORT = Short.SIZE / Byte.SIZE;
+	private static final int SIZEOF_INT = Integer.SIZE / Byte.SIZE;
+	private static final int SIZEOF_LONG = Long.SIZE / Byte.SIZE;
 
 	private static class EncodingResult {
 		/**
@@ -580,60 +583,162 @@ public class Streams {
 	/**
 	 * Transforms a short to a byte array (little endian).
 	 * 
-	 * @param value
-	 *            the integer to be transformed
+	 * @param val
+	 *            the short to be transformed
 	 * 
 	 * @return the byte array
 	 */
-	public static byte[] shortToByte(final short value) {
-		final byte[] array = new byte[2];
+	public static byte[] shortToByte(short val) {
+		final byte[] b = new byte[SIZEOF_SHORT];
 
-		array[0] = (byte) ((value >>> 8) & 0xFF);
-		array[1] = (byte) ((value >>> 0) & 0xFF);
+		for (int i = SIZEOF_SHORT - 1; i > 0; i--) {
+			b[i] = (byte) val;
+			val >>= 8;
+		}
+		b[0] = (byte) val;
 
-		return array;
+		return b;
+	}
+
+	/**
+	 * Transforms the {@code bytes} to the short. The bytes should have been
+	 * generated using {@link #shortToByte(short)}.
+	 * 
+	 * @param bytes
+	 *            the bytes to be transformed to a short
+	 * 
+	 * @return the short represented by the bytes
+	 */
+	public static short byteToShort(final byte[] bytes) {
+		short n = 0;
+		n ^= bytes[0] & 0xFF;
+		n <<= 8;
+		n ^= bytes[1] & 0xFF;
+		return n;
 	}
 
 	/**
 	 * Transforms an integer to a byte array.
 	 * 
-	 * @param value
+	 * @param val
 	 *            the integer to be transformed
 	 * 
 	 * @return the byte array
 	 */
-	public static byte[] intToByte(final int value) {
-		final byte[] array = new byte[4];
+	public static byte[] intToByte(int val) {
+		final byte[] b = new byte[SIZEOF_INT];
 
-		array[0] = (byte) ((value >>> 24) & 0xFF);
-		array[1] = (byte) ((value >>> 16) & 0xFF);
-		array[2] = (byte) ((value >>> 8) & 0xFF);
-		array[3] = (byte) ((value >>> 0) & 0xFF);
+		for (int i = SIZEOF_INT - 1; i > 0; i--) {
+			b[i] = (byte) val;
+			val >>>= 8;
+		}
+		b[0] = (byte) val;
 
-		return array;
+		return b;
+
+	}
+
+	/**
+	 * Transforms the {@code bytes} to the int. The bytes should have been
+	 * generated using {@link #intToByte(int)}.
+	 * 
+	 * @param bytes
+	 *            the bytes to be transformed to an integer
+	 * 
+	 * @return the int represented by the bytes
+	 */
+	public static int byteToInt(final byte[] bytes) {
+		int n = 0;
+		for (int i = 0; i < SIZEOF_INT; i++) {
+			n <<= 8;
+			n ^= bytes[i] & 0xFF;
+		}
+
+		return n;
 	}
 
 	/**
 	 * Transforms a long to a byte array.
 	 * 
-	 * @param value
+	 * @param val
 	 *            the long to be transformed
 	 * 
 	 * @return the byte array
 	 */
-	public static byte[] longToByte(final int value) {
-		final byte[] array = new byte[8];
+	public static byte[] longToByte(long val) {
+		final byte[] b = new byte[SIZEOF_LONG];
 
-		array[0] = (byte) ((value >>> 56) & 0xFF);
-		array[1] = (byte) ((value >>> 48) & 0xFF);
-		array[2] = (byte) ((value >>> 40) & 0xFF);
-		array[3] = (byte) ((value >>> 32) & 0xFF);
-		array[4] = (byte) ((value >>> 24) & 0xFF);
-		array[5] = (byte) ((value >>> 16) & 0xFF);
-		array[6] = (byte) ((value >>> 8) & 0xFF);
-		array[7] = (byte) ((value >>> 0) & 0xFF);
+		for (int i = SIZEOF_LONG - 1; i > 0; i--) {
+			b[i] = (byte) val;
+			val >>>= 8;
+		}
+		b[0] = (byte) val;
 
-		return array;
+		return b;
+	}
+
+	/**
+	 * Transforms the {@code bytes} to the long. The bytes should have been
+	 * generated using {@link #longToByte(long)}.
+	 * 
+	 * @param bytes
+	 *            the bytes to be transformed to a long
+	 * 
+	 * @return the int represented by the bytes
+	 */
+	public static long byteToLong(final byte[] bytes) {
+		long l = 0;
+
+		for (int i = 0; i < SIZEOF_LONG; i++) {
+			l <<= 8;
+			l ^= bytes[i] & 0xFF;
+		}
+
+		return l;
+	}
+
+	/**
+	 * Transforms a string to a byte array using a UTF-8 charset.
+	 * 
+	 * @param s
+	 *            the string to be transformed
+	 * 
+	 * @return the byte array
+	 */
+	public static byte[] stringToByte(final String s) {
+		return stringToByte(s, "UTF-8");
+	}
+
+	/**
+	 * Transforms a string to a byte array using the specified {@code charset}.
+	 * 
+	 * @param s
+	 *            the string to be transformed
+	 * @param charset
+	 *            the {@code Charset} to be used
+	 * 
+	 * @return the byte array
+	 * 
+	 * @see Charset
+	 */
+	public static byte[] stringToByte(final String s, final String charset) {
+		return stringToByte(s, Charset.forName(charset));
+	}
+
+	/**
+	 * Transforms a string to a byte array using the specified {@code charset}.
+	 * 
+	 * @param s
+	 *            the string to be transformed
+	 * @param charset
+	 *            the {@code Charset} to be used
+	 * 
+	 * @return the byte array
+	 * 
+	 * @see Charset
+	 */
+	public static byte[] stringToByte(final String s, final Charset charset) {
+		return s.getBytes(charset);
 	}
 
 	/**
@@ -645,7 +750,7 @@ public class Streams {
 	 * @return the byte array
 	 */
 	public static byte[] objectToByte(final Object o) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ObjectOutput out = null;
 		try {
 			out = new ObjectOutputStream(bos);

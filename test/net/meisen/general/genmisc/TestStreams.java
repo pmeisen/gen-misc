@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 
 import net.meisen.general.genmisc.types.Streams;
 
@@ -80,5 +81,81 @@ public class TestStreams {
 				"encodedFiles/UCS-2_LittleEndian.txt");
 		enc = Streams.guessEncoding(is, null);
 		assertEquals("UTF-16LE", enc);
+	}
+
+	/**
+	 * Tests the implementation of the short mappers, i.e.
+	 * {@link Streams#shortToByte(short)} and
+	 * {@link Streams#byteToShort(byte[])}.
+	 */
+	@Test
+	public void testShortByte() {
+		byte[] byteArray;
+		short value;
+
+		for (short i = Short.MIN_VALUE;; i++) {
+			byteArray = Streams.shortToByte((short) i);
+			value = Streams.byteToShort(byteArray);
+			assertEquals((short) i, value);
+
+			if (i == Short.MAX_VALUE) {
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Tests the implementation of the int mappers, i.e.
+	 * {@link Streams#intToByte(int)} and {@link Streams#byteToInt(byte[])}.
+	 */
+	@Test
+	public void testIntByte() {
+		byte[] byteArray;
+		int value;
+
+		for (int i = Integer.MIN_VALUE;; i++) {
+			byteArray = Streams.intToByte(i);
+			value = Streams.byteToInt(byteArray);
+
+			assertEquals(i, value);
+
+			if (i == Integer.MAX_VALUE) {
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Tests the implementation of the long mappers, i.e.
+	 * {@link Streams#longToByte(long)} and {@link Streams#byteToLong(byte[])}.
+	 */
+	@Test
+	public void testLongByte() {
+		byte[] byteArray;
+		long value;
+
+		// test the boundaries
+		byteArray = Streams.longToByte(Long.MIN_VALUE);
+		value = Streams.byteToLong(byteArray);
+		assertEquals(Long.MIN_VALUE, value);
+
+		byteArray = Streams.longToByte(Long.MAX_VALUE);
+		value = Streams.byteToLong(byteArray);
+		assertEquals(Long.MAX_VALUE, value);
+
+		byteArray = Streams.longToByte(0);
+		value = Streams.byteToLong(byteArray);
+		assertEquals(0, value);
+
+		// pick some random numbers
+		final Random rnd = new Random();
+		for (int i = 0; i < Integer.MAX_VALUE; i++) {
+			final long rndValue = rnd.nextLong();
+
+			byteArray = Streams.longToByte(rndValue);
+			value = Streams.byteToLong(byteArray);
+
+			assertEquals(i, value);
+		}
 	}
 }
