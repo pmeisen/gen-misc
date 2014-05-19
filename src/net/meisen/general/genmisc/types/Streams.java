@@ -19,7 +19,9 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.MalformedInputException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import net.meisen.general.genmisc.unicode.UnicodeReader;
@@ -922,14 +924,12 @@ public class Streams {
 	 * 
 	 * <pre>
 	 * final ArrayList&lt;Object&gt; objects = new ArrayList&lt;Object&gt;();
-	 * int counter = 0;
 	 * int offset = 0;
 	 * while (offset &lt; byteArray.length) {
 	 * 	value = Streams.byteToObject(byteArray, offset);
 	 * 	offset = value.nextPos;
 	 * 
 	 * 	objects.add(value.object);
-	 * 	counter++;
 	 * }
 	 * </pre>
 	 * 
@@ -937,6 +937,8 @@ public class Streams {
 	 *            the byte array to read the object from
 	 * 
 	 * @return the read object or {@code null} if an error occurred
+	 * 
+	 * @see #readAllObjects(byte[])
 	 */
 	public static ByteResult byteToObject(final byte[] bytes) {
 		return byteToObject(bytes, 0);
@@ -948,14 +950,12 @@ public class Streams {
 	 * 
 	 * <pre>
 	 * final ArrayList&lt;Object&gt; objects = new ArrayList&lt;Object&gt;();
-	 * int counter = 0;
 	 * int offset = 0;
 	 * while (offset &lt; byteArray.length) {
 	 * 	value = Streams.byteToObject(byteArray, offset);
 	 * 	offset = value.nextPos;
 	 * 
 	 * 	objects.add(value.object);
-	 * 	counter++;
 	 * }
 	 * </pre>
 	 * 
@@ -965,6 +965,8 @@ public class Streams {
 	 *            the first position to read the object from
 	 * 
 	 * @return the read object or {@code null} if an error occurred
+	 * 
+	 * @see #readAllObjects(byte[])
 	 */
 	public static ByteResult byteToObject(final byte[] bytes, final int offset) {
 		int off = offset;
@@ -1006,6 +1008,31 @@ public class Streams {
 		}
 
 		return new ByteResult(res, off);
+	}
+
+	/**
+	 * Reads all the objects represented by the specified {@code byteArray}.
+	 * 
+	 * @param byteArray
+	 *            the array to read the objects from
+	 * 
+	 * @return the list of read objects
+	 */
+	public static ArrayList<Object> readAllObjects(final byte[] byteArray) {
+
+		// the list of objects read
+		final ArrayList<Object> objects = new ArrayList<Object>();
+
+		// read all the instances
+		int offset = 0;
+		while (offset < byteArray.length) {
+			final ByteResult value = Streams.byteToObject(byteArray, offset);
+			offset = value.nextPos;
+
+			objects.add(value.object);
+		}
+
+		return objects;
 	}
 
 	/**
