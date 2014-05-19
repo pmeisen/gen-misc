@@ -31,7 +31,11 @@ import net.meisen.general.genmisc.unicode.UnicodeReader;
  * 
  */
 public class Streams {
-	private final static Class<?>[] BYTE_TYPES;
+	/**
+	 * Array of classes, which have a special byte-representation (with
+	 * exception of Object).
+	 */
+	public static final Class<?>[] BYTE_TYPES;
 	static {
 		BYTE_TYPES = new Class<?>[] { Object.class, Byte.class, Short.class,
 				Integer.class, Long.class, String.class };
@@ -40,9 +44,22 @@ public class Streams {
 		Numbers.castToByte(BYTE_TYPES.length);
 	}
 
-	private static final int SIZEOF_SHORT = Short.SIZE / Byte.SIZE;
-	private static final int SIZEOF_INT = Integer.SIZE / Byte.SIZE;
-	private static final int SIZEOF_LONG = Long.SIZE / Byte.SIZE;
+	/**
+	 * The size of a byte within the byte representation
+	 */
+	public static final int SIZEOF_BYTE = Byte.SIZE / Byte.SIZE;
+	/**
+	 * The size of a short within the byte representation
+	 */
+	public static final int SIZEOF_SHORT = Short.SIZE / Byte.SIZE;
+	/**
+	 * The size of an integer within the byte representation
+	 */
+	public static final int SIZEOF_INT = Integer.SIZE / Byte.SIZE;
+	/**
+	 * The size of a long within the byte representation
+	 */
+	public static final int SIZEOF_LONG = Long.SIZE / Byte.SIZE;
 
 	private static class EncodingResult {
 		/**
@@ -67,7 +84,7 @@ public class Streams {
 	 * 
 	 * @param clazz
 	 *            the class to get the number for
-	 *            
+	 * 
 	 * @return the number of the class
 	 */
 	public static byte getByteTypeNr(final Class<?> clazz) {
