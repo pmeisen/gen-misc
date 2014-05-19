@@ -21,7 +21,6 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.MalformedInputException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 
 import net.meisen.general.genmisc.unicode.UnicodeReader;
