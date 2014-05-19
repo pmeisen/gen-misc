@@ -973,7 +973,7 @@ public class Streams {
 
 		final byte pos = bytes[off];
 		if (pos < 0) {
-			return new ByteResult(null, 1);
+			return new ByteResult(null, offset + 1);
 		} else {
 			off++;
 		}
@@ -1027,8 +1027,8 @@ public class Streams {
 		int offset = 0;
 		while (offset < byteArray.length) {
 			final ByteResult value = Streams.byteToObject(byteArray, offset);
+			
 			offset = value.nextPos;
-
 			objects.add(value.object);
 		}
 

@@ -268,8 +268,16 @@ public class TestStreams {
 		assertEquals(byteArray.length, value.nextPos);
 		assertEquals(1, byteArray.length);
 
-		// test an object
+		// test some objects
 		org = new Date();
+		byteArray = Streams.objectToByte(org);
+		value = Streams.byteToObject(byteArray);
+		assertEquals(org, value.object);
+		assertEquals(byteArray.length, value.nextPos);
+		assertEquals(Streams.serializeObject(org).length + 1
+				+ Streams.SIZEOF_INT, byteArray.length);
+		
+		org = UUID.randomUUID();
 		byteArray = Streams.objectToByte(org);
 		value = Streams.byteToObject(byteArray);
 		assertEquals(org, value.object);
@@ -285,6 +293,7 @@ public class TestStreams {
 				Streams.objectToByte(Integer.MIN_VALUE),
 				Streams.objectToByte(Long.MAX_VALUE));
 
+		// write some objects in an array and read those
 		final Object[] objects = new Object[5];
 		int counter = 0;
 		int offset = 0;
@@ -316,6 +325,7 @@ public class TestStreams {
 		objects.add((byte) 5);
 		objects.add(21000);
 		objects.add(5l);
+		objects.add(null);
 		objects.add(UUID.randomUUID());
 		objects.add(Strings.repeat('A', Short.MAX_VALUE));
 
