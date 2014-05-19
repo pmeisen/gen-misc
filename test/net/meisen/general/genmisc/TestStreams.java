@@ -15,6 +15,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import net.meisen.general.genmisc.types.Streams;
+import net.meisen.general.genmisc.types.Strings;
 import net.meisen.general.genmisc.types.Streams.ByteResult;
 
 import org.junit.Test;
@@ -316,6 +317,7 @@ public class TestStreams {
 		objects.add(21000);
 		objects.add(5l);
 		objects.add(UUID.randomUUID());
+		objects.add(Strings.repeat('A', Short.MAX_VALUE));
 
 		final byte[] res = Streams.writeAllObjects(objects);
 		assertEquals(objects, Streams.readAllObjects(res));

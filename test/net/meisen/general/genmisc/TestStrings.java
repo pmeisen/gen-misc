@@ -253,4 +253,14 @@ public class TestStrings {
 		assertNotNull(Strings.isBigDecimal("" + Double.MAX_VALUE));
 		assertNotNull(Strings.isBigDecimal("" + Double.MIN_VALUE));
 	}
+
+	/**
+	 * Tests the implementation of {@code Strings#repeat(char, int)}.
+	 */
+	@Test
+	public void testRepeat() {
+		assertEquals("", Strings.repeat('C', 0));
+		assertEquals("C", Strings.repeat('C', 1));
+		assertEquals("AAAAA", Strings.repeat('A', 5));
+	}
 }

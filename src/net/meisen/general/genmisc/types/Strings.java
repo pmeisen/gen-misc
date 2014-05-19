@@ -529,4 +529,23 @@ public class Strings {
 	public static Date isDate(final String d) {
 		return Dates.isDate(d);
 	}
+
+	/**
+	 * Repeats the character {@code c} {@code count}-times.
+	 * 
+	 * @param c
+	 *            the character to repeat
+	 * @param count
+	 *            the amount of repetitions
+	 * 
+	 * @return the created string
+	 */
+	public static String repeat(final char c, final int count) {
+
+		final char[] array = new char[count];
+		for (int i = 0; i < count; i++) {
+			array[i] = c;
+		}
+		return new String(array);
+	}
 }
