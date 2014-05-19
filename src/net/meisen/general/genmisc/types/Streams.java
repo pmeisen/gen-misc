@@ -973,9 +973,9 @@ public class Streams {
 
 		final byte pos = bytes[off];
 		if (pos < 0) {
-			return new ByteResult(null, offset + 1);
+			return new ByteResult(null, offset + SIZEOF_BYTE);
 		} else {
-			off++;
+			off += SIZEOF_BYTE;
 		}
 
 		// get the first byte to get the representation type
@@ -984,7 +984,7 @@ public class Streams {
 		final Object res;
 		if (Byte.class.equals(clazz)) {
 			res = bytes[off];
-			off++;
+			off += SIZEOF_BYTE;
 		} else if (Short.class.equals(clazz)) {
 			res = Streams.byteToShort(Arrays.copyOfRange(bytes, off, off = off
 					+ SIZEOF_SHORT));
@@ -1008,6 +1008,96 @@ public class Streams {
 		}
 
 		return new ByteResult(res, off);
+	}
+
+	/**
+	 * Determines the overhead (in bytes) to the typical byte-representation
+	 * needed when represented as general object.
+	 * 
+	 * @param o
+	 *            the object to determine the overhead for
+	 * 
+	 * @return the overhead needed to represent the object
+	 */
+	public static int objectOverhead(final Object o) {
+		if (o == null) {
+			return objectOverhead((Class<?>) null);
+		} else {
+			return objectOverhead(o.getClass());
+		}
+	}
+
+	/**
+	 * Determines the overhead (in bytes) to the typical byte-representation
+	 * needed when represented as general object.
+	 * 
+	 * @param clazz
+	 *            the clazz to determine the overhead for
+	 * 
+	 * @return the overhead needed to represent the object
+	 */
+	public static int objectOverhead(final Class<?> clazz) {
+		if (clazz == null) {
+			return SIZEOF_BYTE;
+		} else if (Short.class.equals(clazz)) {
+			return SIZEOF_BYTE;
+		} else if (Integer.class.equals(clazz)) {
+			return SIZEOF_BYTE;
+		} else if (Long.class.equals(clazz)) {
+			return SIZEOF_BYTE;
+		} else if (String.class.equals(clazz)) {
+			return SIZEOF_BYTE + SIZEOF_INT;
+		} else {
+			return SIZEOF_BYTE + SIZEOF_INT;
+		}
+	}
+
+	/**
+	 * Returns the size in bytes of the byte-representation of an object. If the
+	 * value is negative, the size is dynamic and cannot be determined without
+	 * creating the presentation. The absolute value of a negative value is the
+	 * minimum size.
+	 * 
+	 * @param o
+	 *            the object to determine the size for
+	 * 
+	 * @return the size of an object presented as byte-array
+	 */
+	public static int objectSize(final Object o) {
+		if (o == null) {
+			return objectSize((Class<?>) null);
+		} else {
+			return objectSize(o.getClass());
+		}
+	}
+
+	/**
+	 * Returns the size in bytes of the byte-representation of an object of the
+	 * specified {@code clazz}. If the value is negative, the size is dynamic
+	 * and cannot be determined without creating the presentation. The absolute
+	 * value of a negative value is the minimum size.
+	 * 
+	 * @param clazz
+	 *            the type to determine the size for
+	 * 
+	 * @return the size of an object presented as byte-array
+	 */
+	public static int objectSize(final Class<?> clazz) {
+		final int overhead = objectOverhead(clazz);
+
+		if (clazz == null) {
+			return overhead + 0;
+		} else if (Short.class.equals(clazz)) {
+			return overhead + SIZEOF_SHORT;
+		} else if (Integer.class.equals(clazz)) {
+			return overhead + SIZEOF_INT;
+		} else if (Long.class.equals(clazz)) {
+			return overhead + SIZEOF_LONG;
+		} else if (String.class.equals(clazz)) {
+			return -1 * overhead;
+		} else {
+			return -1 * overhead;
+		}
 	}
 
 	/**
