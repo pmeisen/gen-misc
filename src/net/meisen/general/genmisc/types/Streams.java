@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.MalformedInputException;
+import java.util.Arrays;
 import java.util.Properties;
 
 import net.meisen.general.genmisc.unicode.UnicodeReader;
@@ -30,6 +31,15 @@ import net.meisen.general.genmisc.unicode.UnicodeReader;
  * 
  */
 public class Streams {
+	private final static Class<?>[] BYTE_TYPES;
+	static {
+		BYTE_TYPES = new Class<?>[] { Object.class, Byte.class, Short.class,
+				Integer.class, Long.class, String.class };
+
+		// make sure the length is valid and can be held within a byte
+		Numbers.castToByte(BYTE_TYPES.length);
+	}
+
 	private static final int SIZEOF_SHORT = Short.SIZE / Byte.SIZE;
 	private static final int SIZEOF_INT = Integer.SIZE / Byte.SIZE;
 	private static final int SIZEOF_LONG = Long.SIZE / Byte.SIZE;
@@ -49,6 +59,35 @@ public class Streams {
 				final boolean validateByContent) {
 			this.encoding = encoding;
 			this.validateByContent = validateByContent;
+		}
+	}
+
+	/**
+	 * Gets an identifier for some specific (i.e. deserializable) classes.
+	 * 
+	 * @param clazz
+	 *            the class to get the number for
+	 *            
+	 * @return the number of the class
+	 */
+	public static byte getByteTypeNr(final Class<?> clazz) {
+
+		if (clazz == null) {
+			return (byte) -1;
+		} else {
+			byte objectClazzPos = -1;
+			for (byte i = 0; i < BYTE_TYPES.length; i++) {
+				final Class<?> byteType = BYTE_TYPES[i];
+
+				if (byteType.equals(clazz)) {
+					return i;
+				} else if (Object.class.equals(byteType)) {
+					objectClazzPos = i;
+				}
+			}
+
+			// if we didn't find one return the Object.class
+			return objectClazzPos;
 		}
 	}
 
@@ -797,6 +836,88 @@ public class Streams {
 	 *         serialized
 	 */
 	public static byte[] objectToByte(final Object o) {
+		final Class<?> clazz = o == null ? null : o.getClass();
+		final byte nr = getByteTypeNr(clazz);
+
+		// get the identifier as array
+		final byte[] bytesType = new byte[] { nr };
+
+		// get the value as array
+		final byte[] bytesRepresentation;
+		if (clazz == null) {
+			bytesRepresentation = new byte[] {};
+		} else if (Byte.class.equals(clazz)) {
+			bytesRepresentation = new byte[] { (Byte) o };
+		} else if (Short.class.equals(clazz)) {
+			bytesRepresentation = Streams.shortToByte((Short) o);
+		} else if (Integer.class.equals(clazz)) {
+			bytesRepresentation = Streams.intToByte((Integer) o);
+		} else if (Long.class.equals(clazz)) {
+			bytesRepresentation = Streams.longToByte((Long) o);
+		} else if (String.class.equals(clazz)) {
+			final byte[] tmpBytesId = Streams.stringToByte((String) o);
+			final byte[] tmpBytesLength = Streams.intToByte(tmpBytesId.length);
+
+			bytesRepresentation = Streams.combineBytes(tmpBytesLength,
+					tmpBytesId);
+		} else {
+			bytesRepresentation = serializeObject(o);
+		}
+
+		return Streams.combineBytes(bytesType, bytesRepresentation);
+	}
+
+	/**
+	 * Deserializes an object from the specified byte array.
+	 * 
+	 * @param bytes
+	 *            the byte array to read the object from
+	 * 
+	 * @return the read object or {@code null} if an error occurred
+	 */
+	public static Object byteToObject(final byte[] bytes) {
+		final byte pos = bytes[0];
+		if (pos < 0) {
+			return null;
+		}
+
+		// get the first byte to get the representation type
+		final Class<?> clazz = BYTE_TYPES[pos];
+
+		int offset = 1;
+		if (Byte.class.equals(clazz)) {
+			return bytes[offset];
+		} else if (Short.class.equals(clazz)) {
+			return Streams.byteToShort(Arrays.copyOfRange(bytes, offset,
+					offset = offset + SIZEOF_SHORT));
+		} else if (Integer.class.equals(clazz)) {
+			return Streams.byteToInt(Arrays.copyOfRange(bytes, offset,
+					offset = offset + SIZEOF_INT));
+		} else if (Long.class.equals(clazz)) {
+			return Streams.byteToLong(Arrays.copyOfRange(bytes, offset,
+					offset = offset + SIZEOF_LONG));
+		} else if (String.class.equals(clazz)) {
+			final int length = Streams.byteToInt(Arrays.copyOfRange(bytes,
+					offset, offset = offset + SIZEOF_INT));
+			return Streams.byteToString(Arrays.copyOfRange(bytes, offset,
+					offset = offset + length));
+		} else {
+			return deserializeObject(Arrays.copyOfRange(bytes, offset,
+					bytes.length));
+		}
+	}
+
+	/**
+	 * Serializes the specified object using a {@code ObjectOutputStream}.
+	 * 
+	 * @param o
+	 *            the object to be serialized
+	 * 
+	 * @return the serialized version of the object
+	 * 
+	 * @see ObjectOutputStream
+	 */
+	public static byte[] serializeObject(final Object o) {
 		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		ObjectOutput out = null;
 		try {
@@ -813,15 +934,17 @@ public class Streams {
 	}
 
 	/**
-	 * Deserializes an object from the specified byte array.
+	 * Deserializes the specified byte-array using a {@code ObjectInputStream}.
 	 * 
-	 * @param bytes
-	 *            the byte array to read the object from
+	 * @param rep
+	 *            the byte array to be deserialized
 	 * 
-	 * @return the read object or {@code null} if an error occurred
+	 * @return the deserialized version of the object
+	 * 
+	 * @see ObjectInputStream
 	 */
-	public static Object byteToObject(final byte[] bytes) {
-		final ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+	public static Object deserializeObject(final byte[] rep) {
+		final ByteArrayInputStream bis = new ByteArrayInputStream(rep);
 		ObjectInput in = null;
 		try {
 			in = new ObjectInputStream(bis);

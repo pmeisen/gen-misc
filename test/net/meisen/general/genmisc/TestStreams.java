@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -209,5 +210,59 @@ public class TestStreams {
 		byteArray = Streams.stringToByte("äüöüöäüß?\"");
 		value = Streams.byteToString(byteArray);
 		assertEquals("äüöüöäüß?\"", value);
+	}
+
+	/**
+	 * Tests the implementation of the object mappers, i.e.
+	 * {@link Streams#objectToByte(Object)} and
+	 * {@link Streams#byteToObject(byte[])}.
+	 */
+	@Test
+	public void testObjectByte() {
+		byte[] byteArray;
+		Object org;
+		Object value;
+
+		// test an empty string
+		org = "";
+		byteArray = Streams.objectToByte(org);
+		value = Streams.byteToObject(byteArray);
+		assertEquals(org, value);
+		assertTrue(Streams.serializeObject(org).length > byteArray.length);
+
+		// test a string
+		org = "äüößAÜÖ!?  ";
+		byteArray = Streams.objectToByte(org);
+		value = Streams.byteToObject(byteArray);
+		assertEquals(org, value);
+		assertTrue(Streams.serializeObject(org).length > byteArray.length);
+
+		// test a byte
+		org = Byte.MIN_VALUE;
+		byteArray = Streams.objectToByte(org);
+		value = Streams.byteToObject(byteArray);
+		assertEquals(org, value);
+		assertTrue(Streams.serializeObject(org).length > byteArray.length);
+
+		// test a short
+		org = Short.MAX_VALUE;
+		byteArray = Streams.objectToByte(org);
+		value = Streams.byteToObject(byteArray);
+		assertEquals(org, value);
+		assertTrue(Streams.serializeObject(org).length > byteArray.length);
+
+		// test null
+		org = null;
+		byteArray = Streams.objectToByte(org);
+		value = Streams.byteToObject(byteArray);
+		assertEquals(org, value);
+		assertEquals(1, byteArray.length);
+
+		// test an object
+		org = new Date();
+		byteArray = Streams.objectToByte(org);
+		value = Streams.byteToObject(byteArray);
+		assertEquals(org, value);
+		assertEquals(Streams.serializeObject(org).length + 1, byteArray.length);
 	}
 }

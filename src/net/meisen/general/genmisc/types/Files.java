@@ -1332,8 +1332,6 @@ public class Files {
 	 * 
 	 * @throws IOException
 	 *             if the file cannot be accessed
-	 * 
-	 * @see System#getProperties()
 	 */
 	public static String guessEncoding(final String file,
 			final String defaultEncoding) throws IOException {
@@ -1356,8 +1354,6 @@ public class Files {
 	 * 
 	 * @throws IOException
 	 *             if the file cannot be accessed
-	 * 
-	 * @see System#getProperties()
 	 */
 	public static String guessEncoding(final File file,
 			final String defaultEncoding) throws IOException {
