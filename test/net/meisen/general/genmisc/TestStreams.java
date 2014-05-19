@@ -276,7 +276,7 @@ public class TestStreams {
 		assertEquals(byteArray.length, value.nextPos);
 		assertEquals(Streams.serializeObject(org).length + 1
 				+ Streams.SIZEOF_INT, byteArray.length);
-		
+
 		org = UUID.randomUUID();
 		byteArray = Streams.objectToByte(org);
 		value = Streams.byteToObject(byteArray);
@@ -320,16 +320,21 @@ public class TestStreams {
 	public void testWriteAndReadAll() {
 
 		final List<Object> objects = new ArrayList<Object>();
+		objects.add(5l);
 		objects.add(new Date());
 		objects.add("äüößÄÖÜ+\"*");
 		objects.add((byte) 5);
 		objects.add(21000);
-		objects.add(5l);
 		objects.add(null);
 		objects.add(UUID.randomUUID());
 		objects.add(Strings.repeat('A', Short.MAX_VALUE));
 
+		// test reading all
 		final byte[] res = Streams.writeAllObjects(objects);
 		assertEquals(objects, Streams.readAllObjects(res));
+
+		// test the offset
+		assertEquals(objects.subList(1, objects.size()),
+				Streams.readAllObjects(res, Streams.objectSize(Long.class)));
 	}
 }
