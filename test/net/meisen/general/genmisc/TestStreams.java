@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import net.meisen.general.genmisc.types.Streams;
+import net.meisen.general.genmisc.types.Streams.ByteResult;
 
 import org.junit.Test;
 
@@ -221,48 +222,80 @@ public class TestStreams {
 	public void testObjectByte() {
 		byte[] byteArray;
 		Object org;
-		Object value;
+		ByteResult value;
 
 		// test an empty string
 		org = "";
 		byteArray = Streams.objectToByte(org);
 		value = Streams.byteToObject(byteArray);
-		assertEquals(org, value);
+		assertEquals(org, value.object);
+		assertEquals(byteArray.length, value.nextPos);
 		assertTrue(Streams.serializeObject(org).length > byteArray.length);
 
 		// test a string
 		org = "äüößAÜÖ!?  ";
 		byteArray = Streams.objectToByte(org);
 		value = Streams.byteToObject(byteArray);
-		assertEquals(org, value);
+		assertEquals(org, value.object);
+		assertEquals(byteArray.length, value.nextPos);
 		assertTrue(Streams.serializeObject(org).length > byteArray.length);
 
 		// test a byte
 		org = Byte.MIN_VALUE;
 		byteArray = Streams.objectToByte(org);
 		value = Streams.byteToObject(byteArray);
-		assertEquals(org, value);
+		assertEquals(org, value.object);
+		assertEquals(byteArray.length, value.nextPos);
 		assertTrue(Streams.serializeObject(org).length > byteArray.length);
 
 		// test a short
 		org = Short.MAX_VALUE;
 		byteArray = Streams.objectToByte(org);
 		value = Streams.byteToObject(byteArray);
-		assertEquals(org, value);
+		assertEquals(org, value.object);
+		assertEquals(byteArray.length, value.nextPos);
 		assertTrue(Streams.serializeObject(org).length > byteArray.length);
 
 		// test null
 		org = null;
 		byteArray = Streams.objectToByte(org);
 		value = Streams.byteToObject(byteArray);
-		assertEquals(org, value);
+		assertEquals(org, value.object);
+		assertEquals(byteArray.length, value.nextPos);
 		assertEquals(1, byteArray.length);
 
 		// test an object
 		org = new Date();
 		byteArray = Streams.objectToByte(org);
 		value = Streams.byteToObject(byteArray);
-		assertEquals(org, value);
-		assertEquals(Streams.serializeObject(org).length + 1, byteArray.length);
+		assertEquals(org, value.object);
+		assertEquals(byteArray.length, value.nextPos);
+		assertEquals(Streams.serializeObject(org).length + 1
+				+ Streams.SIZEOF_INT, byteArray.length);
+
+		// test some combination
+		org = new Date();
+		byteArray = Streams.combineBytes(Streams.objectToByte(org),
+				Streams.objectToByte(Byte.MIN_VALUE),
+				Streams.objectToByte("This is a test!"),
+				Streams.objectToByte(Integer.MIN_VALUE),
+				Streams.objectToByte(Long.MAX_VALUE));
+
+		final Object[] objects = new Object[5];
+		int counter = 0;
+		int offset = 0;
+		while (offset < byteArray.length) {
+			value = Streams.byteToObject(byteArray, offset);
+			offset = value.nextPos;
+
+			objects[counter] = value.object;
+			counter++;
+		}
+
+		assertEquals(org, objects[0]);
+		assertEquals(Byte.MIN_VALUE, objects[1]);
+		assertEquals("This is a test!", objects[2]);
+		assertEquals(Integer.MIN_VALUE, objects[3]);
+		assertEquals(Long.MAX_VALUE, objects[4]);
 	}
 }

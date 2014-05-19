@@ -80,6 +80,34 @@ public class Streams {
 	}
 
 	/**
+	 * Result of a byte-deserialization.
+	 * 
+	 * @author pmeisen
+	 * 
+	 */
+	public static class ByteResult {
+		/**
+		 * The object read.
+		 */
+		public final Object object;
+		/**
+		 * The next position to read from
+		 */
+		public final int nextPos;
+
+		/**
+		 * Constructor to specify the object and the nextPos to read
+		 * 
+		 * @param object
+		 * @param nextPos
+		 */
+		public ByteResult(final Object object, final int nextPos) {
+			this.object = object;
+			this.nextPos = nextPos;
+		}
+	}
+
+	/**
 	 * Gets an identifier for some specific (i.e. deserializable) classes.
 	 * 
 	 * @param clazz
@@ -872,56 +900,112 @@ public class Streams {
 		} else if (Long.class.equals(clazz)) {
 			bytesRepresentation = Streams.longToByte((Long) o);
 		} else if (String.class.equals(clazz)) {
-			final byte[] tmpBytesId = Streams.stringToByte((String) o);
-			final byte[] tmpBytesLength = Streams.intToByte(tmpBytesId.length);
+			final byte[] tmpBytes = Streams.stringToByte((String) o);
+			final byte[] tmpBytesLength = Streams.intToByte(tmpBytes.length);
 
-			bytesRepresentation = Streams.combineBytes(tmpBytesLength,
-					tmpBytesId);
+			bytesRepresentation = Streams
+					.combineBytes(tmpBytesLength, tmpBytes);
 		} else {
-			bytesRepresentation = serializeObject(o);
+			final byte[] tmpBytes = serializeObject(o);
+			final byte[] tmpBytesLength = Streams.intToByte(tmpBytes.length);
+
+			bytesRepresentation = Streams
+					.combineBytes(tmpBytesLength, tmpBytes);
 		}
 
 		return Streams.combineBytes(bytesType, bytesRepresentation);
 	}
 
 	/**
-	 * Deserializes an object from the specified byte array.
+	 * Deserializes an object from the specified byte array. If the array
+	 * represents several objects, all objects can be read using:
+	 * 
+	 * <pre>
+	 * final ArrayList&lt;Object&gt; objects = new ArrayList&lt;Object&gt;();
+	 * int counter = 0;
+	 * int offset = 0;
+	 * while (offset &lt; byteArray.length) {
+	 * 	value = Streams.byteToObject(byteArray, offset);
+	 * 	offset = value.nextPos;
+	 * 
+	 * 	objects.add(value.object);
+	 * 	counter++;
+	 * }
+	 * </pre>
 	 * 
 	 * @param bytes
 	 *            the byte array to read the object from
 	 * 
 	 * @return the read object or {@code null} if an error occurred
 	 */
-	public static Object byteToObject(final byte[] bytes) {
-		final byte pos = bytes[0];
+	public static ByteResult byteToObject(final byte[] bytes) {
+		return byteToObject(bytes, 0);
+	}
+
+	/**
+	 * Deserializes an object from the specified byte array. If the array
+	 * represents several objects, all objects can be read using:
+	 * 
+	 * <pre>
+	 * final ArrayList&lt;Object&gt; objects = new ArrayList&lt;Object&gt;();
+	 * int counter = 0;
+	 * int offset = 0;
+	 * while (offset &lt; byteArray.length) {
+	 * 	value = Streams.byteToObject(byteArray, offset);
+	 * 	offset = value.nextPos;
+	 * 
+	 * 	objects.add(value.object);
+	 * 	counter++;
+	 * }
+	 * </pre>
+	 * 
+	 * @param bytes
+	 *            the byte array to read the object from
+	 * @param offset
+	 *            the first position to read the object from
+	 * 
+	 * @return the read object or {@code null} if an error occurred
+	 */
+	public static ByteResult byteToObject(final byte[] bytes, final int offset) {
+		int off = offset;
+
+		final byte pos = bytes[off];
 		if (pos < 0) {
-			return null;
+			return new ByteResult(null, 1);
+		} else {
+			off++;
 		}
 
 		// get the first byte to get the representation type
 		final Class<?> clazz = BYTE_TYPES[pos];
 
-		int offset = 1;
+		final Object res;
 		if (Byte.class.equals(clazz)) {
-			return bytes[offset];
+			res = bytes[off];
+			off++;
 		} else if (Short.class.equals(clazz)) {
-			return Streams.byteToShort(Arrays.copyOfRange(bytes, offset,
-					offset = offset + SIZEOF_SHORT));
+			res = Streams.byteToShort(Arrays.copyOfRange(bytes, off, off = off
+					+ SIZEOF_SHORT));
 		} else if (Integer.class.equals(clazz)) {
-			return Streams.byteToInt(Arrays.copyOfRange(bytes, offset,
-					offset = offset + SIZEOF_INT));
+			res = Streams.byteToInt(Arrays.copyOfRange(bytes, off, off = off
+					+ SIZEOF_INT));
 		} else if (Long.class.equals(clazz)) {
-			return Streams.byteToLong(Arrays.copyOfRange(bytes, offset,
-					offset = offset + SIZEOF_LONG));
+			res = Streams.byteToLong(Arrays.copyOfRange(bytes, off, off = off
+					+ SIZEOF_LONG));
 		} else if (String.class.equals(clazz)) {
-			final int length = Streams.byteToInt(Arrays.copyOfRange(bytes,
-					offset, offset = offset + SIZEOF_INT));
-			return Streams.byteToString(Arrays.copyOfRange(bytes, offset,
-					offset = offset + length));
+			final int length = Streams.byteToInt(Arrays.copyOfRange(bytes, off,
+					off = off + SIZEOF_INT));
+			res = Streams.byteToString(Arrays.copyOfRange(bytes, off, off = off
+					+ length));
 		} else {
-			return deserializeObject(Arrays.copyOfRange(bytes, offset,
-					bytes.length));
+			final int length = Streams.byteToInt(Arrays.copyOfRange(bytes, off,
+					off = off + SIZEOF_INT));
+
+			res = deserializeObject(Arrays.copyOfRange(bytes, off, off = off
+					+ length));
 		}
+
+		return new ByteResult(res, off);
 	}
 
 	/**
