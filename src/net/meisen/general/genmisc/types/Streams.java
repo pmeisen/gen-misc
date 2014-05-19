@@ -1019,16 +1019,31 @@ public class Streams {
 	 * @return the list of read objects
 	 */
 	public static ArrayList<Object> readAllObjects(final byte[] byteArray) {
+		return readAllObjects(byteArray, 0);
+	}
+
+	/**
+	 * Reads all the objects represented by the specified {@code byteArray}.
+	 * 
+	 * @param byteArray
+	 *            the array to read the objects from
+	 * @param offset
+	 *            the zero-based position to start reading at
+	 * 
+	 * @return the list of read objects
+	 */
+	public static ArrayList<Object> readAllObjects(final byte[] byteArray,
+			final int offset) {
 
 		// the list of objects read
 		final ArrayList<Object> objects = new ArrayList<Object>();
 
 		// read all the instances
-		int offset = 0;
-		while (offset < byteArray.length) {
-			final ByteResult value = Streams.byteToObject(byteArray, offset);
-			
-			offset = value.nextPos;
+		int curPos = offset;
+		while (curPos < byteArray.length) {
+			final ByteResult value = Streams.byteToObject(byteArray, curPos);
+
+			curPos = value.nextPos;
 			objects.add(value.object);
 		}
 
