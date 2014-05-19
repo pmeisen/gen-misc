@@ -21,6 +21,7 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.MalformedInputException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Properties;
 
 import net.meisen.general.genmisc.unicode.UnicodeReader;
@@ -1032,6 +1033,25 @@ public class Streams {
 		}
 
 		return objects;
+	}
+
+	public static byte[] writeAllObjects(final Collection<Object> objects) {
+		return writeAllObjects(objects == null ? null : objects.toArray());
+	}
+
+	public static byte[] writeAllObjects(final Object... objects) {
+		byte[] result = new byte[] {};
+		if (objects != null) {
+			byte[][] intermediateResults = new byte[objects.length][];
+			for (int i = 0; i < objects.length; i++) {
+				final Object object = objects[i];
+				intermediateResults[i] = objectToByte(object);
+			}
+
+			result = Streams.combineBytes(intermediateResults);
+		}
+
+		return result;
 	}
 
 	/**

@@ -7,9 +7,12 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import net.meisen.general.genmisc.types.Streams;
 import net.meisen.general.genmisc.types.Streams.ByteResult;
@@ -297,5 +300,24 @@ public class TestStreams {
 		assertEquals("This is a test!", objects[2]);
 		assertEquals(Integer.MIN_VALUE, objects[3]);
 		assertEquals(Long.MAX_VALUE, objects[4]);
+	}
+
+	/**
+	 * Tests the implementation of {@link Streams#writeAllObjects(Object...)}
+	 * and {@link Streams#readAllObjects(byte[])}.
+	 */
+	@Test
+	public void testWriteAndReadAll() {
+
+		final List<Object> objects = new ArrayList<Object>();
+		objects.add(new Date());
+		objects.add("äüößÄÖÜ+\"*");
+		objects.add((byte) 5);
+		objects.add(21000);
+		objects.add(5l);
+		objects.add(UUID.randomUUID());
+
+		final byte[] res = Streams.writeAllObjects(objects);
+		assertEquals(objects, Streams.readAllObjects(res));
 	}
 }
