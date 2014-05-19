@@ -1035,10 +1035,26 @@ public class Streams {
 		return objects;
 	}
 
+	/**
+	 * Writes all the object so that those are represented within the result.
+	 * 
+	 * @param objects
+	 *            the objects to be written
+	 * 
+	 * @return the result
+	 */
 	public static byte[] writeAllObjects(final Collection<Object> objects) {
 		return writeAllObjects(objects == null ? null : objects.toArray());
 	}
 
+	/**
+	 * Writes all the object so that those are represented within the result.
+	 * 
+	 * @param objects
+	 *            the objects to be written
+	 * 
+	 * @return the result
+	 */
 	public static byte[] writeAllObjects(final Object... objects) {
 		byte[] result = new byte[] {};
 		if (objects != null) {
