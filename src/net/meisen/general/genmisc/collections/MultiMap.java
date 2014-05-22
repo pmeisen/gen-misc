@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -148,6 +149,40 @@ public class MultiMap<K, V> implements Map<K, V> {
 		final List<V> l = innerMap.get(key);
 
 		return l == null ? new ArrayList<V>() : l;
+	}
+
+	@Override
+	public String toString() {
+
+		final Iterator<K> i = keySet().iterator();
+		if (!i.hasNext()) {
+			return "{}";
+		}
+
+		final StringBuilder sb = new StringBuilder();
+		sb.append('{');
+		for (;;) {
+			final K key = i.next();
+			final Collection<V> value = getAll(key);
+			sb.append(value.toString());
+
+			if (!i.hasNext()) {
+				return sb.append('}').toString();
+			}
+			sb.append(", ");
+		}
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == this) {
+			return true;
+		} else if (obj instanceof MultiMap) {
+			final MultiMap<?, ?> map = (MultiMap<?, ?>) obj;
+			return innerMap.equals(map.innerMap);
+		} else {
+			return false;
+		}
 	}
 
 	private V getFirstValue(final List<V> list) {

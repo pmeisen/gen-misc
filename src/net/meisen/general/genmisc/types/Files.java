@@ -1443,4 +1443,45 @@ public class Files {
 		// check the prefix
 		return canFile.startsWith(canDir);
 	}
+
+	/**
+	 * Moves {@code from} to {@code to}.
+	 * 
+	 * @param from
+	 *            the file to be moved
+	 * @param to
+	 *            the destination to move to
+	 * 
+	 * @throws IOException
+	 *             if the moving is not possible
+	 */
+	public static void moveFile(final File from, final File to)
+			throws IOException {
+
+		// validate some pre-requirements
+		if (from == null || to == null) {
+			throw new NullPointerException("Neither from nor to can be null.");
+		} else if (to.exists()) {
+			throw new IOException("The file '" + to + "' already exists.");
+		} else if (!from.exists()) {
+			throw new IOException("The file '" + from + "' does not exist.");
+		} else if (!from.isFile()) {
+			throw new IOException("'" + from + "' is not a file.");
+		}
+
+		// do it
+		if (!from.renameTo(to)) {
+
+			// copy the file
+			Files.copyFile(from, to);
+
+			// delete the old one
+			if (!from.delete()) {
+				if (!to.delete()) {
+					throw new IOException("Unable to delete '" + to + "'.");
+				}
+				throw new IOException("Unable to delete '" + from + "'.");
+			}
+		}
+	}
 }
