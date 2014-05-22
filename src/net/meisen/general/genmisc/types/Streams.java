@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
@@ -981,6 +982,50 @@ public class Streams {
 		// get the first byte to get the representation type
 		final Class<?> clazz = BYTE_TYPES[pos];
 
+		// read the object
+		return byteToObject(clazz, bytes, off);
+	}
+
+	/**
+	 * Deserializes an object from the specified byte array.
+	 * 
+	 * @param clazz
+	 *            the {@code Class} of the object to read
+	 * @param bytes
+	 *            the byte array to read the object from
+	 * @param offset
+	 *            the first position to read the object from
+	 * 
+	 * @return the read object or {@code null} if an error occurred
+	 * 
+	 * @see #readAllObjects(byte[])
+	 */
+	public static ByteResult byteToObject(final Class<?> clazz,
+			final byte[] bytes, final int offset) {
+		return byteToObject(clazz, -1, bytes, offset);
+	}
+
+	/**
+	 * Deserializes an object from the specified byte array.
+	 * 
+	 * @param clazz
+	 *            the {@code Class} of the object to read
+	 * @param dynLength
+	 *            the dynamic length of the object to be retrieved, if not known
+	 *            pass {@code -1}
+	 * @param bytes
+	 *            the byte array to read the object from
+	 * @param offset
+	 *            the first position to read the object from
+	 * 
+	 * @return the read object or {@code null} if an error occurred
+	 * 
+	 * @see #readAllObjects(byte[])
+	 */
+	public static ByteResult byteToObject(final Class<?> clazz,
+			final int dynLength, final byte[] bytes, final int offset) {
+		int off = offset;
+
 		final Object res;
 		if (Byte.class.equals(clazz)) {
 			res = bytes[off];
@@ -994,19 +1039,28 @@ public class Streams {
 		} else if (Long.class.equals(clazz)) {
 			res = Streams.byteToLong(Arrays.copyOfRange(bytes, off, off = off
 					+ SIZEOF_LONG));
-		} else if (String.class.equals(clazz)) {
-			final int length = Streams.byteToInt(Arrays.copyOfRange(bytes, off,
-					off = off + SIZEOF_INT));
-			res = Streams.byteToString(Arrays.copyOfRange(bytes, off, off = off
-					+ length));
-		} else {
-			final int length = Streams.byteToInt(Arrays.copyOfRange(bytes, off,
-					off = off + SIZEOF_INT));
-
-			res = deserializeObject(Arrays.copyOfRange(bytes, off, off = off
-					+ length));
 		}
+		// we have a dynamically sizing object
+		else {
 
+			// get the length
+			final int length;
+			if (dynLength < 0) {
+				length = Streams.byteToInt(Arrays.copyOfRange(bytes, off,
+						off = off + SIZEOF_INT));
+			} else {
+				length = dynLength;
+			}
+
+			// check if we have a string
+			if (String.class.equals(clazz)) {
+				res = Streams.byteToString(Arrays.copyOfRange(bytes, off,
+						off = off + length));
+			} else {
+				res = deserializeObject(Arrays.copyOfRange(bytes, off,
+						off = off + length));
+			}
+		}
 		return new ByteResult(res, off);
 	}
 
@@ -1028,8 +1082,21 @@ public class Streams {
 	}
 
 	/**
+	 * Gets the overhead needed to represent the type of an object (this is done
+	 * using the first byte to represent a position in the class-array
+	 * {@link #BYTE_TYPES}).
+	 * 
+	 * @return the overhead needed to represent the type of an object
+	 */
+	public static int classOverhead() {
+		return SIZEOF_BYTE;
+	}
+
+	/**
 	 * Determines the overhead (in bytes) to the typical byte-representation
-	 * needed when represented as general object.
+	 * needed when represented as general object. The overhead-size includes the
+	 * size to represent the {@code clazz} as well (see {@link #classOverhead()}
+	 * ).
 	 * 
 	 * @param clazz
 	 *            the clazz to determine the overhead for
@@ -1038,17 +1105,17 @@ public class Streams {
 	 */
 	public static int objectOverhead(final Class<?> clazz) {
 		if (clazz == null) {
-			return SIZEOF_BYTE;
+			return classOverhead();
 		} else if (Short.class.equals(clazz)) {
-			return SIZEOF_BYTE;
+			return classOverhead();
 		} else if (Integer.class.equals(clazz)) {
-			return SIZEOF_BYTE;
+			return classOverhead();
 		} else if (Long.class.equals(clazz)) {
-			return SIZEOF_BYTE;
+			return classOverhead();
 		} else if (String.class.equals(clazz)) {
-			return SIZEOF_BYTE + SIZEOF_INT;
+			return classOverhead() + SIZEOF_INT;
 		} else {
-			return SIZEOF_BYTE + SIZEOF_INT;
+			return classOverhead() + SIZEOF_INT;
 		}
 	}
 
@@ -1270,6 +1337,77 @@ public class Streams {
 			}
 
 			return result;
+		}
+	}
+
+	/**
+	 * Reads the next object from the buffer. It should be ensured that there is
+	 * at least the possibility of a next object by calling
+	 * {@link ByteBuffer#hasRemaining()} prior to calling this method.
+	 * 
+	 * @param buffer
+	 *            the buffer to read from
+	 * 
+	 * @return the object read
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if there is no object in the buffer
+	 */
+	public static Object readNextObject(final ByteBuffer buffer)
+			throws IllegalArgumentException {
+
+		try {
+			// determine the type of the object we are looking for
+			final Class<?> clazz;
+			if (buffer.hasRemaining()) {
+				final byte pos = buffer.get();
+				if (pos < 0) {
+					return null;
+				} else {
+					clazz = BYTE_TYPES[pos];
+				}
+			} else {
+				throw new IllegalArgumentException(
+						"The buffer does not contain any object.");
+			}
+
+			/*
+			 * determine the size of the object, so that we can read the bytes
+			 * needed
+			 */
+			final int objSize = objectSize(clazz);
+
+			// get the amount of bytes to be read for the object
+			final int readSize;
+			final int dynSize;
+
+			// we have a dynamic object-size
+			if (objSize < 0) {
+
+				// the size is encoded in the first bytes as integer
+				final byte[] sizeBytes = new byte[SIZEOF_INT];
+				buffer.get(sizeBytes);
+				readSize = Streams.byteToInt(sizeBytes);
+				dynSize = readSize;
+			}
+			// we have a static object-size
+			else {
+
+				// get the size of the object
+				readSize = objectSize(clazz) - classOverhead();
+				dynSize = -1;
+			}
+
+			// get the bytes from the buffer
+			final byte[] bytes = new byte[readSize];
+			buffer.get(bytes);
+
+			// get the result and return the object
+			final ByteResult res = byteToObject(clazz, dynSize, bytes, 0);
+			return res.object;
+		} catch (final BufferUnderflowException e) {
+			throw new IllegalArgumentException(
+					"The buffer does not contain any valid object", e);
 		}
 	}
 }
