@@ -9,17 +9,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
 import net.meisen.general.genmisc.types.Streams;
-import net.meisen.general.genmisc.types.Strings;
 import net.meisen.general.genmisc.types.Streams.ByteResult;
+import net.meisen.general.genmisc.types.Strings;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -146,7 +145,6 @@ public class TestStreams {
 	 * {@link Streams#intToByte(int)} and {@link Streams#byteToInt(byte[])}.
 	 */
 	@Test
-	@Ignore
 	public void testIntByte() {
 		byte[] byteArray;
 		int value;
@@ -168,7 +166,6 @@ public class TestStreams {
 	 * {@link Streams#longToByte(long)} and {@link Streams#byteToLong(byte[])}.
 	 */
 	@Test
-	@Ignore
 	public void testLongByte() {
 		byte[] byteArray;
 		long value;
