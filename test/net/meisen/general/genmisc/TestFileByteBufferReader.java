@@ -20,11 +20,28 @@ import net.meisen.general.genmisc.types.Streams;
 import org.junit.After;
 import org.junit.Test;
 
+/**
+ * Tests the implementation of the {@code FileByteBufferReader}.
+ * 
+ * @author pmeisen
+ * 
+ */
 public class TestFileByteBufferReader {
 
 	private FileByteBufferReader reader = null;
 	private File file = null;
 
+	/**
+	 * Helper method to create a binary test file.
+	 * 
+	 * @param sizeInBytes
+	 *            the amount of bytes to be added
+	 * @param upcount
+	 *            {@code true} if the bytes should be numbered from 0 -
+	 *            {@code Byte.MAX_VALUE}
+	 * 
+	 * @return the created file
+	 */
 	protected File createFile(final long sizeInBytes, final boolean upcount) {
 		final File file = new File(System.getProperty("java.io.tmpdir"), UUID
 				.randomUUID().toString());
@@ -64,6 +81,17 @@ public class TestFileByteBufferReader {
 		return file;
 	}
 
+	/**
+	 * Sets the reader and creates a file for it.
+	 * 
+	 * @param fileSizeInBytes
+	 *            the size of the file in bytes
+	 * @param arraySizeInBytes
+	 *            the size of the array to be used internally
+	 * @param upcount
+	 *            {@code true} if the bytes should be numbered from 0 -
+	 *            {@code Byte.MAX_VALUE}
+	 */
 	protected void setReader(final long fileSizeInBytes,
 			final int arraySizeInBytes, final boolean upcount) {
 		file = createFile(fileSizeInBytes, upcount);
@@ -114,6 +142,9 @@ public class TestFileByteBufferReader {
 		assertTrue(reader.usesBuffer());
 	}
 
+	/**
+	 * Tests the reading of a file without a buffer.
+	 */
 	@Test
 	public void testReadingWithoutBuffer() {
 		setReader(100, 1000, true);
@@ -133,6 +164,9 @@ public class TestFileByteBufferReader {
 		assertEquals(100, i);
 	}
 
+	/**
+	 * Tests the reading using no buffer and a full-array.
+	 */
 	@Test
 	public void testReadingWithFullArray() {
 		setReader(100, 100, true);
@@ -151,7 +185,10 @@ public class TestFileByteBufferReader {
 		// last read value was 99 but i++ was triggered
 		assertEquals(100, i);
 	}
-	
+
+	/**
+	 * Tests teh reading with a full buffer.
+	 */
 	@Test
 	public void testReadingWithFullBuffer() {
 		setReader(10000, 1000, true);
@@ -170,7 +207,10 @@ public class TestFileByteBufferReader {
 		}
 
 	}
-	
+
+	/**
+	 * Tests the reading of a file with an exceeded buffer.
+	 */
 	@Test
 	public void testReadingWithExceededBuffer() {
 		setReader(300, 1, true);
@@ -188,11 +228,14 @@ public class TestFileByteBufferReader {
 			i++;
 		}
 	}
-	
+
+	/**
+	 * Tests the reading of an empty file.
+	 */
 	@Test
 	public void testReadingEmptyFile() {
 		setReader(0, 1, true);
-		
+
 		assertFalse(reader.usesBuffer());
 		assertFalse(reader.hasRemaining());
 		assertEquals(0, reader.getLimit());
