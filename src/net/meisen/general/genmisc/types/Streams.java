@@ -13,6 +13,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.BufferUnderflowException;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 
+import net.meisen.general.genmisc.resources.FileByteBufferReader;
 import net.meisen.general.genmisc.unicode.UnicodeReader;
 
 /**
@@ -190,6 +192,18 @@ public class Streams {
 		} else if (obj instanceof Reader) {
 			try {
 				((Reader) obj).close();
+			} catch (final IOException e) {
+				return e;
+			}
+		} else if (obj instanceof RandomAccessFile) {
+			try {
+				((RandomAccessFile) obj).close();
+			} catch (final IOException e) {
+				return e;
+			}
+		} else if (obj instanceof FileByteBufferReader) {
+			try {
+				((FileByteBufferReader) obj).close();
 			} catch (final IOException e) {
 				return e;
 			}
