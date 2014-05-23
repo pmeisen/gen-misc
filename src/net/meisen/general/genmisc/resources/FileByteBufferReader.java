@@ -24,7 +24,7 @@ import net.meisen.general.genmisc.types.Streams;
  * @author pmeisen
  * 
  */
-public class FileByteBufferReader {
+public class FileByteBufferReader implements IByteBufferReader {
 	private final long limit;
 	private final int bufferSizeInByte;
 
@@ -37,24 +37,74 @@ public class FileByteBufferReader {
 	private final FileInputStream fileInputStream;
 	private final FileChannel channel;
 
+	/**
+	 * Default constructor creates a {@code ByteBufferReader} for the specified
+	 * {@code file}.
+	 * 
+	 * @param file
+	 *            the {@code File} to create the reader for
+	 * 
+	 * @throws FileNotFoundException
+	 *             if the file cannot be found
+	 */
 	public FileByteBufferReader(final File file) throws FileNotFoundException {
 		this(file, 1024);
 	}
 
+	/**
+	 * Default constructor creates a {@code ByteBufferReader} for the specified
+	 * {@code file}.
+	 * 
+	 * @param file
+	 *            the {@code File} to create the reader for
+	 * @param arraySizeInByte
+	 *            the size of the internally used array
+	 * 
+	 * @throws FileNotFoundException
+	 *             if the file cannot be found
+	 */
 	public FileByteBufferReader(final File file, final int arraySizeInByte)
 			throws FileNotFoundException {
 		this(new FileInputStream(file), null, arraySizeInByte);
 	}
 
+	/**
+	 * Default constructor creates a {@code ByteBufferReader} for the specified
+	 * {@code channel}.
+	 * 
+	 * @param channel
+	 *            the {@code FileChannel} to create the reader for
+	 */
 	public FileByteBufferReader(final FileChannel channel) {
 		this(channel, 1024);
 	}
 
+	/**
+	 * Default constructor creates a {@code ByteBufferReader} for the specified
+	 * {@code channel}.
+	 * 
+	 * @param channel
+	 *            the {@code FileChannel} to create the reader for
+	 * @param arraySizeInByte
+	 *            the size of the internally used array
+	 */
 	public FileByteBufferReader(final FileChannel channel,
 			final int arraySizeInByte) {
 		this(null, channel, arraySizeInByte);
 	}
 
+	/**
+	 * Internally used constructor which initializes the reader.
+	 * 
+	 * @param fis
+	 *            a {@code FileInputStream} if one was defined to create the
+	 *            instance
+	 * @param channel
+	 *            a {@code FileChannel} if one was defined to create the
+	 *            instance
+	 * @param arraySizeInByte
+	 *            the size of the internally used array
+	 */
 	protected FileByteBufferReader(final FileInputStream fis,
 			final FileChannel channel, final int arraySizeInByte) {
 		this.fileInputStream = fis;
@@ -94,6 +144,7 @@ public class FileByteBufferReader {
 		}
 	}
 
+	@Override
 	public byte get() {
 		if (!hasRemaining()) {
 			throw new BufferUnderflowException();
@@ -113,6 +164,10 @@ public class FileByteBufferReader {
 		return value;
 	}
 
+	/**
+	 * Fills the array with data from the buffer, or the file if no buffer is
+	 * needed.
+	 */
 	protected void fillArray() {
 		final int curArraySize = array.length;
 
@@ -137,13 +192,16 @@ public class FileByteBufferReader {
 
 				// refill the buffer
 				fillBuffer();
-				
+
 				// get the rest
 				buffer.get(array, bufferedBytes, curArraySize - bufferedBytes);
 			}
 		}
 	}
 
+	/**
+	 * Fills the buffer with data from the file.
+	 */
 	protected void fillBuffer() {
 		buffer.clear();
 		final int readFileBytes;
@@ -160,10 +218,12 @@ public class FileByteBufferReader {
 		}
 	}
 
+	@Override
 	public void get(final byte[] dst) {
 		get(dst, 0, dst.length);
 	}
 
+	@Override
 	public void get(final byte[] dst, final int offset, final int length) {
 		if (length > remaining()) {
 			throw new BufferUnderflowException();
@@ -175,32 +235,59 @@ public class FileByteBufferReader {
 		}
 	}
 
+	/**
+	 * Gets the amount of remaining bytes to be read.
+	 * 
+	 * @return the amount of remaining bytes to be read
+	 */
 	public long remaining() {
 		return Math.max(0, getLimit() - curPos);
 	}
 
+	@Override
 	public void close() throws IOException {
 		Streams.closeIO(channel);
 		Streams.closeIO(fileInputStream);
 		Streams.closeIO(buffer);
 	}
 
+	/**
+	 * Gets the size of the buffer used.
+	 * 
+	 * @return the size of the buffer used
+	 */
 	public int getBufferSize() {
 		return this.bufferSizeInByte;
 	}
 
+	/**
+	 * Checks if a buffer is used.
+	 * 
+	 * @return {@code true} if a buffer is used, {@code false} otherwise
+	 */
 	public boolean usesBuffer() {
 		return this.buffer != null;
 	}
 
+	/**
+	 * Gets the size of the array used.
+	 * 
+	 * @return the size of the array used
+	 */
 	public int getArraySize() {
 		return this.array.length;
 	}
 
+	/**
+	 * Gets the limit, i.e. the maximal amount of bytes to read.
+	 * 
+	 * @return the limit, i.e. the maximal amount of bytes to read
+	 */
 	public long getLimit() {
 		return this.limit;
 	}
 
+	@Override
 	public boolean hasRemaining() {
 		return curPos < this.limit;
 	}

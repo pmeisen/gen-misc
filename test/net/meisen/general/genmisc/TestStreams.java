@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import net.meisen.general.genmisc.resources.WrappedByteBufferReader;
 import net.meisen.general.genmisc.types.Streams;
 import net.meisen.general.genmisc.types.Streams.ByteResult;
 import net.meisen.general.genmisc.types.Strings;
@@ -350,7 +351,8 @@ public class TestStreams {
 				.combineBytes(Streams.objectToByte(5),
 						Streams.objectToByte(500l),
 						Streams.objectToByte("Hello World"));
-		final ByteBuffer ret = ByteBuffer.wrap(sampleFile);
+		final WrappedByteBufferReader ret = new WrappedByteBufferReader(
+				ByteBuffer.wrap(sampleFile));
 
 		final Object o1 = Streams.readNextObject(ret);
 		assertEquals(new Integer(5), o1);
@@ -361,7 +363,8 @@ public class TestStreams {
 
 		boolean exception = false;
 		try {
-			Streams.readNextObject(ByteBuffer.wrap(new byte[0]));
+			Streams.readNextObject(new WrappedByteBufferReader(ByteBuffer
+					.wrap(new byte[0])));
 		} catch (final IllegalArgumentException e) {
 			assertTrue(e.getMessage().contains(
 					"buffer does not contain any object"));

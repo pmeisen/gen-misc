@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 import net.meisen.general.genmisc.resources.FileByteBufferReader;
+import net.meisen.general.genmisc.resources.IByteBufferReader;
 import net.meisen.general.genmisc.unicode.UnicodeReader;
 
 /**
@@ -1367,7 +1368,7 @@ public class Streams {
 	 * @throws IllegalArgumentException
 	 *             if there is no object in the buffer
 	 */
-	public static Object readNextObject(final ByteBuffer buffer)
+	public static Object readNextObject(final IByteBufferReader buffer)
 			throws IllegalArgumentException {
 
 		try {
