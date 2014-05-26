@@ -45,7 +45,8 @@ public class Streams {
 	public static final Class<?>[] BYTE_TYPES;
 	static {
 		BYTE_TYPES = new Class<?>[] { Object.class, Byte.class, Short.class,
-				Integer.class, Long.class, String.class, Boolean.class };
+				Integer.class, Long.class, String.class, Boolean.class,
+				Double.class };
 
 		// make sure the length is valid and can be held within a byte
 		Numbers.castToByte(BYTE_TYPES.length);
@@ -804,6 +805,30 @@ public class Streams {
 	}
 
 	/**
+	 * Transforms a double to a byte representation.
+	 * 
+	 * @param val
+	 *            the double to be transformed
+	 * 
+	 * @return the result of the transformation
+	 */
+	public static byte[] doubleToByte(final double val) {
+		return longToByte(Double.doubleToLongBits((Double) val));
+	}
+
+	/**
+	 * Transforms a byte representation to a double.
+	 * 
+	 * @param bytes
+	 *            the bytes representation to be transformed
+	 *            
+	 * @return the created double
+	 */
+	public static double byteToDouble(final byte[] bytes) {
+		return Double.longBitsToDouble(byteToLong(bytes));
+	}
+
+	/**
 	 * Transforms a boolean to a byte array.
 	 * 
 	 * @param val
@@ -945,6 +970,8 @@ public class Streams {
 			bytesRepresentation = Streams.intToByte((Integer) o);
 		} else if (Long.class.equals(clazz)) {
 			bytesRepresentation = Streams.longToByte((Long) o);
+		} else if (Double.class.equals(clazz)) {
+			bytesRepresentation = Streams.doubleToByte((Double) o);
 		} else if (String.class.equals(clazz)) {
 			final byte[] tmpBytes = Streams.stringToByte((String) o);
 			final byte[] tmpBytesLength = Streams.intToByte(tmpBytes.length);
@@ -1085,6 +1112,9 @@ public class Streams {
 		} else if (Long.class.equals(clazz)) {
 			res = Streams.byteToLong(Arrays.copyOfRange(bytes, off, off = off
 					+ SIZEOF_LONG));
+		} else if (Double.class.equals(clazz)) {
+			res = Streams.byteToDouble(Arrays.copyOfRange(bytes, off, off = off
+					+ SIZEOF_LONG));
 		}
 		// we have a dynamically sizing object
 		else {
@@ -1154,13 +1184,15 @@ public class Streams {
 			return classOverhead();
 		} else if (Byte.class.equals(clazz)) {
 			return classOverhead();
+		} else if (Boolean.class.equals(clazz)) {
+			return classOverhead();
 		} else if (Short.class.equals(clazz)) {
 			return classOverhead();
 		} else if (Integer.class.equals(clazz)) {
 			return classOverhead();
 		} else if (Long.class.equals(clazz)) {
 			return classOverhead();
-		} else if (Boolean.class.equals(clazz)) {
+		} else if (Double.class.equals(clazz)) {
 			return classOverhead();
 		} else if (String.class.equals(clazz)) {
 			return classOverhead() + SIZEOF_INT;
@@ -1213,6 +1245,8 @@ public class Streams {
 		} else if (Integer.class.equals(clazz)) {
 			return overhead + SIZEOF_INT;
 		} else if (Long.class.equals(clazz)) {
+			return overhead + SIZEOF_LONG;
+		} else if (Double.class.equals(clazz)) {
 			return overhead + SIZEOF_LONG;
 		} else if (String.class.equals(clazz)) {
 			return -1 * overhead;

@@ -199,6 +199,37 @@ public class TestStreams {
 
 	/**
 	 * Tests the implementation of the string mappers, i.e.
+	 * {@link Streams#doubleToByte(double)} and
+	 * {@link Streams#byteToDouble(byte[])}.
+	 */
+	@Test
+	public void testDoubleByte() {
+		byte[] byteArray;
+		double value;
+
+		byteArray = Streams.doubleToByte(Double.MAX_VALUE);
+		value = Streams.byteToDouble(byteArray);
+		assertEquals(Double.MAX_VALUE, value, 0.0);
+
+		byteArray = Streams.doubleToByte(Double.MIN_VALUE);
+		value = Streams.byteToDouble(byteArray);
+		assertEquals(Double.MIN_VALUE, value, 0.0);
+
+		byteArray = Streams.doubleToByte(Double.NaN);
+		value = Streams.byteToDouble(byteArray);
+		assertEquals(Double.NaN, value, 0.0);
+
+		byteArray = Streams.doubleToByte(Double.NEGATIVE_INFINITY);
+		value = Streams.byteToDouble(byteArray);
+		assertEquals(Double.NEGATIVE_INFINITY, value, 0.0);
+
+		byteArray = Streams.doubleToByte(500.120312803921);
+		value = Streams.byteToDouble(byteArray);
+		assertEquals(500.120312803921, value, 0.0);
+	}
+
+	/**
+	 * Tests the implementation of the string mappers, i.e.
 	 * {@link Streams#stringToByte(String)} and
 	 * {@link Streams#byteToString(byte[])}.
 	 */
@@ -390,7 +421,7 @@ public class TestStreams {
 			if (Object.class.equals(clazz)) {
 				continue;
 			} else if (Number.class.isAssignableFrom(clazz)) {
-				o = Numbers.castToNumber(1, (Class<? extends Number>) clazz);
+				o = Numbers.castToNumber(100, (Class<? extends Number>) clazz);
 			} else if (Boolean.class.equals(clazz)) {
 				o = true;
 			} else if (String.class.equals(clazz)) {
