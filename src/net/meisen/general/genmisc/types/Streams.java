@@ -45,7 +45,7 @@ public class Streams {
 	public static final Class<?>[] BYTE_TYPES;
 	static {
 		BYTE_TYPES = new Class<?>[] { Object.class, Byte.class, Short.class,
-				Integer.class, Long.class, String.class };
+				Integer.class, Long.class, String.class, Boolean.class };
 
 		// make sure the length is valid and can be held within a byte
 		Numbers.castToByte(BYTE_TYPES.length);
@@ -804,6 +804,31 @@ public class Streams {
 	}
 
 	/**
+	 * Transforms a boolean to a byte array.
+	 * 
+	 * @param val
+	 *            the boolean to be transformed
+	 * 
+	 * @return the byte array
+	 */
+	public static byte[] booleanToByte(final boolean val) {
+		return val ? new byte[] { 1 } : new byte[] { 0 };
+	}
+
+	/**
+	 * Transforms the {@code bytes} to the boolean. The bytes should have been
+	 * generated using {@link #booleanToByte(boolean)}.
+	 * 
+	 * @param bytes
+	 *            the bytes to be transformed to a boolean
+	 * 
+	 * @return the boolean represented by the bytes
+	 */
+	public static boolean byteToBoolean(final byte[] bytes) {
+		return (bytes[0] == (byte) 1);
+	}
+
+	/**
 	 * Transforms a string to a byte array using a UTF-8 charset.
 	 * 
 	 * @param s
@@ -912,6 +937,8 @@ public class Streams {
 			bytesRepresentation = new byte[] {};
 		} else if (Byte.class.equals(clazz)) {
 			bytesRepresentation = new byte[] { (Byte) o };
+		} else if (Boolean.class.equals(clazz)) {
+			bytesRepresentation = Streams.booleanToByte((Boolean) o);
 		} else if (Short.class.equals(clazz)) {
 			bytesRepresentation = Streams.shortToByte((Short) o);
 		} else if (Integer.class.equals(clazz)) {
@@ -1046,6 +1073,9 @@ public class Streams {
 		if (Byte.class.equals(clazz)) {
 			res = bytes[off];
 			off += SIZEOF_BYTE;
+		} else if (Boolean.class.equals(clazz)) {
+			res = Streams.byteToBoolean(Arrays.copyOfRange(bytes, off,
+					off = off + SIZEOF_BYTE));
 		} else if (Short.class.equals(clazz)) {
 			res = Streams.byteToShort(Arrays.copyOfRange(bytes, off, off = off
 					+ SIZEOF_SHORT));
@@ -1122,11 +1152,15 @@ public class Streams {
 	public static int objectOverhead(final Class<?> clazz) {
 		if (clazz == null) {
 			return classOverhead();
+		} else if (Byte.class.equals(clazz)) {
+			return classOverhead();
 		} else if (Short.class.equals(clazz)) {
 			return classOverhead();
 		} else if (Integer.class.equals(clazz)) {
 			return classOverhead();
 		} else if (Long.class.equals(clazz)) {
+			return classOverhead();
+		} else if (Boolean.class.equals(clazz)) {
 			return classOverhead();
 		} else if (String.class.equals(clazz)) {
 			return classOverhead() + SIZEOF_INT;
@@ -1170,6 +1204,10 @@ public class Streams {
 
 		if (clazz == null) {
 			return overhead + 0;
+		} else if (Byte.class.equals(clazz)) {
+			return overhead + SIZEOF_BYTE;
+		} else if (Boolean.class.equals(clazz)) {
+			return overhead + SIZEOF_BYTE;
 		} else if (Short.class.equals(clazz)) {
 			return overhead + SIZEOF_SHORT;
 		} else if (Integer.class.equals(clazz)) {

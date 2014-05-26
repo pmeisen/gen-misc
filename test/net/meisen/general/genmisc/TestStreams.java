@@ -16,6 +16,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import net.meisen.general.genmisc.resources.WrappedByteBufferReader;
+import net.meisen.general.genmisc.types.Numbers;
 import net.meisen.general.genmisc.types.Streams;
 import net.meisen.general.genmisc.types.Streams.ByteResult;
 import net.meisen.general.genmisc.types.Strings;
@@ -371,5 +372,57 @@ public class TestStreams {
 			exception = true;
 		}
 		assertTrue(exception);
+	}
+
+	/**
+	 * Tests an instance of each {@link Streams#BYTE_TYPES}.
+	 * 
+	 * @throws Exception
+	 *             if an exception occurred
+	 */
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testAllTypes() throws Exception {
+		for (final Class<?> clazz : Streams.BYTE_TYPES) {
+			final Object o;
+
+			// generate the needed values
+			if (Object.class.equals(clazz)) {
+				continue;
+			} else if (Number.class.isAssignableFrom(clazz)) {
+				o = Numbers.castToNumber(1, (Class<? extends Number>) clazz);
+			} else if (Boolean.class.equals(clazz)) {
+				o = true;
+			} else if (String.class.equals(clazz)) {
+				o = "Hello World";
+			} else {
+				o = clazz.newInstance();
+			}
+
+			final byte[] rep = Streams.writeAllObjects(o);
+			final ArrayList<Object> res = Streams.readAllObjects(rep);
+			assertEquals(1, res.size());
+			assertEquals(o, res.get(0));
+
+			/*
+			 * all the representative should be smaller than the typical object
+			 * representation
+			 */
+			final byte[] oRep = Streams.serializeObject(o);
+			assertTrue(oRep.length + " > " + rep.length + " (" + clazz + ")",
+					oRep.length > rep.length);
+
+			// Strings have a dynamic overhead
+			if (String.class.equals(clazz)) {
+				continue;
+			}
+
+			/*
+			 * check the overhead and the size, only String and Object are
+			 * dynamic
+			 */
+			assertEquals(Streams.classOverhead(), Streams.objectOverhead(clazz));
+			assertTrue(Streams.objectSize(clazz) > 0);
+		}
 	}
 }
