@@ -1,7 +1,6 @@
 package net.meisen.general.genmisc.resources;
 
 import java.io.Closeable;
-import java.io.IOException;
 
 /**
  * An interface to read bytes, e.g. from a {@code ByteBuffer}.
