@@ -1,6 +1,5 @@
 package net.meisen.general.genmisc.resources;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
@@ -45,7 +44,7 @@ public class WrappedByteBufferReader implements IByteBufferReader {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		byteBuffer.clear();
 	}
 }

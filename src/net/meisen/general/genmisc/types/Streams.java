@@ -3,7 +3,10 @@ package net.meisen.general.genmisc.types;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.DataInput;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,6 +21,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.MalformedInputException;
@@ -29,6 +33,8 @@ import java.util.Properties;
 import net.meisen.general.genmisc.resources.FileByteBufferReader;
 import net.meisen.general.genmisc.resources.IByteBufferReader;
 import net.meisen.general.genmisc.resources.WrappedByteBufferReader;
+import net.meisen.general.genmisc.resources.WrappedDataInputReader;
+import net.meisen.general.genmisc.resources.WrappedInputStreamReader;
 import net.meisen.general.genmisc.unicode.UnicodeReader;
 
 /**
@@ -165,48 +171,22 @@ public class Streams {
 	}
 
 	/**
-	 * Closes a {@link InputStream}, {@link OutputStream}, {@link Writer} or
-	 * {@link Reader} without throwing an error if closing fails
+	 * Closes a {@link Closeable}, i.e. {@link InputStream},
+	 * {@link OutputStream}, {@link Writer} or {@link Reader} without throwing
+	 * an error if closing fails
 	 * 
 	 * @param obj
 	 *            the IO-object to be closed
+	 * 
 	 * @return the {@link IOException} which was thrown, or <code>null</code> if
 	 *         none was thrown
+	 * 
+	 * @see Closeable
 	 */
 	public static IOException closeIO(final Object obj) {
-		if (obj instanceof OutputStream) {
+		if (obj instanceof Closeable) {
 			try {
-				((OutputStream) obj).close();
-			} catch (final IOException e) {
-				return e;
-			}
-		} else if (obj instanceof InputStream) {
-			try {
-				((InputStream) obj).close();
-			} catch (final IOException e) {
-				return e;
-			}
-		} else if (obj instanceof Writer) {
-			try {
-				((Writer) obj).close();
-			} catch (final IOException e) {
-				return e;
-			}
-		} else if (obj instanceof Reader) {
-			try {
-				((Reader) obj).close();
-			} catch (final IOException e) {
-				return e;
-			}
-		} else if (obj instanceof RandomAccessFile) {
-			try {
-				((RandomAccessFile) obj).close();
-			} catch (final IOException e) {
-				return e;
-			}
-		} else if (obj instanceof FileByteBufferReader) {
-			try {
-				((FileByteBufferReader) obj).close();
+				((Closeable) obj).close();
 			} catch (final IOException e) {
 				return e;
 			}
@@ -821,7 +801,7 @@ public class Streams {
 	 * 
 	 * @param bytes
 	 *            the bytes representation to be transformed
-	 *            
+	 * 
 	 * @return the created double
 	 */
 	public static double byteToDouble(final byte[] bytes) {
@@ -1447,21 +1427,51 @@ public class Streams {
 	public static Object readNextObject(final IByteBufferReader buffer)
 			throws IllegalArgumentException {
 
-		try {
-			// determine the type of the object we are looking for
-			final Class<?> clazz;
-			if (buffer.hasRemaining()) {
-				final byte pos = buffer.get();
-				if (pos < 0) {
-					return null;
-				} else {
-					clazz = BYTE_TYPES[pos];
-				}
+		// determine the type of the object we are looking for
+		final Class<?> clazz;
+		if (buffer.hasRemaining()) {
+			final byte pos = buffer.get();
+			if (pos < 0) {
+				return null;
 			} else {
-				throw new IllegalArgumentException(
-						"The buffer does not contain any object.");
+				clazz = BYTE_TYPES[pos];
 			}
+		} else {
+			throw new IllegalArgumentException(
+					"The buffer does not contain any object.");
+		}
 
+		return readNextObject(buffer, clazz);
+	}
+
+	/**
+	 * Reads the next object from the buffer, which is of the specified
+	 * {@code clazz}. It should be ensured that there is at least the
+	 * possibility of a next object by calling {@link ByteBuffer#hasRemaining()}
+	 * prior to calling this method.
+	 * 
+	 * @param buffer
+	 *            the buffer to read from
+	 * @param clazz
+	 *            the type of the object read
+	 * 
+	 * @return the object read
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if there is no object in the buffer
+	 * 
+	 * @see WrappedByteBufferReader
+	 * @see FileByteBufferReader
+	 */
+	public static <T> T readNextObject(final IByteBufferReader buffer,
+			final Class<? extends T> clazz) throws IllegalArgumentException {
+
+		// null class expects null
+		if (clazz == null) {
+			return null;
+		}
+
+		try {
 			/*
 			 * determine the size of the object, so that we can read the bytes
 			 * needed
@@ -1495,10 +1505,68 @@ public class Streams {
 
 			// get the result and return the object
 			final ByteResult res = byteToObject(clazz, dynSize, bytes, 0);
-			return res.object;
+
+			@SuppressWarnings("unchecked")
+			final T typedObject = (T) res.object;
+
+			return (T) typedObject;
 		} catch (final BufferUnderflowException e) {
 			throw new IllegalArgumentException(
-					"The buffer does not contain any valid object", e);
+					"The buffer does not contain any valid object.", e);
+		}
+	}
+
+	/**
+	 * Factory method used to create a {@code ByteBufferReader}.
+	 * 
+	 * @param o
+	 *            the {@code Object} to create the {@code ByteBufferReader} for
+	 * 
+	 * @return the created instance
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if the object-type is not supported or if creation failed
+	 */
+	public static IByteBufferReader createByteBufferReader(final Object o)
+			throws IllegalArgumentException {
+		return createByteBufferReader(o, 1024);
+	}
+
+	/**
+	 * Factory method used to create a {@code ByteBufferReader}.
+	 * 
+	 * @param o
+	 *            the {@code Object} to create the {@code ByteBufferReader} for
+	 * @param arraySize
+	 *            the size of the backed-array
+	 * 
+	 * @return the created instance
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if the object-type is not supported or if creation failed
+	 */
+	public static IByteBufferReader createByteBufferReader(final Object o,
+			final int arraySize) throws IllegalArgumentException {
+		if (o instanceof File) {
+			try {
+				return new FileByteBufferReader((File) o, arraySize);
+			} catch (final FileNotFoundException e) {
+				throw new IllegalArgumentException(
+						"Error creating the ByteBufferReader", e);
+			}
+		} else if (o instanceof FileChannel) {
+			return new FileByteBufferReader((FileChannel) o, arraySize);
+		} else if (o instanceof RandomAccessFile) {
+			return new FileByteBufferReader((RandomAccessFile) o, arraySize);
+		} else if (o instanceof ByteBuffer) {
+			return new WrappedByteBufferReader((ByteBuffer) o);
+		} else if (o instanceof InputStream) {
+			return new WrappedInputStreamReader((InputStream) o, arraySize);
+		} else if (o instanceof DataInput) {
+			return new WrappedDataInputReader((DataInput) o, arraySize);
+		} else {
+			throw new IllegalArgumentException("The clazz '" + o.getClass()
+					+ "' cannot be used by any ByteBufferReader.");
 		}
 	}
 }

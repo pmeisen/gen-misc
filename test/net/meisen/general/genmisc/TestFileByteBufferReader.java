@@ -152,7 +152,6 @@ public class TestFileByteBufferReader {
 		// check the values
 		assertFalse(reader.usesBuffer());
 		assertTrue(reader.hasRemaining());
-		assertEquals(100, reader.getLimit());
 
 		int i = 0;
 		while (reader.hasRemaining()) {
@@ -174,7 +173,6 @@ public class TestFileByteBufferReader {
 		// check the values
 		assertFalse(reader.usesBuffer());
 		assertTrue(reader.hasRemaining());
-		assertEquals(100, reader.getLimit());
 
 		int i = 0;
 		while (reader.hasRemaining()) {
@@ -196,7 +194,6 @@ public class TestFileByteBufferReader {
 		// check the values
 		assertTrue(reader.usesBuffer());
 		assertTrue(reader.hasRemaining());
-		assertEquals(10000, reader.getLimit());
 		assertEquals(1000, reader.getArraySize());
 		assertEquals(10000, reader.getBufferSize());
 
@@ -218,7 +215,6 @@ public class TestFileByteBufferReader {
 		// check the values
 		assertTrue(reader.usesBuffer());
 		assertTrue(reader.hasRemaining());
-		assertEquals(300, reader.getLimit());
 		assertEquals(1, reader.getArraySize());
 		assertEquals(10, reader.getBufferSize());
 
@@ -238,7 +234,6 @@ public class TestFileByteBufferReader {
 
 		assertFalse(reader.usesBuffer());
 		assertFalse(reader.hasRemaining());
-		assertEquals(0, reader.getLimit());
 	}
 
 	/**

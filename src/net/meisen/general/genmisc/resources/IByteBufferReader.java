@@ -1,5 +1,6 @@
 package net.meisen.general.genmisc.resources;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
@@ -7,7 +8,7 @@ import java.io.IOException;
  * 
  * @author pmeisen
  */
-public interface IByteBufferReader {
+public interface IByteBufferReader extends Closeable {
 
 	/**
 	 * Get the next byte.
@@ -39,13 +40,8 @@ public interface IByteBufferReader {
 	 */
 	public void get(final byte[] dst, final int offset, final int length);
 
-	/**
-	 * Closes the reader, i.e. all resources are released.
-	 * 
-	 * @throws IOException
-	 *             if a resource cannot be released
-	 */
-	public void close() throws IOException;
+	@Override
+	public void close();
 
 	/**
 	 * Checks if bytes to be read are available
