@@ -79,6 +79,7 @@ public abstract class BaseByteBufferReader implements IByteBufferReader {
 			fillArray();
 			curArrayPos = 0;
 		}
+		
 		return value;
 	}
 
@@ -130,6 +131,8 @@ public abstract class BaseByteBufferReader implements IByteBufferReader {
 					curArrayLength = Math.min(buffer.remaining(),
 							neededBytesToFill);
 					buffer.get(array, bufferedBytes, curArrayLength);
+				} else if (bufferedBytes > 0) {
+					curArrayLength = bufferedBytes;
 				} else {
 					curArrayLength = 0;
 				}

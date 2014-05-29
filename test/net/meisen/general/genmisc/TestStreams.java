@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import net.meisen.general.genmisc.resources.IByteBufferReader;
 import net.meisen.general.genmisc.resources.WrappedByteBufferReader;
 import net.meisen.general.genmisc.types.Numbers;
 import net.meisen.general.genmisc.types.Streams;
@@ -455,5 +458,37 @@ public class TestStreams {
 			assertEquals(Streams.classOverhead(), Streams.objectOverhead(clazz));
 			assertTrue(Streams.objectSize(clazz) > 0);
 		}
+	}
+
+	/**
+	 * Tests the reading of a file using the {@code FileByteBufferReader} and
+	 * the {@code Streams#readNextObject(IByteBufferReader)} and
+	 * {@code Streams#objectToByte(Object)}.
+	 * 
+	 * @throws IOException
+	 *             if the file cannot be created
+	 */
+	@Test
+	public void testStreamsWithByteBufferReader() throws IOException {
+
+		// create a tmpFile
+		final File tmpFile = new File(System.getProperty("java.io.tmpdir"),
+				UUID.randomUUID().toString());
+		tmpFile.createNewFile();
+		final FileOutputStream fos = new FileOutputStream(tmpFile);
+		for (int i = 0; i < 50000; i++) {
+			fos.write(Streams.objectToByte(i));
+		}
+		fos.flush();
+		fos.close();
+
+		final IByteBufferReader reader = Streams
+				.createByteBufferReader(tmpFile);
+		for (int i = 0; i < 50000; i++) {
+			assertEquals(i, Streams.readNextObject(reader));
+		}
+		reader.close();
+
+		assertTrue(tmpFile.delete());
 	}
 }
