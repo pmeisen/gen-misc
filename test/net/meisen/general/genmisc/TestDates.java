@@ -51,9 +51,12 @@ public class TestDates {
 
 	/**
 	 * Tests the implementation of {@link Dates#now()}.
+	 * 
+	 * @throws ParseException
+	 *             if the re-parsing cannot be done
 	 */
 	@Test
-	public void testNow() {
+	public void testNow() throws ParseException {
 
 		// now should return the current time in the default TimeZone
 		assertEquals((new Date()).getTime(),
@@ -65,7 +68,10 @@ public class TestDates {
 		final String nowNow = Dates.formatDate(new Date(),
 				"dd.MM.yyyy HH:mm:ss");
 
-		assertEquals(nowNow, utcNow);
+		final Date uctNowDate = Dates.parseDate(utcNow, "dd.MM.yyyy HH:mm:ss");
+		final Date nowNowDate = Dates.parseDate(nowNow, "dd.MM.yyyy HH:mm:ss");
+
+		assertEquals(uctNowDate.getTime(), nowNowDate.getTime(), 500);
 	}
 
 	/**
