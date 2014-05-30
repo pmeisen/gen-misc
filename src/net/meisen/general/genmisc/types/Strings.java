@@ -243,13 +243,13 @@ public class Strings {
 	 * @return a {@link String} with the entries of the {@link Collection}
 	 *         separated by the passed <code>separator</code>
 	 */
-	public static <T> String concate(final String separator, final T... array) {
+	public static <T> String concate(final String separator, final Object... array) {
 		final String concatedList;
 
 		if (array == null) {
 			concatedList = "";
 		} else {
-			final List<T> list = Arrays.asList(array);
+			final List<Object> list = Arrays.asList(array);
 			concatedList = concate(separator, list);
 		}
 
