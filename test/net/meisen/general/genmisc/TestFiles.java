@@ -497,4 +497,41 @@ public class TestFiles {
 		// assertTrue(Files.deleteDir(tmpTestDir));
 		assertTrue(zippedFile.delete());
 	}
+
+	/**
+	 * Tests the implementation of
+	 * {@code Files#writeProperties(File, Properties)}.
+	 * 
+	 * @throws IOException
+	 *             if an IO-error occurred
+	 */
+	@Test
+	public void writePropertyFile() throws IOException {
+
+		final Properties myTestProperties = new Properties();
+		myTestProperties.setProperty("propertyKey", "propertyValue");
+
+		// create the files for the test
+		final File tmpDir = new File(System.getProperty("java.io.tmpdir"), UUID
+				.randomUUID().toString());
+		final File tmpFile = new File(tmpDir, "myTest.properties");
+
+		// make sure we don't have a parent currently and not a file
+		assertFalse(tmpFile.exists());
+		assertFalse(tmpFile.getParentFile().exists());
+
+		try {
+			// write the properties to the file
+			Files.writeProperties(tmpFile, myTestProperties);
+
+			// the file should have been created
+			assertTrue(tmpFile.exists());
+
+			final Properties myLoadedProperties = Files.readProperties(tmpFile);
+			assertEquals(myTestProperties, myLoadedProperties);
+		} finally {
+			// cleanUp
+			Files.deleteDir(tmpDir);
+		}
+	}
 }

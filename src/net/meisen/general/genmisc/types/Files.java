@@ -1158,6 +1158,51 @@ public class Files {
 	}
 
 	/**
+	 * Writes the specified properties to the specified file.
+	 * 
+	 * @param file
+	 *            the file to write the properties to
+	 * @param properties
+	 *            the properties to be written
+	 * 
+	 * @throws IOException
+	 *             if the properties cannot be written
+	 */
+	public static void writeProperties(final File file,
+			final Properties properties) throws IOException {
+		writeProperties(file, properties, null);
+	}
+
+	/**
+	 * Writes the specified properties to the specified file.
+	 * 
+	 * @param file
+	 *            the file to write the properties to
+	 * @param properties
+	 *            the properties to be written
+	 * @param comments
+	 *            the comments to be written to the head of the file, can be
+	 *            {@code null}
+	 * 
+	 * @throws IOException
+	 *             if the properties cannot be written
+	 */
+	public static void writeProperties(final File file,
+			final Properties properties, final String comments)
+			throws IOException {
+
+		// make sure the file does not exist and the parent-folder is created
+		if (file.exists()) {
+			file.delete();
+		} else if (file.getParent() != null) {
+			file.getParentFile().mkdirs();
+		}
+
+		final FileOutputStream out = new FileOutputStream(file);
+		Streams.writePropertiesToStream(properties, out, comments);
+	}
+
+	/**
 	 * Copies a <code>Resource</code> to a <code>File</code>.
 	 * 
 	 * @param resource

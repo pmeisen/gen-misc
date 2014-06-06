@@ -343,6 +343,32 @@ public class Streams {
 	}
 
 	/**
+	 * Writes the {@code Properties} to the specified {@code out}. Additionally
+	 * a comment can be defined which should be written to the head of the
+	 * properties-file.
+	 * 
+	 * @param properties
+	 *            the properties to be written
+	 * @param out
+	 *            the stream to write to, which will be closed after a
+	 *            successful write
+	 * @param comments
+	 *            the comments to be written (can be {@code null})
+	 * 
+	 * @throws IOException
+	 *             if the properties cannot be written
+	 */
+	public static void writePropertiesToStream(final Properties properties,
+			final OutputStream out, final String comments) throws IOException {
+
+		// write the properties
+		properties.store(out, comments);
+
+		// close the stream
+		Streams.closeIO(out);
+	}
+
+	/**
 	 * Copies the <code>inputStream</code> into a <code>byte[]</code>. Uses a
 	 * buffer of size 4096 to copy the stream.
 	 * 
