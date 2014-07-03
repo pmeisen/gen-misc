@@ -177,6 +177,64 @@ public class Files {
 	}
 
 	/**
+	 * Deletes all the directories matching the specified {@code pattern} within
+	 * the {@code dir}.
+	 * 
+	 * @param dir
+	 *            the directory to be deleted
+	 * @param pattern
+	 *            a regular expression
+	 * 
+	 * @return <code>true</code> if all deletions were successful, if a deletion
+	 *         fails, the method marks it to be deleted on shutdown an returns
+	 *         (after all other directories are deleted) {@code false}
+	 */
+	public static boolean deleteOnExitDir(final File dir, final String pattern) {
+
+		boolean success = true;
+		final String[] children = dir.list();
+		for (final String child : children) {
+			final File sub = new File(dir, child);
+
+			if (sub.isDirectory() && sub.getName().matches(pattern)) {
+				final boolean dirSuccess = deleteOnExitDir(sub);
+				success = success && dirSuccess;
+			}
+		}
+
+		return success;
+	}
+
+	/**
+	 * Deletes the directory (and all it's content). If not deleteable it is
+	 * marked to be deleted on shutdown.
+	 * 
+	 * @param dir
+	 *            the directory to be deleted
+	 * @return <code>true</code> if all deletions were successful, if a deletion
+	 *         fails, the method marks it to be deleted on shutdown an returns
+	 *         (after all other directories are deleted) {@code false}
+	 */
+	public static boolean deleteOnExitDir(final File dir) {
+
+		if (!dir.exists()) {
+			return true;
+		} else if (dir.isDirectory()) {
+			final String[] children = dir.list();
+			for (int i = 0; i < children.length; i++) {
+				deleteOnExitDir(new File(dir, children[i]));
+			}
+		}
+
+		if (dir.delete()) {
+			return true;
+		} else {
+			dir.deleteOnExit();
+			return false;
+		}
+	}
+
+	/**
 	 * Deletes a <code>Collection</code> of files and directories
 	 * 
 	 * @param files
