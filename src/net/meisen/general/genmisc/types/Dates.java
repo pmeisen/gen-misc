@@ -149,7 +149,7 @@ public class Dates {
 
 	/**
 	 * This function calculates the difference between two {@link Date} objects
-	 * in minutes
+	 * in minutes. The difference is calculated by {@code date1 - date2}.
 	 * 
 	 * @param date1
 	 *            the {@link Date} object to be subtracted from
