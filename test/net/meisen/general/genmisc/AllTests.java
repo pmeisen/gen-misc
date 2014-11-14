@@ -3,6 +3,7 @@ package net.meisen.general.genmisc;
 import net.meisen.general.genmisc.exceptions.catalog.TestExceptionCatalog;
 import net.meisen.general.genmisc.exceptions.catalog.TestLocalizedExceptionCatalog;
 import net.meisen.general.genmisc.exceptions.registry.TestDefaultExceptionRegistry;
+import net.meisen.general.genmisc.raster.AllRasterTests;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -21,7 +22,10 @@ import org.junit.runners.Suite;
 		TestManifest.class, TestVersion.class, TestExceptionCatalog.class,
 		TestLocalizedExceptionCatalog.class,
 		TestDefaultExceptionRegistry.class, TestNumbers.class,
-		TestObjects.class })
+		TestObjects.class,
+
+		// raster test
+		AllRasterTests.class })
 public class AllTests {
 	// nothing more to do here
 }

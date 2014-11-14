@@ -17,5 +17,13 @@
       <version>TRUNK-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
+    
+    <!-- powermock for testing -->
+    <dependency>
+	  <groupId>org.powermock</groupId>
+	  <artifactId>powermock-api-mockito</artifactId>
+	  <version>1.4.12</version>
+	  <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
