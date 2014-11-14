@@ -5,7 +5,6 @@ import java.util.Map;
 
 import net.meisen.general.genmisc.raster.data.IModelData;
 
-
 /**
  * A basic <code>ModelData</code> implementation which is based on a {@link Map}
  * 
@@ -50,6 +49,16 @@ public class BaseModelData implements IModelData {
 		return values.put(name, value);
 	}
 
+	/**
+	 * Sets all the specified values.
+	 * 
+	 * @param values
+	 *            the values to be added
+	 */
+	public void setValues(final Map<String, Object> values) {
+		this.values.putAll(values);
+	}
+
 	@Override
 	public <T> T get(final String name) {
 
@@ -57,5 +66,10 @@ public class BaseModelData implements IModelData {
 		final T val = (T) getValue(name);
 
 		return val;
+	}
+
+	@Override
+	public String toString() {
+		return values.toString();
 	}
 }
