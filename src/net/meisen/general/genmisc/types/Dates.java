@@ -136,7 +136,22 @@ public class Dates {
 	 * @return the truncated {@link Date}, i.e. no time information
 	 */
 	public static Date truncateDate(final Date date) {
+		return truncDate(date, TimeZone.getDefault().getID());
+	}
+
+	/**
+	 * Truncates the date assuming it's in the specified {@code timezone}.
+	 * 
+	 * @param date
+	 *            the date to be truncated
+	 * @param timezone
+	 *            the timezone
+	 * 
+	 * @return the truncated date
+	 */
+	public static Date truncDate(final Date date, final String timezone) {
 		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeZone(TimeZone.getTimeZone(timezone));
 		calendar.setTime(date);
 
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -145,6 +160,18 @@ public class Dates {
 		calendar.set(Calendar.MILLISECOND, 0);
 
 		return calendar.getTime();
+	}
+
+	/**
+	 * Truncates the date assuming it's in the {@link #GENERAL_TIMEZONE}.
+	 * 
+	 * @param date
+	 *            the date to be truncated
+	 * 
+	 * @return the truncated date
+	 */
+	public static Date truncDate(final Date date) {
+		return truncDate(date, GENERAL_TIMEZONE);
 	}
 
 	/**
@@ -348,7 +375,10 @@ public class Dates {
 
 	/**
 	 * Get the current <code>Date</code> of the system in the general defined
-	 * <code>TimeZone</code>.
+	 * <code>TimeZone</code>. That means, e.g. assume that it is currently
+	 * {@code 21.11.2014 12:00} in {@code Europe/Berlin}, the method gets that
+	 * time as UTC time, i.e. converting it back to {@code Europe/Berlin} would
+	 * than be +1.
 	 * 
 	 * @return the current <code>Date</code> of the system in the general
 	 *         defined <code>TimeZone</code>
@@ -368,15 +398,8 @@ public class Dates {
 	 *         <code>TimeZone</code>
 	 */
 	public static Date now(final String timezone) {
-		final String format = "ddMMyyyy HH:mm:ss,SSS";
-		final Date now = new Date();
-
-		final String nowString = formatDate(now, format);
-		try {
-			return parseDate(nowString, format);
-		} catch (final ParseException e) {
-			throw new IllegalStateException("Unreachable code was reached.", e);
-		}
+		return mapToTimezone(new Date(), TimeZone.getDefault().getID(),
+				timezone);
 	}
 
 	/**

@@ -66,7 +66,7 @@ public class TestDates {
 		final String utcNow = Dates.formatDate(Dates.now(),
 				"dd.MM.yyyy HH:mm:ss");
 		final String nowNow = Dates.formatDate(new Date(),
-				"dd.MM.yyyy HH:mm:ss");
+				"dd.MM.yyyy HH:mm:ss", TimeZone.getDefault().getID());
 
 		final Date uctNowDate = Dates.parseDate(utcNow, "dd.MM.yyyy HH:mm:ss");
 		final Date nowNowDate = Dates.parseDate(nowNow, "dd.MM.yyyy HH:mm:ss");
@@ -155,5 +155,32 @@ public class TestDates {
 		assertEquals(Dates.parseDate("20.01.1981 08:07:00,000",
 				Dates.FULL_FORMAT, "America/Los_Angeles"), dateUs);
 
+	}
+
+	/**
+	 * Tests the truncation of dates.
+	 * 
+	 * @throws ParseException
+	 *             if a test format is invalid
+	 */
+	@Test
+	public void testTruncDate() throws ParseException {
+		final String timezone = TimeZone.getDefault().getID();
+		final Date now = Dates.now(timezone);
+		final Date nowTrunc = Dates.truncateDate(now);
+
+		assertEquals(Dates.formatDate(now, "dd.MM.yyyy", timezone),
+				Dates.formatDate(nowTrunc, "dd.MM.yyyy", timezone));
+
+		final Date chicDate = Dates.parseDate("10.02.2000 19:12:00",
+				"dd.MM.yyyy HH:mm:ss", "America/Chicago");
+
+		// the UTC was truncated
+		assertEquals(Dates.parseDate("10.02.2000 18:00:00",
+				"dd.MM.yyyy HH:mm:ss", "America/Chicago"),
+				Dates.truncDate(chicDate));
+		assertEquals(Dates.parseDate("10.02.2000 00:00:00",
+				"dd.MM.yyyy HH:mm:ss", "America/Chicago"), Dates.truncDate(
+				chicDate, "America/Chicago"));
 	}
 }
