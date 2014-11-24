@@ -140,6 +140,41 @@ public class Dates {
 	}
 
 	/**
+	 * Truncates the date assuming it's in the {@link #GENERAL_TIMEZONE}.
+	 * 
+	 * @param date
+	 *            the date to be truncated
+	 * 
+	 * @return the truncated date
+	 */
+	public static Date truncDate(final Date date) {
+		return truncDate(date, GENERAL_TIMEZONE);
+	}
+
+	/**
+	 * Truncates the date assuming it's in the {@link #GENERAL_TIMEZONE}.
+	 * 
+	 * @param date
+	 *            the date to be truncated
+	 * @param truncateLevel
+	 *            one of:
+	 *            <ul>
+	 *            <li>{@link Calendar#YEAR}</li>
+	 *            <li>{@link Calendar#MONTH}</li>
+	 *            <li>{@link Calendar#DATE}</li>
+	 *            <li>{@link Calendar#HOUR}</li>
+	 *            <li>{@link Calendar#MINUTE}</li>
+	 *            <li>{@link Calendar#SECOND}</li>
+	 *            <li>{@link Calendar#MILLISECOND}</li>
+	 *            </ul>
+	 * 
+	 * @return the truncated date
+	 */
+	public static Date truncDate(final Date date, final int truncateLevel) {
+		return truncDate(date, GENERAL_TIMEZONE, truncateLevel);
+	}
+
+	/**
 	 * Truncates the date assuming it's in the specified {@code timezone}.
 	 * 
 	 * @param date
@@ -150,28 +185,53 @@ public class Dates {
 	 * @return the truncated date
 	 */
 	public static Date truncDate(final Date date, final String timezone) {
+		return truncDate(date, timezone, Calendar.DATE);
+	}
+
+	/**
+	 * Truncates the date assuming it's in the specified {@code timezone} to the
+	 * specified {@code truncateLevel}.
+	 * 
+	 * @param date
+	 *            the date to be truncated
+	 * @param timezone
+	 *            the timezone
+	 * @param truncateLevel
+	 *            one of:
+	 *            <ul>
+	 *            <li>{@link Calendar#YEAR}</li>
+	 *            <li>{@link Calendar#MONTH}</li>
+	 *            <li>{@link Calendar#DATE}</li>
+	 *            <li>{@link Calendar#HOUR}</li>
+	 *            <li>{@link Calendar#MINUTE}</li>
+	 *            <li>{@link Calendar#SECOND}</li>
+	 *            <li>{@link Calendar#MILLISECOND}</li>
+	 *            </ul>
+	 * 
+	 * @return the truncated date
+	 */
+	public static Date truncDate(final Date date, final String timezone,
+			final int truncateLevel) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getTimeZone(timezone));
 		calendar.setTime(date);
 
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
+		switch (truncateLevel) {
+		case Calendar.YEAR:
+			calendar.set(Calendar.MONTH, 0);
+		case Calendar.MONTH:
+			calendar.set(Calendar.DAY_OF_MONTH, 1);
+		case Calendar.DATE:
+			calendar.set(Calendar.HOUR_OF_DAY, 0);
+		case Calendar.HOUR:
+			calendar.set(Calendar.MINUTE, 0);
+		case Calendar.MINUTE:
+			calendar.set(Calendar.SECOND, 0);
+		case Calendar.SECOND:
+			calendar.set(Calendar.MILLISECOND, 0);
+		}
 
 		return calendar.getTime();
-	}
-
-	/**
-	 * Truncates the date assuming it's in the {@link #GENERAL_TIMEZONE}.
-	 * 
-	 * @param date
-	 *            the date to be truncated
-	 * 
-	 * @return the truncated date
-	 */
-	public static Date truncDate(final Date date) {
-		return truncDate(date, GENERAL_TIMEZONE);
 	}
 
 	/**

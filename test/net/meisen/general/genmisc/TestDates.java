@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -172,7 +173,7 @@ public class TestDates {
 		assertEquals(Dates.formatDate(now, "dd.MM.yyyy", timezone),
 				Dates.formatDate(nowTrunc, "dd.MM.yyyy", timezone));
 
-		final Date chicDate = Dates.parseDate("10.02.2000 19:12:00",
+		Date chicDate = Dates.parseDate("10.02.2000 19:12:00",
 				"dd.MM.yyyy HH:mm:ss", "America/Chicago");
 
 		// the UTC was truncated
@@ -182,5 +183,26 @@ public class TestDates {
 		assertEquals(Dates.parseDate("10.02.2000 00:00:00",
 				"dd.MM.yyyy HH:mm:ss", "America/Chicago"), Dates.truncDate(
 				chicDate, "America/Chicago"));
+
+		chicDate = Dates.parseDate("02.11.2014 02:15:12,312",
+				"dd.MM.yyyy HH:mm:ss,SSS", "America/Chicago");
+		assertEquals(Dates.parseDate("01.11.2014 00:00:00",
+				"dd.MM.yyyy HH:mm:ss", "America/Chicago"), Dates.truncDate(
+				chicDate, "America/Chicago", Calendar.MONTH));
+		assertEquals(Dates.parseDate("02.11.2014 00:00:00",
+				"dd.MM.yyyy HH:mm:ss", "America/Chicago"), Dates.truncDate(
+				chicDate, "America/Chicago", Calendar.DATE));
+		assertEquals(Dates.parseDate("02.11.2014 02:00:00",
+				"dd.MM.yyyy HH:mm:ss", "America/Chicago"), Dates.truncDate(
+				chicDate, "America/Chicago", Calendar.HOUR));
+		assertEquals(Dates.parseDate("02.11.2014 02:15:00",
+				"dd.MM.yyyy HH:mm:ss", "America/Chicago"), Dates.truncDate(
+				chicDate, "America/Chicago", Calendar.MINUTE));
+		assertEquals(Dates.parseDate("02.11.2014 02:15:12",
+				"dd.MM.yyyy HH:mm:ss", "America/Chicago"), Dates.truncDate(
+				chicDate, "America/Chicago", Calendar.SECOND));
+		assertEquals(Dates.parseDate("02.11.2014 02:15:12,312",
+				"dd.MM.yyyy HH:mm:ss,SSS", "America/Chicago"), Dates.truncDate(
+				chicDate, "America/Chicago", Calendar.MILLISECOND));
 	}
 }
