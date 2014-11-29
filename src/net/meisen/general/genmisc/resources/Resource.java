@@ -32,12 +32,12 @@ import net.meisen.general.genmisc.types.Files;
 public class Resource {
 
 	/**
-	 * Tries to load a resource from the file-system (relative files are resolved
-	 * against the working directory). If the resource cannot be found on the
-	 * file-system it is resolved against the class-path.
+	 * Tries to load a resource from the file-system (relative files are
+	 * resolved against the working directory). If the resource cannot be found
+	 * on the file-system it is resolved against the class-path.
 	 * 
 	 * @param path
-	 *          the path to be resolved
+	 *            the path to be resolved
 	 * @return the resource as {@link InputStream} or <code>null</code> if it
 	 *         cannot be found
 	 */
@@ -53,11 +53,12 @@ public class Resource {
 	 * returned.
 	 * 
 	 * @param resInfo
-	 *          the <code>ResourceInfo</code> loaded
+	 *            the <code>ResourceInfo</code> loaded
 	 * @return the resource as {@link InputStream} or <code>null</code> if it
 	 *         cannot be found
 	 */
-	public final static InputStream getResourceAsStream(final ResourceInfo resInfo) {
+	public final static InputStream getResourceAsStream(
+			final ResourceInfo resInfo) {
 
 		// check if the resource is available
 		if (resInfo == null || !resInfo.exists() || !resInfo.isFile()) {
@@ -78,7 +79,8 @@ public class Resource {
 			try {
 				final JarFile jarFile = new JarFile(URLDecoder.decode(
 						resInfo.getJarPath(), "UTF-8"));
-				final JarEntry jarEntry = jarFile.getJarEntry(resInfo.getInJarPath());
+				final JarEntry jarEntry = jarFile.getJarEntry(resInfo
+						.getInJarPath());
 
 				is = jarFile.getInputStream(jarEntry);
 			} catch (final UnsupportedEncodingException e) {
@@ -98,7 +100,7 @@ public class Resource {
 	 * Checks if the specified resource is a file and if it exists.
 	 * 
 	 * @param path
-	 *          the relative or absolute file to be checked
+	 *            the relative or absolute file to be checked
 	 * @return <code>true</code> if the resource is a file and available (i.e.
 	 *         readable on the file-system or available on the class-path,
 	 *         otherwise <code>false</code>
@@ -115,7 +117,8 @@ public class Resource {
 	 * Checks if the specified resource is a file and if it exists.
 	 * 
 	 * @param resInfo
-	 *          the <code>ResourceInfo</code> of the file which should be checked
+	 *            the <code>ResourceInfo</code> of the file which should be
+	 *            checked
 	 * @return <code>true</code> if the resource exists and if it is a file,
 	 *         otherwise <code>false</code>
 	 * 
@@ -139,7 +142,7 @@ public class Resource {
 	 * or on the class-path
 	 * 
 	 * @param path
-	 *          the relative or absolute path to be checked
+	 *            the relative or absolute path to be checked
 	 * @return <code>true</code> if the path can be resolved, otherwise
 	 *         <code>false</code>
 	 * 
@@ -156,10 +159,10 @@ public class Resource {
 	 * This means that the resource is a directory (i.e. not a file) and exists.
 	 * 
 	 * @param resInfo
-	 *          the <code>ResourceInfo</code> with defines the resource which
-	 *          should be checked
-	 * @return <code>true</code> if the resource is a directory (i.e. not a file)
-	 *         and exists, <code>false</code> otherwise
+	 *            the <code>ResourceInfo</code> with defines the resource which
+	 *            should be checked
+	 * @return <code>true</code> if the resource is a directory (i.e. not a
+	 *         file) and exists, <code>false</code> otherwise
 	 * 
 	 * @see ResourceInfo#exists()
 	 * @see ResourceInfo#isFile()
@@ -177,10 +180,11 @@ public class Resource {
 	}
 
 	/**
-	 * This method is used to resolve a path to the path used to access the path.
+	 * This method is used to resolve a path to the path used to access the
+	 * path.
 	 * 
 	 * @param path
-	 *          the resolved path
+	 *            the resolved path
 	 * @return the path pointing to the resolved path
 	 * 
 	 * @see Resource#resolveResource(String)
@@ -192,11 +196,11 @@ public class Resource {
 	}
 
 	/**
-	 * This method is used to resolve a path to the path used to retrieve the file
-	 * from the file-system or the class-path.
+	 * This method is used to resolve a path to the path used to retrieve the
+	 * file from the file-system or the class-path.
 	 * 
 	 * @param path
-	 *          the path to be resolved
+	 *            the path to be resolved
 	 * @return the path pointing to the resolved resource
 	 * 
 	 * @see Resource#resolvePath(String)
@@ -212,8 +216,8 @@ public class Resource {
 	 * sub-directories or sub-directories are not included.
 	 * 
 	 * @param path
-	 *          the path to get all the available resources for (sub-directories
-	 *          are excluded and not added)
+	 *            the path to get all the available resources for
+	 *            (sub-directories are excluded and not added)
 	 * @return the list of all the resources within the specified path,
 	 *         <code>null</code> if a location was passed, which does not exist
 	 */
@@ -227,11 +231,11 @@ public class Resource {
 	 * Determines all the available files under the specified path
 	 * 
 	 * @param path
-	 *          the path to get all the available resources for (sub-directories
-	 *          are excluded and not added)
+	 *            the path to get all the available resources for
+	 *            (sub-directories are excluded and not added)
 	 * @param includeSubs
-	 *          <code>true</code> if the sub-files and directories should be
-	 *          included, otherwise <code>false</code>
+	 *            <code>true</code> if the sub-files and directories should be
+	 *            included, otherwise <code>false</code>
 	 * 
 	 * @return the list of all the resources within the specified path,
 	 *         <code>null</code> if a location was passed, which does not exist
@@ -247,15 +251,15 @@ public class Resource {
 	 * Determines all the available files under the specified path
 	 * 
 	 * @param resInfo
-	 *          the <code>ResourceInfo</code> which points to the directory to be
-	 *          checked for available resources
+	 *            the <code>ResourceInfo</code> which points to the directory to
+	 *            be checked for available resources
 	 * @param includeSubs
-	 *          <code>true</code> if the sub-files and directories should be
-	 *          included, otherwise <code>false</code>
+	 *            <code>true</code> if the sub-files and directories should be
+	 *            included, otherwise <code>false</code>
 	 * 
 	 * @return the list of all the resources within the specified path,
-	 *         <code>null</code> if a location was passed, which does not exist or
-	 *         which points to a file
+	 *         <code>null</code> if a location was passed, which does not exist
+	 *         or which points to a file
 	 */
 	public static Collection<String> getAvailableResources(
 			final ResourceInfo resInfo, final boolean includeSubs) {
@@ -269,15 +273,16 @@ public class Resource {
 		} else if (ResourceType.FILE_SYSTEM_PATH.equals(resInfo.getType())) {
 			final String fullPath = resInfo.getFullPath();
 			final File dir = new File(fullPath);
-			final List<File> files = includeSubs ? Files.getDirectoryContent(dir)
-					: Files.getCurrentFilelist(dir);
+			final List<File> files = includeSubs ? Files
+					.getDirectoryContent(dir) : Files.getCurrentFilelist(dir);
 
 			// add all the files
 			result = new HashSet<String>();
 
 			for (final File file : files) {
 				final String filePath = Files.getCanonicalPath(file);
-				final String entry = filePath.replaceFirst(Pattern.quote(fullPath), "");
+				final String entry = filePath.replaceFirst(
+						Pattern.quote(fullPath), "");
 				result.add(entry);
 			}
 		} else if (ResourceType.IN_JAR_PATH.equals(resInfo.getType())) {
@@ -306,7 +311,8 @@ public class Resource {
 					final String entry = name.substring(inJarPath.length());
 
 					// only add the files
-					if (!entry.equals("") && (includeSubs || entry.indexOf("/") < 0)) {
+					if (!entry.equals("")
+							&& (includeSubs || entry.indexOf("/") < 0)) {
 						result.add(entry);
 					}
 				}
@@ -323,7 +329,7 @@ public class Resource {
 	 * class-path
 	 * 
 	 * @param fileName
-	 *          the file-name to look for
+	 *            the file-name to look for
 	 * 
 	 * @return the <code>Collection</code> of all the resources found on the
 	 *         class-path with the specified filename
@@ -337,13 +343,13 @@ public class Resource {
 	 * class-path and/or working-directory.
 	 * 
 	 * @param fileName
-	 *          the file-name to look for
+	 *            the file-name to look for
 	 * @param lookOnClassPath
-	 *          <code>true</code> to look for the resource on the classpath,
-	 *          otherwise <code>false</code>
+	 *            <code>true</code> to look for the resource on the classpath,
+	 *            otherwise <code>false</code>
 	 * @param lookInWorkingDir
-	 *          <code>true</code> to look for the resource in the
-	 *          working-directory, otherwise <code>false</code>
+	 *            <code>true</code> to look for the resource in the
+	 *            working-directory, otherwise <code>false</code>
 	 * 
 	 * @return the <code>Collection</code> of all the resources found on the
 	 *         class-path with the specified filename
@@ -353,30 +359,13 @@ public class Resource {
 
 		// we have to modify the filename and replace the \ and / by regular
 		// expressions
-		final String regExFileName = transformFileNameIntoValidRegEx(fileName);
+		final String regExFileName = Files
+				.transformFileNameIntoValidRegEx(fileName);
 
 		// create the pattern
-		final Pattern pattern = Pattern.compile("(?:^|.*[/\\\\])" + regExFileName
-				+ "$");
+		final Pattern pattern = Pattern.compile("(?:^|.*[/\\\\])"
+				+ regExFileName + "$");
 		return getResources(pattern, lookOnClassPath, lookInWorkingDir);
-	}
-
-	/**
-	 * Helper method if a <code>fileName</code> has to be transformed into a
-	 * regular expression, which can be used to filter for the
-	 * <code>fileName</code>.
-	 * 
-	 * @param fileName
-	 *          the file's name to be transformed into a valid regular expression
-	 * 
-	 * @return the transformed valid regular expression
-	 * 
-	 * @see #getResources(Pattern)
-	 * @see #getResources(Pattern, boolean, boolean)
-	 */
-	public static String transformFileNameIntoValidRegEx(final String fileName) {
-		return "\\Q" + fileName.replaceAll("[\\\\/]", "\\\\E[/\\\\\\\\]\\\\Q")
-				+ "\\E";
 	}
 
 	/**
@@ -384,7 +373,7 @@ public class Resource {
 	 * available on the class-path
 	 * 
 	 * @param pattern
-	 *          the <code>Pattern</code> to match against
+	 *            the <code>Pattern</code> to match against
 	 * 
 	 * @return the <code>Collection</code> of all the resources found on the
 	 *         class-path with the specified filename
@@ -394,18 +383,19 @@ public class Resource {
 	}
 
 	/**
-	 * Retrieves all the resources which match the specified <code>Pattern</code>.
-	 * The resources must be files and must be located (depending on the passed
-	 * booleans) on the classpath or in the working directory.
+	 * Retrieves all the resources which match the specified
+	 * <code>Pattern</code>. The resources must be files and must be located
+	 * (depending on the passed booleans) on the classpath or in the working
+	 * directory.
 	 * 
 	 * @param pattern
-	 *          the <code>Pattern</code> to match the files against
+	 *            the <code>Pattern</code> to match the files against
 	 * @param lookOnClassPath
-	 *          <code>true</code> if the resource should be searched on the
-	 *          class-path, otherwise <code>false</code>
+	 *            <code>true</code> if the resource should be searched on the
+	 *            class-path, otherwise <code>false</code>
 	 * @param lookInWorkingDir
-	 *          <code>true</code> if the resource should be searched on the
-	 *          working directory, otherwise <code>false</code>
+	 *            <code>true</code> if the resource should be searched on the
+	 *            working directory, otherwise <code>false</code>
 	 * 
 	 * @return the <code>Collection</code> of found resources
 	 */
@@ -415,11 +405,14 @@ public class Resource {
 
 		if (lookOnClassPath) {
 
-			// get the different ClassLoaders, hopefully we find our sources there
+			// get the different ClassLoaders, hopefully we find our sources
+			// there
 			final Set<ClassLoader> mainClassloaders = new HashSet<ClassLoader>();
 			mainClassloaders.add(Resource.class.getClassLoader());
-			mainClassloaders.add(Thread.currentThread().getClass().getClassLoader());
-			mainClassloaders.add(Thread.currentThread().getContextClassLoader());
+			mainClassloaders.add(Thread.currentThread().getClass()
+					.getClassLoader());
+			mainClassloaders
+					.add(Thread.currentThread().getContextClassLoader());
 
 			// get all the parents and add those as well
 			final Set<ClassLoader> classloaders = new HashSet<ClassLoader>();
@@ -435,11 +428,13 @@ public class Resource {
 			for (final ClassLoader classloader : classloaders) {
 
 				if (classloader instanceof URLClassLoader) {
-					final URL[] clUrls = ((URLClassLoader) classloader).getURLs();
+					final URL[] clUrls = ((URLClassLoader) classloader)
+							.getURLs();
 					urls.addAll(Arrays.asList(clUrls));
 				} else {
 					try {
-						final Enumeration<URL> clUrls = classloader.getResources("");
+						final Enumeration<URL> clUrls = classloader
+								.getResources("");
 						urls.addAll(Collections.list(clUrls));
 					} catch (final IOException e) {
 						// ignore
@@ -456,8 +451,10 @@ public class Resource {
 				}
 
 				if (file.isDirectory()) {
-					final List<File> files = Files.getFilelist(file, null, pattern);
-					retval.addAll(ResourceInfo.transformFromFileCollection(file, files));
+					final List<File> files = Files.getFilelist(file, null,
+							pattern);
+					retval.addAll(ResourceInfo.transformFromFileCollection(
+							file, files));
 				} else {
 					retval.addAll(getResourcesFromJarFile(file, pattern));
 				}
@@ -466,8 +463,8 @@ public class Resource {
 		if (lookInWorkingDir) {
 
 			// look in the working directory for the pattern
-			final List<File> workDirFiles = Files.getFilelist(new File("."), null,
-					pattern);
+			final List<File> workDirFiles = Files.getFilelist(new File("."),
+					null, pattern);
 			for (final File workDirFile : workDirFiles) {
 				if (workDirFile.isFile()) {
 					final String fullPath = Files.getCanonicalPath(workDirFile);
@@ -479,13 +476,13 @@ public class Resource {
 	}
 
 	/**
-	 * Retrieves all the resources which match the specified <code>Pattern</code>
-	 * and are available on the classpath.
+	 * Retrieves all the resources which match the specified
+	 * <code>Pattern</code> and are available on the classpath.
 	 * 
 	 * @param file
-	 *          the jar-<code>File</code> to look for resources
+	 *            the jar-<code>File</code> to look for resources
 	 * @param pattern
-	 *          the <code>Pattern</code> to match the files against
+	 *            the <code>Pattern</code> to match the files against
 	 * 
 	 * @return the <code>Collection</code> of found resources
 	 */
@@ -508,16 +505,17 @@ public class Resource {
 				final String fileName = je.getName();
 				final boolean accept = pattern.matcher(fileName).matches();
 				if (accept) {
-					retval.add(new ResourceInfo(fileName, pathToJar, !je.isDirectory()));
+					retval.add(new ResourceInfo(fileName, pathToJar, !je
+							.isDirectory()));
 				}
 			}
 			jarFile.close();
 		} catch (final UnsupportedEncodingException e) {
-			throw new IllegalStateException("Cannot read jar at '" + pathToJar + "'",
-					e);
+			throw new IllegalStateException("Cannot read jar at '" + pathToJar
+					+ "'", e);
 		} catch (final IOException e) {
-			throw new IllegalStateException("Cannot read jar at '" + pathToJar + "'",
-					e);
+			throw new IllegalStateException("Cannot read jar at '" + pathToJar
+					+ "'", e);
 		}
 		return retval;
 	}

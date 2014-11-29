@@ -368,8 +368,7 @@ public class Files {
 		// create a filter
 		final FileFilter filter = new FileFilter() {
 
-			private final String dirRegEx = "\\Q" + Files.getCanonicalPath(dir)
-					+ "\\E";
+			private final String dirRegEx = transformFileNameIntoValidRegEx(getCanonicalPath(dir));
 
 			@Override
 			public boolean accept(final File file) {
@@ -381,6 +380,25 @@ public class Files {
 		};
 
 		return getFilelist(dir, fileList, filter);
+	}
+
+	/**
+	 * Helper method if a <code>fileName</code> has to be transformed into a
+	 * regular expression, which can be used to filter for the
+	 * <code>fileName</code>.
+	 * 
+	 * @param fileName
+	 *            the file's name to be transformed into a valid regular
+	 *            expression
+	 * 
+	 * @return the transformed valid regular expression
+	 * 
+	 * @see Resource#getResources(Pattern)
+	 * @see Resource#getResources(Pattern, boolean, boolean)
+	 */
+	public static String transformFileNameIntoValidRegEx(final String fileName) {
+		return "\\Q" + fileName.replaceAll("[\\\\/]", "\\\\E[/\\\\\\\\]\\\\Q")
+				+ "\\E";
 	}
 
 	/**

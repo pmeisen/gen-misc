@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import net.meisen.general.genmisc.resources.Resource;
 import net.meisen.general.genmisc.resources.ResourceInfo;
+import net.meisen.general.genmisc.types.Files;
 import net.meisen.general.genmisc.types.Objects;
 
 /**
@@ -64,11 +65,11 @@ public class DefaultLocalizedExceptionCatalog implements
 	 * Constructor which specifies the bundle to be used.
 	 * 
 	 * @param bundle
-	 *          the bundle to be used as resource for the
-	 *          <code>LocalizedExceptionCatalog</code>
+	 *            the bundle to be used as resource for the
+	 *            <code>LocalizedExceptionCatalog</code>
 	 * 
 	 * @throws InvalidCatalogEntryException
-	 *           if one of the entries of the catalog is invalid
+	 *             if one of the entries of the catalog is invalid
 	 */
 	public DefaultLocalizedExceptionCatalog(final String bundle)
 			throws InvalidCatalogEntryException {
@@ -85,11 +86,11 @@ public class DefaultLocalizedExceptionCatalog implements
 	 * Sets the bundle to be used.
 	 * 
 	 * @param bundle
-	 *          the bundle to be used as resource for the
-	 *          <code>LocalizedExceptionCatalog</code>
+	 *            the bundle to be used as resource for the
+	 *            <code>LocalizedExceptionCatalog</code>
 	 * 
 	 * @throws InvalidCatalogEntryException
-	 *           if one of the entries of the catalog is invalid
+	 *             if one of the entries of the catalog is invalid
 	 */
 	public void setBundle(final String bundle)
 			throws InvalidCatalogEntryException {
@@ -109,7 +110,7 @@ public class DefaultLocalizedExceptionCatalog implements
 		// create the pattern for the bundle's resources
 		final String regExLocale = "(?:\\_([a-z]{2})(?:\\_([A-Z]{2}))?)?\\.properties$";
 		final String regExClasspath = ".*"
-				+ Resource.transformFileNameIntoValidRegEx(validBundleName)
+				+ Files.transformFileNameIntoValidRegEx(validBundleName)
 				+ regExLocale;
 		final Pattern patternClasspath = Pattern.compile(regExClasspath);
 		final Pattern patternLocale = Pattern.compile(regExLocale);
@@ -157,18 +158,18 @@ public class DefaultLocalizedExceptionCatalog implements
 	}
 
 	/**
-	 * Method to create the <code>ExceptionCatalog</code> which is internally used
-	 * to store all the exceptions defined for one <code>Locale</code>.
+	 * Method to create the <code>ExceptionCatalog</code> which is internally
+	 * used to store all the exceptions defined for one <code>Locale</code>.
 	 * 
 	 * @param stream
-	 *          the <code>InputStream</code> of the <code>Locale</code>'s property
-	 *          file to load the <code>ExceptionCatalog</code> from
+	 *            the <code>InputStream</code> of the <code>Locale</code>'s
+	 *            property file to load the <code>ExceptionCatalog</code> from
 	 * 
 	 * @return the created new catalog
 	 * 
 	 * @throws InvalidCatalogEntryException
-	 *           if the properties cannot be read by the
-	 *           <code>ExceptionCatalog</code>
+	 *             if the properties cannot be read by the
+	 *             <code>ExceptionCatalog</code>
 	 */
 	public IExceptionCatalog createNewCatalog(final InputStream stream)
 			throws InvalidCatalogEntryException {
@@ -190,11 +191,13 @@ public class DefaultLocalizedExceptionCatalog implements
 
 		String message = null;
 		if (useCountry) {
-			final Locale l = new Locale(locale.getLanguage(), locale.getCountry());
+			final Locale l = new Locale(locale.getLanguage(),
+					locale.getCountry());
 			final IExceptionCatalog catalog = localizedCatalogs.get(l);
 			message = catalog == null ? null : catalog.getMessage(number);
 
-			// check if we got a message, otherwise we have to check the language
+			// check if we got a message, otherwise we have to check the
+			// language
 			if (message == null) {
 				useLanguage = true;
 			}
@@ -224,7 +227,8 @@ public class DefaultLocalizedExceptionCatalog implements
 	public String getMessage(final Integer number) {
 
 		// get the default locale of the VM
-		final Locale locale = defLocale == null ? Locale.getDefault() : defLocale;
+		final Locale locale = defLocale == null ? Locale.getDefault()
+				: defLocale;
 
 		// get the message for the locale
 		return getMessage(number, locale);
