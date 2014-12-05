@@ -29,14 +29,19 @@ import net.meisen.general.genmisc.types.Classes;
 public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 	private Map<Class<? extends Exception>, IExceptionCatalog> registry = new HashMap<Class<? extends Exception>, IExceptionCatalog>();;
 
+	@Override
+	public boolean isRegistered(Class<? extends Exception> exceptionClass) {
+		return registry.containsKey(exceptionClass);
+	}
+
 	/**
 	 * Adds the passed <code>ExceptionCatalog</code> to the registry and
 	 * associates it to the passed <code>exceptionClazz</code>.
 	 * 
 	 * @param exceptionClazz
-	 *          the class of the exception to associate the catalog to
+	 *            the class of the exception to associate the catalog to
 	 * @param catalog
-	 *          the catalog to be associated
+	 *            the catalog to be associated
 	 */
 	public void addExceptionCatalog(
 			final Class<? extends Exception> exceptionClazz,
@@ -50,9 +55,9 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 	 * specified <code>exceptionClazz</code>.
 	 * 
 	 * @param exceptionClazz
-	 *          the class of the exception to associate the catalog to
+	 *            the class of the exception to associate the catalog to
 	 * @param exceptionCatalogClazz
-	 *          the class of the <code>ExceptionCatalog</code>
+	 *            the class of the <code>ExceptionCatalog</code>
 	 * 
 	 * @see IExceptionCatalog
 	 */
@@ -62,15 +67,17 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 		final Class<?> clazz = Classes.getClass(exceptionCatalogClazz);
 
 		if (clazz == null) {
-			throw new IllegalArgumentException("Could not find the catalog clazz '"
-					+ exceptionCatalogClazz + "'.");
+			throw new IllegalArgumentException(
+					"Could not find the catalog clazz '"
+							+ exceptionCatalogClazz + "'.");
 		} else if (IExceptionCatalog.class.isAssignableFrom(clazz)) {
 			@SuppressWarnings("unchecked")
 			final Class<? extends IExceptionCatalog> catalogClazz = (Class<? extends IExceptionCatalog>) clazz;
 			addExceptionCatalogByClass(exceptionClazz, catalogClazz);
 		} else {
 			throw new IllegalArgumentException("The catalog clazz '"
-					+ exceptionCatalogClazz + "' is not an concrete implementation of '"
+					+ exceptionCatalogClazz
+					+ "' is not an concrete implementation of '"
 					+ IExceptionCatalog.class.getName() + "'.");
 		}
 	}
@@ -81,9 +88,9 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 	 * specified <code>exceptionClazz</code>.
 	 * 
 	 * @param exceptionClazz
-	 *          the class of the exception to associate the catalog to
+	 *            the class of the exception to associate the catalog to
 	 * @param exceptionCatalogClazz
-	 *          the class of the <code>ExceptionCatalog</code>
+	 *            the class of the <code>ExceptionCatalog</code>
 	 * 
 	 * @see IExceptionCatalog
 	 */
@@ -95,9 +102,11 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 		try {
 			catalog = (IExceptionCatalog) exceptionCatalogClazz.newInstance();
 		} catch (final Exception e) {
-			throw new IllegalArgumentException("The catalog clazz '"
-					+ exceptionCatalogClazz
-					+ "' could not be instantiated using the default constructor.", e);
+			throw new IllegalArgumentException(
+					"The catalog clazz '"
+							+ exceptionCatalogClazz
+							+ "' could not be instantiated using the default constructor.",
+					e);
 		}
 
 		// if it is a bundled ExceptionCatalog start it
@@ -121,8 +130,8 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 	 * associates it to the passed <code>exceptionClazz</code>.
 	 * 
 	 * @param exceptionCatalogs
-	 *          the map with the <code>ExceptionCatalog</code> instances and their
-	 *          associated <code>Exception</code> classes
+	 *            the map with the <code>ExceptionCatalog</code> instances and
+	 *            their associated <code>Exception</code> classes
 	 */
 	public void addExceptionCatalogs(
 			final Map<Class<? extends Exception>, IExceptionCatalog> exceptionCatalogs) {
@@ -140,8 +149,8 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 	 * <code>ExceptionCatalog</code> is created using the default constructor.
 	 * 
 	 * @param exceptionCatalogs
-	 *          the map with the <code>ExceptionCatalog</code> instances and their
-	 *          associated <code>Exception</code> classes
+	 *            the map with the <code>ExceptionCatalog</code> instances and
+	 *            their associated <code>Exception</code> classes
 	 */
 	public void addExceptionCatalogsByName(
 			final Map<Class<? extends Exception>, String> exceptionCatalogs) {
@@ -159,8 +168,8 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 	 * <code>ExceptionCatalog</code> is created using the default constructor.
 	 * 
 	 * @param exceptionCatalogs
-	 *          the map with the <code>ExceptionCatalog</code> instances and their
-	 *          associated <code>Exception</code> classes
+	 *            the map with the <code>ExceptionCatalog</code> instances and
+	 *            their associated <code>Exception</code> classes
 	 */
 	public void addExceptionCatalogsByClass(
 			final Map<Class<? extends Exception>, Class<? extends IExceptionCatalog>> exceptionCatalogs) {
@@ -174,15 +183,17 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 
 	@Override
 	public <T extends RuntimeException> void throwRuntimeException(
-			final Class<T> exceptionClazz, final Integer number, final Locale locale,
-			final Throwable reason, final Object... parameter) throws T {
+			final Class<T> exceptionClazz, final Integer number,
+			final Locale locale, final Throwable reason,
+			final Object... parameter) throws T {
 		throwException(exceptionClazz, number, locale, reason, parameter);
 	}
 
 	@Override
 	public <T extends Exception> void throwException(
-			final Class<T> exceptionClazz, final Integer number, final Locale locale,
-			final Throwable reason, final Object... parameter) throws T {
+			final Class<T> exceptionClazz, final Integer number,
+			final Locale locale, final Throwable reason,
+			final Object... parameter) throws T {
 		final IExceptionCatalog catalog = registry.get(exceptionClazz);
 
 		// get the message to be shown
@@ -192,7 +203,8 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 					"The catalog for the exceptionClass '"
 							+ exceptionClazz
 							+ "' cannot be found, please register it within the registry prior to using it.");
-		} else if (locale != null && catalog instanceof ILocalizedExceptionCatalog) {
+		} else if (locale != null
+				&& catalog instanceof ILocalizedExceptionCatalog) {
 			final ILocalizedExceptionCatalog localizedCatalog = (ILocalizedExceptionCatalog) catalog;
 			message = localizedCatalog.getMessage(number, locale);
 		} else {
@@ -214,15 +226,17 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 		try {
 			exception = getException(exceptionClazz, formattedMessage, reason);
 		} catch (final Exception e) {
-			throw new IllegalArgumentException("Unable to throw the exception '"
-					+ exceptionClazz + "', please see the nested exceptions for details",
+			throw new IllegalArgumentException(
+					"Unable to throw the exception '" + exceptionClazz
+							+ "', please see the nested exceptions for details",
 					e);
 		}
 
 		if (exception == null) {
 			throw new IllegalArgumentException(
 					"Unable to generate an exception of class '"
-							+ (exceptionClazz == null ? null : exceptionClazz.getName())
+							+ (exceptionClazz == null ? null : exceptionClazz
+									.getName())
 							+ "', no valid constructor was found. Make sure at least one constructor supports a string parameter.");
 		}
 
@@ -237,38 +251,39 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 	 * <li>if a <code>Throwable</code> is defined a constructor with a
 	 * <code>String</code> and a <code>Throwable</code> is searched</li>
 	 * <li>otherwise a constructor with just a <code>String</code> is searched</li>
-	 * <li>if no constructor wasn't found yet, the default constructor is used (if
-	 * available)</li>
+	 * <li>if no constructor wasn't found yet, the default constructor is used
+	 * (if available)</li>
 	 * <li>if nothing could be created so far, the method will return
 	 * <code>null</code></li>
 	 * </ol>
 	 * 
 	 * @param exceptionClazz
-	 *          the <code>Class</code> of the exception to be generated
+	 *            the <code>Class</code> of the exception to be generated
 	 * @param msg
-	 *          the message of the exception
+	 *            the message of the exception
 	 * @param r
-	 *          the reason for the exception
+	 *            the reason for the exception
 	 * 
-	 * @return the created instance, <code>null</code> if no valid constructor was
-	 *         found
+	 * @return the created instance, <code>null</code> if no valid constructor
+	 *         was found
 	 * 
 	 * @throws InstantiationException
-	 *           if the <code>Exception</code> couldn't be instantiated
+	 *             if the <code>Exception</code> couldn't be instantiated
 	 * @throws IllegalAccessException
-	 *           if the <code>Constructor</code> couldn't be accessed
+	 *             if the <code>Constructor</code> couldn't be accessed
 	 * @throws InvocationTargetException
-	 *           if the invocation of the constructor failed
+	 *             if the invocation of the constructor failed
 	 */
-	protected <T extends Exception> T getException(final Class<T> exceptionClazz,
-			final String msg, final Throwable r) throws InstantiationException,
-			IllegalAccessException, InvocationTargetException {
+	protected <T extends Exception> T getException(
+			final Class<T> exceptionClazz, final String msg, final Throwable r)
+			throws InstantiationException, IllegalAccessException,
+			InvocationTargetException {
 		T exception = null;
 
 		if (r != null && exception == null) {
 			try {
-				final Constructor<T> c = exceptionClazz.getConstructor(String.class,
-						Throwable.class);
+				final Constructor<T> c = exceptionClazz.getConstructor(
+						String.class, Throwable.class);
 				exception = c.newInstance(msg, r);
 			} catch (final NoSuchMethodException e) {
 				// nothing to do
@@ -277,8 +292,8 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 
 		if (r != null && exception == null) {
 			try {
-				final Constructor<T> c = exceptionClazz.getConstructor(Throwable.class,
-						String.class);
+				final Constructor<T> c = exceptionClazz.getConstructor(
+						Throwable.class, String.class);
 				exception = c.newInstance(r, msg);
 			} catch (final NoSuchMethodException e) {
 				// nothing to do
@@ -288,7 +303,8 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 		// if we still don't have one keep on searching
 		if (exception == null) {
 			try {
-				final Constructor<T> c = exceptionClazz.getConstructor(String.class);
+				final Constructor<T> c = exceptionClazz
+						.getConstructor(String.class);
 				exception = c.newInstance(msg);
 			} catch (final NoSuchMethodException e) {
 				// nothing to do
@@ -297,8 +313,8 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 
 		if (exception == null && r == null) {
 			try {
-				final Constructor<T> c = exceptionClazz.getConstructor(String.class,
-						Throwable.class);
+				final Constructor<T> c = exceptionClazz.getConstructor(
+						String.class, Throwable.class);
 				exception = c.newInstance(msg, null);
 			} catch (final NoSuchMethodException e) {
 				// nothing to do
@@ -307,8 +323,8 @@ public class DefaultExceptionRegistry extends AbstractExceptionRegistry {
 
 		if (exception == null && r == null) {
 			try {
-				final Constructor<T> c = exceptionClazz.getConstructor(Throwable.class,
-						String.class);
+				final Constructor<T> c = exceptionClazz.getConstructor(
+						Throwable.class, String.class);
 				exception = c.newInstance(msg, null);
 			} catch (final NoSuchMethodException e) {
 				// nothing to do

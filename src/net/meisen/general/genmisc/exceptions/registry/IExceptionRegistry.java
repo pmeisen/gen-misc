@@ -14,6 +14,16 @@ import net.meisen.general.genmisc.exceptions.ForwardedRuntimeException;
 public interface IExceptionRegistry {
 
 	/**
+	 * Checks if the specified class is already registered.
+	 * 
+	 * @param exceptionClass
+	 *            the class to be checked
+	 *            
+	 * @return {@code true} if the class is registered, otherwise {@code false}
+	 */
+	public boolean isRegistered(final Class<? extends Exception> exceptionClass);
+
+	/**
 	 * Throws a {@code RuntimeException} based on the specified
 	 * {@code ForwardedException}. It might be necessary to cast the exception
 	 * thrown to the one encapsulated by the {@code ForwardedRuntimeException},
