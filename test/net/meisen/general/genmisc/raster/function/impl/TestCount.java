@@ -57,7 +57,7 @@ public class TestCount {
 					modelData, rasterModelData, null, null);
 
 			assertEquals(value, i);
-			assertEquals(rasterModelData.get(entry.getName()), i);
+			assertEquals(rasterModelData.get(entry.getName()), Integer.valueOf(i));
 		}
 	}
 
@@ -93,7 +93,7 @@ public class TestCount {
 			}
 
 			assertEquals(value, ((int) i / 2));
-			assertEquals(rasterModelData.get(entry.getName()), ((int) i / 2));
+			assertEquals(rasterModelData.get(entry.getName()), Integer.valueOf(i / 2));
 		}
 	}
 }

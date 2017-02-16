@@ -1,1 +1,0 @@
-This is an Cp1252 which has some special characters like äüöÜÄÖ

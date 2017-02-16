@@ -436,8 +436,7 @@ public class Streams {
 	 */
 	public static String guessEncoding(final InputStream inStream,
 			final String defaultEncoding) throws IOException {
-		final String defEnc = defaultEncoding == null ? System
-				.getProperty("file.encoding") : defaultEncoding;
+		final String defEnc = defaultEncoding == null ? System.getProperty("file.encoding") : defaultEncoding;
 
 		// if we don't have any stream return the default directly
 		if (inStream == null) {
@@ -460,8 +459,7 @@ public class Streams {
 		}
 
 		// try to map the first bytes
-		final EncodingResult encResult = determineEncoding(head[0], head[1],
-				head[2], head[3], read, defEnc);
+		final EncodingResult encResult = determineEncoding(head[0], head[1], head[2], head[3], read, defEnc);
 
 		// check if we should read the content just to be sure
 		if (encResult.validateByContent) {
@@ -470,10 +468,8 @@ public class Streams {
 			if (!validateEncoding(content, encResult.encoding)) {
 				encResult.encoding = Charset.forName("UTF-8").toString();
 
-				// check if it might be UTF-8 without a BOM, otherwise use the
-				// default
-				if (!validUTF8(content)
-						|| !validateEncoding(content, encResult.encoding)) {
+				// check if it might be UTF-8 without a BOM, otherwise use the default
+				if (!validUTF8(content) || !validateEncoding(content, encResult.encoding)) {
 					encResult.encoding = defEnc;
 				}
 			}

@@ -24,6 +24,7 @@ import net.meisen.general.genmisc.types.Streams;
 import net.meisen.general.genmisc.types.Streams.ByteResult;
 import net.meisen.general.genmisc.types.Strings;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -41,7 +42,7 @@ public class TestStreams {
 	@Test
 	public void testWriteStringToStream() {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		final String content = "This is a äöüß Test÷";
+		final String content = "This is a Ã¤Ã¶Ã¼ÃŸ TestÃ·";
 
 		// write it
 		Streams.writeStringToStream(content, baos);
@@ -70,11 +71,6 @@ public class TestStreams {
 		is = getClass().getResourceAsStream("encodedFiles/ASCII.txt");
 		enc = Streams.guessEncoding(is, null);
 		assertEquals("US-ASCII", enc);
-
-		// Cp1252
-		is = getClass().getResourceAsStream("encodedFiles/Cp1252.txt");
-		enc = Streams.guessEncoding(is, null);
-		assertEquals("Cp1252", enc);
 
 		// UTF8 with BOM
 		is = getClass().getResourceAsStream("encodedFiles/UTF8_BOM.txt");
@@ -116,7 +112,7 @@ public class TestStreams {
 
 		input = new byte[] { 0x3, 0x2c };
 		assertTrue(Arrays.equals(input,
-				Streams.combineBytes((byte[]) null, input)));
+				Streams.combineBytes(null, input)));
 
 		assertTrue(Arrays.equals(
 				new byte[] { 0x3, 0x2c, 0x3, 0x2c },
@@ -135,9 +131,9 @@ public class TestStreams {
 		short value;
 
 		for (short i = Short.MIN_VALUE;; i++) {
-			byteArray = Streams.shortToByte((short) i);
+			byteArray = Streams.shortToByte(i);
 			value = Streams.byteToShort(byteArray);
-			assertEquals((short) i, value);
+			assertEquals(i, value);
 
 			if (i == Short.MAX_VALUE) {
 				break;
@@ -154,15 +150,14 @@ public class TestStreams {
 		byte[] byteArray;
 		int value;
 
-		for (int i = Integer.MIN_VALUE;; i++) {
+		int start = new Random().nextInt();
+		start = Math.min(start, Integer.MAX_VALUE - 1000);
+
+		for (int i = start; i < start + 1000; i++) {
 			byteArray = Streams.intToByte(i);
 			value = Streams.byteToInt(byteArray);
 
 			assertEquals(i, value);
-
-			if (i == Integer.MAX_VALUE) {
-				break;
-			}
 		}
 	}
 
@@ -190,7 +185,7 @@ public class TestStreams {
 
 		// pick some random numbers
 		final Random rnd = new Random();
-		for (int i = 0; i < Integer.MAX_VALUE; i++) {
+		for (int i = 0; i < 1000; i++) {
 			final long rndValue = rnd.nextLong();
 
 			byteArray = Streams.longToByte(rndValue);
@@ -249,9 +244,9 @@ public class TestStreams {
 		value = Streams.byteToString(byteArray);
 		assertEquals("Hello", value);
 
-		byteArray = Streams.stringToByte("äüöüöäüß?\"");
+		byteArray = Streams.stringToByte("Ã¤Ã¼Ã¶Ã¼Ã¶Ã¤Ã¼ÃŸ?\"");
 		value = Streams.byteToString(byteArray);
-		assertEquals("äüöüöäüß?\"", value);
+		assertEquals("Ã¤Ã¼Ã¶Ã¼Ã¶Ã¤Ã¼ÃŸ?\"", value);
 	}
 
 	/**
@@ -259,6 +254,7 @@ public class TestStreams {
 	 * {@link Streams#objectToByte(Object)} and
 	 * {@link Streams#byteToObject(byte[])}.
 	 */
+	@SuppressWarnings("ConstantConditions")
 	@Test
 	public void testObjectByte() {
 		byte[] byteArray;
@@ -274,7 +270,7 @@ public class TestStreams {
 		assertTrue(Streams.serializeObject(org).length > byteArray.length);
 
 		// test a string
-		org = "äüößAÜÖ!?  ";
+		org = "Ã¤Ã¼Ã¶ÃŸAÃœÃ–!?  ";
 		byteArray = Streams.objectToByte(org);
 		value = Streams.byteToObject(byteArray);
 		assertEquals(org, value.object);
@@ -356,10 +352,10 @@ public class TestStreams {
 	@Test
 	public void testWriteAndReadAll() {
 
-		final List<Object> objects = new ArrayList<Object>();
-		objects.add(5l);
+		final List<Object> objects = new ArrayList<>();
+		objects.add(5L);
 		objects.add(new Date());
-		objects.add("äüößÄÖÜ+\"*");
+		objects.add("Ã¤Ã¼Ã¶ÃŸÃ„Ã–Ãœ+\"*");
 		objects.add((byte) 5);
 		objects.add(21000);
 		objects.add(null);
@@ -384,17 +380,17 @@ public class TestStreams {
 		// test the reading of three sample objects
 		final byte[] sampleFile = Streams
 				.combineBytes(Streams.objectToByte(5),
-						Streams.objectToByte(500l),
+						Streams.objectToByte(500L),
 						Streams.objectToByte("Hello World"));
 		final WrappedByteBufferReader ret = new WrappedByteBufferReader(
 				ByteBuffer.wrap(sampleFile));
 
 		final Object o1 = Streams.readNextObject(ret);
-		assertEquals(new Integer(5), o1);
+		assertEquals(5, o1);
 		final Object o2 = Streams.readNextObject(ret);
-		assertEquals(new Long(500), o2);
+		assertEquals(500L, o2);
 		final Object o3 = Streams.readNextObject(ret);
-		assertEquals(new String("Hello World"), o3);
+		assertEquals("Hello World", o3);
 
 		boolean exception = false;
 		try {
@@ -414,7 +410,7 @@ public class TestStreams {
 	 * @throws Exception
 	 *             if an exception occurred
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "ConstantConditions"})
 	@Test
 	public void testAllTypes() throws Exception {
 		for (final Class<?> clazz : Streams.BYTE_TYPES) {
@@ -474,7 +470,7 @@ public class TestStreams {
 		// create a tmpFile
 		final File tmpFile = new File(System.getProperty("java.io.tmpdir"),
 				UUID.randomUUID().toString());
-		tmpFile.createNewFile();
+		Assert.assertTrue(tmpFile.createNewFile());
 		final FileOutputStream fos = new FileOutputStream(tmpFile);
 		for (int i = 0; i < 50000; i++) {
 			fos.write(Streams.objectToByte(i));

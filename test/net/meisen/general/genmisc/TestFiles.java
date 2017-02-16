@@ -1,10 +1,5 @@
 package net.meisen.general.genmisc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,10 +7,13 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
+import net.meisen.general.genmisc.raster.utilities.GeneralUtilities;
 import net.meisen.general.genmisc.types.Files;
 import net.meisen.general.genmisc.types.Streams;
 
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Tests the <code>Files</code> implementation
@@ -25,8 +23,7 @@ import org.junit.Test;
  */
 public class TestFiles {
 
-	private final static File tmpDir = new File(
-			System.getProperty("java.io.tmpdir"));
+	private final static File tmpDir = new File(System.getProperty("java.io.tmpdir"));
 
 	/**
 	 * Utilities for the test.
@@ -53,9 +50,8 @@ public class TestFiles {
 				throws IOException {
 
 			// create a temporary directory
-			final File tmpTestDir = new File(tmpDir, UUID.randomUUID()
-					.toString());
-			tmpTestDir.mkdir();
+			final File tmpTestDir = new File(tmpDir, UUID.randomUUID().toString());
+			assertTrue(tmpTestDir.mkdir());
 
 			// get the archive to unzip
 			final InputStream stream = Util.class.getClassLoader()
@@ -66,7 +62,7 @@ public class TestFiles {
 			Files.unzip(stream, tmpTestDir);
 
 			// cleanUp
-			Streams.closeIO(stream);
+			assertNull(Streams.closeIO(stream));
 
 			return tmpTestDir;
 		}
@@ -106,7 +102,7 @@ public class TestFiles {
 			// check the content of File3.txt
 			final String content = Files.readFromFile(new File(tmpTestDir,
 					"File4.txt"), "UTF8");
-			assertEquals("sƒ‹÷‹ƒ÷", content);
+			assertEquals("s√Ñ√ú√ñ√ú√Ñ√ñ", content);
 
 			files = Files.getCurrentFilelist(emptyDir);
 			subs = Files.getCurrentSubDirectories(emptyDir);
@@ -154,12 +150,12 @@ public class TestFiles {
 		final File mainDir = new File(tmpDir, rndFileName);
 
 		// make sure the file is deleted
-		mainDir.delete();
+		assertTrue(!mainDir.exists() || mainDir.delete());
 		assertEquals(mainDir.exists(), false);
 		assertEquals(Files.deleteDir(mainDir), true);
 
 		// create it and delete it
-		mainDir.mkdir();
+		assertTrue(mainDir.mkdir());
 		assertEquals(mainDir.exists(), true);
 		assertEquals(Files.deleteDir(mainDir), true);
 	}
@@ -174,7 +170,7 @@ public class TestFiles {
 	public void testDirectoryDeletionOfDirWithContent() throws IOException {
 		final String rndFileName = UUID.randomUUID().toString();
 		final File mainDir = new File(tmpDir, rndFileName);
-		mainDir.mkdir();
+		assertTrue(mainDir.mkdir());
 
 		// create some files and sub-directories
 		File lastDir = mainDir;
@@ -184,12 +180,12 @@ public class TestFiles {
 
 			if (i % 2 == 0) {
 				// create the directory
-				subFile.mkdir();
+				assertTrue(subFile.mkdir());
 				lastDir = subFile;
 			} else {
 
 				// create a file
-				subFile.createNewFile();
+				assertTrue(subFile.createNewFile());
 			}
 		}
 
@@ -213,18 +209,23 @@ public class TestFiles {
 		assertEquals(Files.removeExtension((String) null), null);
 		assertEquals(Files.removeExtension("myFile.test"), "myFile");
 		assertEquals(Files.removeExtension("myFile.test.backup"), "myFile.test");
-		assertEquals(Files.removeExtension("noExtensionFile"),
-				"noExtensionFile");
-		assertEquals(Files.removeExtension("C:\\test\\testFile.file"),
-				"testFile");
-		assertEquals(Files.removeExtension("C:\\testFile.file"), "testFile");
-		assertEquals(Files.removeExtension("C:\\"), null);
+		assertEquals(Files.removeExtension("noExtensionFile"), "noExtensionFile");
+
+		if (GeneralUtilities.isWindows()) {
+			assertEquals(Files.removeExtension("C:\\test\\testFile.file"), "testFile");
+			assertEquals(Files.removeExtension("C:\\testFile.file"), "testFile");
+			assertEquals(Files.removeExtension("C:\\"), null);
+		} else {
+			assertEquals(Files.removeExtension("/subdir/testFile.file"), "testFile");
+			assertEquals(Files.removeExtension("/testFile.file"), "testFile");
+			assertEquals(Files.removeExtension("/"), null);
+		}
 
 		// do some stuff with real files
 		final String rnd = UUID.randomUUID().toString();
 
 		final File testFile = new File(tmpDir, rnd);
-		testFile.mkdirs();
+		assertTrue(testFile.mkdirs());
 
 		assertEquals(Files.removeExtension(testFile), testFile.getName());
 		assertTrue(Files.deleteDir(testFile));
