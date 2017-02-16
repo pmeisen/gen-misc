@@ -97,7 +97,6 @@ public class DefaultExceptionCatalog extends HashMap<Integer, String> implements
 
             // load the properties
             final String encoding = Streams.guessEncoding(new ByteArrayInputStream(bytes), null);
-            System.out.println(encoding);
             properties.load(new InputStreamReader(new ByteArrayInputStream(bytes), encoding));
 
             // add the properties with the encoding we determined

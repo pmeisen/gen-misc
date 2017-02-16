@@ -264,8 +264,7 @@ public class TestDateRaster {
 				assertEquals(dRest.get("COUNT"), Integer.valueOf(0));
 				assertEquals(dRest.get("COUNTNONULLS"), Integer.valueOf(0));
 				assertEquals(dRest.get("SUM"), new BigDecimal(0));
-				assertEquals(dRest.get("GROUP"),
-						"Planned of Cleaner (Const: Const)");
+				assertEquals(dRest.get("GROUP"), "Planned of Cleaner (Const: Const)");
 				assertEquals(dRest.get("VALUER0"), "Some Value");
 			}
 
@@ -277,19 +276,13 @@ public class TestDateRaster {
 		modelData.setValue("GROUP1", "Real");
 		modelData.setValue("GROUP2", "Cleaner");
 		modelData.setValue("ISNULL", null);
-		modelData.setValue(MD_INT_START,
-				GeneralUtilities.getDate("20.01.1981 00:18:00"));
-		modelData.setValue(MD_INT_END,
-				GeneralUtilities.getDate("20.01.1981 00:54:00"));
+		modelData.setValue(MD_INT_START, GeneralUtilities.getDate("20.01.1981 00:18:00"));
+		modelData.setValue(MD_INT_END, GeneralUtilities.getDate("20.01.1981 00:54:00"));
 		raster.addModelData(modelData);
 
 		// add the data and check results
 		rasterModelData = raster.getAll();
 		assertEquals(rasterModelData.size(), 96);
-
-		rasterModelData.forEach(data -> {
-			System.out.println(data);
-		});
 
 		d = Collections.get(0, rasterModelData);
 		assertEquals(d.get("COUNT"), Integer.valueOf(1));

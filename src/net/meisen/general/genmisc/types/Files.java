@@ -1002,8 +1002,7 @@ public class Files {
         if (Charset.isSupported(encoding)) {
             ow = new OutputStreamWriter(fos, encoding);
         } else {
-            System.err
-                    .println("The specified encoding '"
+            System.err.println("The specified encoding '"
                             + encoding
                             + "' is not supported, the default encoding will be used instead.");
 

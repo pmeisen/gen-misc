@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -79,8 +80,7 @@ public class TestResource {
 
         // print the working directory
         System.out.println("The working directory is: " + workingDir);
-        System.out.println("- The following directory must be on the "
-                + "class-path: " + resourceDir);
+        System.out.println("- The following directory must be on the class-path: " + resourceDir);
         System.out.println("- The working directory cannot be write protected");
     }
 
@@ -375,7 +375,7 @@ public class TestResource {
     }
 
     /**
-     * Tests the retrieval of resources fromt he classpath
+     * Tests the retrieval of resources from the classpath
      *
      * @throws IOException if a file cannot be read or written
      */
@@ -393,10 +393,10 @@ public class TestResource {
         final String classPath = System.getProperty("java.class.path", ".");
         final String[] classPathElements = classPath.split(pathSep);
         File jarTestFile = null;
+        System.out.println(Arrays.asList(classPathElements));
         for (final String element : classPathElements) {
             final File posFile = new File(element);
-            if ("net-meisen-general-gen-dummy-TRUNK-SNAPSHOT.jar"
-                    .equals(posFile.getName())) {
+            if ("net-meisen-general-gen-dummy-TRUNK-SNAPSHOT.jar".equals(posFile.getName())) {
                 jarTestFile = posFile;
                 break;
             }
@@ -405,7 +405,7 @@ public class TestResource {
 
         // check the resources
         final Collection<ResourceInfo> files = Resource.getResources(testFileName, true, false);
-        System.out.println(files);
+
         // assertEquals("Expected to find exactly 4 files.", 4, files.size());
         assertTrue("The dummyRes '" + dummyRes.getCanonicalPath() + "' was not found.",
                 files.stream()
@@ -474,8 +474,7 @@ public class TestResource {
         final Class<?> clazz = newClassLoader.loadClass(Resource.class.getName());
         final Method m1 = clazz.getMethod("getResources", String.class, boolean.class, boolean.class);
 
-        resources = (Collection<ResourceInfo>) m1.invoke(null,
-                tmpFile.getName(), true, false);
+        resources = (Collection<ResourceInfo>) m1.invoke(null, tmpFile.getName(), true, false);
         assertEquals(resources.size(), 1);
 
         final Method m2 = clazz.getMethod("getResources", Pattern.class, boolean.class, boolean.class);

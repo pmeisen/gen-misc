@@ -40,8 +40,7 @@ public class TestResourceInfo {
 
         // print the working directory
         System.out.println("The working directory is: " + workingDir);
-        System.out.println("- The following directory must be on the "
-                + "class-path: " + resourceDir);
+        System.out.println("- The following directory must be on the class-path: " + resourceDir);
         System.out.println("- The working directory cannot be write protected");
     }
 
@@ -72,7 +71,7 @@ public class TestResourceInfo {
         // lets create a file as resource, which can be found via class-path but
         // is still a file
         final File resFile = new File(resourceDir, "file.txt");
-        System.out.println(resFile);
+
         info = new ResourceInfo(resFile.getName(), true);
         assertEquals(info.getInJarPath(), null);
         assertEquals(info.getJarPath(), null);
@@ -292,9 +291,7 @@ public class TestResourceInfo {
         info = new ResourceInfo(relPath, true);
         assertEquals(ResourceType.IN_JAR_FILE, info.getType());
 
-        assertTrue(info
-                .getFullPath()
-                .endsWith(
+        assertTrue(info.getFullPath().endsWith(
                         ".jar!/net/meisen/general/gendummy/g%c3%b6t%20me%20%c3%a4%20t%c3%b6st/a%20f%c3%b6le%20with%20special%20ch%c3%a4r%c3%a4cters.txt"));
         assertEquals(
                 "net/meisen/general/gendummy/göt me ä töst/a föle with special chäräcters.txt",
