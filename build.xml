@@ -3,7 +3,6 @@
 <project name="gen-misc">
   <include file="../tida-workspace/common-libs/ant-util/util-ant.xml"/>
 
-  <property name="jarFile" value="${ant.project.name}-TRUNK-SNAPSHOT.jar"/>
   <property name="testSuite" value="net.meisen.general.genmisc.AllTests"/>
 
   <target name="01-resolve-dependencies">
@@ -19,6 +18,6 @@
   </target>
 
   <target name="04-deploy" depends="02-compile-sources">
-    <build-jar jarFile="${jarFile}"/>
+    <build-jar />
   </target>
 </project>
