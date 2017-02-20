@@ -1,9 +1,9 @@
 package net.meisen.general.genmisc;
 
-import net.meisen.general.genmisc.raster.utilities.GeneralUtilities;
 import net.meisen.general.genmisc.resources.Resource;
 import net.meisen.general.genmisc.resources.ResourceInfo;
 import net.meisen.general.genmisc.types.Files;
+import net.meisen.general.genmisc.types.Misc;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -96,7 +96,7 @@ public class TestResource {
         assertEquals(isPath, true);
 
         // check a path on the file-system
-        if (GeneralUtilities.isWindows()) {
+        if (Misc.isWindows()) {
             isPath = Resource.isPathResolvable("C:\\");
             assertEquals(isPath, true);
         } else {
@@ -152,7 +152,7 @@ public class TestResource {
         assertEquals(path.endsWith("net/meisen/general/gendummy/dummy.txt"), true);
 
 		/*
-		 * check the resolution of an absolute path
+         * check the resolution of an absolute path
 		 */
         path = Resource.resolveResource(workingDir + file.getName());
         assertEquals(path, workingDir + file.getName());
