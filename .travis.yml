@@ -10,5 +10,6 @@ before_install:
   - wget https://github.com/pmeisen/tida-workspace/archive/master.zip -O /tmp/master.zip
   - unzip -o /tmp/master.zip -d $PWD../
   - ls -l
+  - ls -l ../
 install: true
 script: ant 03-run-test-suite
