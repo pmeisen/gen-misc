@@ -39,6 +39,7 @@ script: ant 03-run-test-suite 04-deploy
 
 after_success:
   - cd $MAVEN_M2
+  - git pull $GITHUB_URL
   - git add .
   - git commit -m "Travis automated build $TRAVIS_BUILD_NUMBER ($TRAVIS_BUILD_ID)"
   - git push $GITHUB_URL
