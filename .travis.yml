@@ -6,10 +6,14 @@ addons:
   apt:
     packages:
       - oracle-java8-installer
+cache:
+  directories:
+    - $HOME/.m2
 before_install:
   - wget https://github.com/pmeisen/tida-workspace/archive/master.zip -O /tmp/master.zip
-  - unzip -o /tmp/master.zip -d $PWD../
+  - unzip -o /tmp/master.zip -d $HOME
   - ls -l
-  - ls -l ../
+  - ls -l $HOME
+  - ls -l $PWD
 install: true
-script: ant 03-run-test-suite
+script: ant 03-run-test-suite 04-deploy
