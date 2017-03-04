@@ -288,8 +288,7 @@ public class TestFiles {
      */
     @Test
     public void testWritingAndReading() throws IOException {
-        final File file = new File(tmpDir, UUID.randomUUID().toString() + "."
-                + "test");
+        final File file = new File(tmpDir, UUID.randomUUID().toString() + ".test");
         final String fileName = Files.getCanonicalPath(file);
 
         // write something to the file
@@ -312,25 +311,20 @@ public class TestFiles {
      */
     @Test
     public void testIsInDirectory() throws IOException {
-        final File file = new File(tmpDir, UUID.randomUUID().toString() + "."
-                + "test");
+        final File file = new File(tmpDir, UUID.randomUUID().toString() + ".test");
 
         assertFalse(Files.isInDirectory(file, file));
-        assertFalse(Files.isInDirectory(file.getAbsolutePath(),
-                tmpDir.getParent()));
-        assertFalse(Files.isInDirectory(file.getAbsolutePath(),
-                tmpDir.getParentFile()));
+        assertFalse(Files.isInDirectory(file.getAbsolutePath(), tmpDir.getParent()));
+        assertFalse(Files.isInDirectory(file.getAbsolutePath(), tmpDir.getParentFile()));
 
         // create a new file
-        assertTrue(file.createNewFile());
+        assertTrue(String.valueOf(file), file.createNewFile());
 
         // check the file
-        assertFalse(Files.isInDirectory(file, file));
-        assertTrue(Files.isInDirectory(file, tmpDir));
-        assertTrue(Files.isInDirectory(file.getAbsolutePath(),
-                tmpDir.getParent()));
-        assertTrue(Files.isInDirectory(file.getAbsolutePath(),
-                tmpDir.getParentFile()));
+        assertFalse(String.valueOf(file), Files.isInDirectory(file, file));
+        assertTrue(String.valueOf(file), Files.isInDirectory(file, tmpDir));
+        assertTrue(String.valueOf(file), Files.isInDirectory(file.getAbsolutePath(), tmpDir.getParent()));
+        assertTrue(String.valueOf(file), Files.isInDirectory(file.getAbsolutePath(), tmpDir.getParentFile()));
 
         // delete the test-file
         assertTrue(file.delete());
