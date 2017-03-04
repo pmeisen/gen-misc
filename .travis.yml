@@ -16,4 +16,6 @@ before_install:
   - ls -l $HOME
   - ls -l $PWD
 install: true
+before_script:
+  - ls -l
 script: ant 03-run-test-suite 04-deploy
