@@ -12,6 +12,7 @@ before_install:
   - wget https://github.com/pmeisen/tida-workspace/archive/master.zip -O /tmp/master.zip
   - unzip -o /tmp/master.zip -d ../
   - mv ../tida-workspace-master ../tida-workspace
-
+  - ls -l /home/travis/.m2/repository
+  - ls -l /home/travis/.m2/repository/net/meisen/general
 install: true
 script: ant 03-run-test-suite 04-deploy
