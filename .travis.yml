@@ -12,7 +12,7 @@ cache:
 before_install:
   - wget https://github.com/pmeisen/tida-workspace/archive/master.zip -O /tmp/master.zip
   - unzip -o /tmp/master.zip -d ../
-  - mv -R ../tida-workspace-master ../tida-workspace
+  - mv ../tida-workspace-master ../tida-workspace
 
 install: true
 script: ant 03-run-test-suite 04-deploy
