@@ -11,11 +11,6 @@ cache:
     - $HOME/.m2
 before_install:
   - wget https://github.com/pmeisen/tida-workspace/archive/master.zip -O /tmp/master.zip
-  - unzip -o /tmp/master.zip -d $HOME
-  - ls -l
-  - ls -l $HOME
-  - ls -l $PWD
+  - unzip -o /tmp/master.zip -d /home/travis/build/pmeisen/
 install: true
-before_script:
-  - ls -l
 script: ant 03-run-test-suite 04-deploy
