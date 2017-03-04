@@ -4,13 +4,27 @@ import net.meisen.general.genmisc.resources.Resource;
 import net.meisen.general.genmisc.resources.ResourceInfo;
 import net.meisen.general.genmisc.unicode.UnicodeReader;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.FileNameMap;
 import java.net.URI;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -1003,8 +1017,8 @@ public class Files {
             ow = new OutputStreamWriter(fos, encoding);
         } else {
             System.err.println("The specified encoding '"
-                            + encoding
-                            + "' is not supported, the default encoding will be used instead.");
+                    + encoding
+                    + "' is not supported, the default encoding will be used instead.");
 
             ow = new OutputStreamWriter(fos);
         }
@@ -1051,8 +1065,7 @@ public class Files {
      * @throws FileNotFoundException if the specified file could not be found
      * @throws IOException           if the file could not be read
      */
-    public static String readFromFile(final File file, final String encoding)
-            throws FileNotFoundException, IOException {
+    public static String readFromFile(final File file, final String encoding) throws IOException {
 
         // get the stream to the file and read it
         final FileInputStream stream = new FileInputStream(file);
