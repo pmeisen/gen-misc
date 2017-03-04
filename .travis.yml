@@ -36,5 +36,5 @@ after_success:
   - cd $MAVEN_M2
   - git add .
   - git commit -m "Travis automated build $TRAVIS_BUILD_NUMBER ($TRAVIS_BUILD_ID)"
-  - git push $GITHUB_URL -q
+  - git push $GITHUB_URL >/dev/null
   - cd $TRAVIS_BUILD_DIR
