@@ -5,18 +5,36 @@ addons:
   apt:
     packages:
       - oracle-java8-installer
-cache:
-  directories:
-    - $HOME/.m2
+
+env:
+  global:
+    - secure: HfNoPGGZcCPoJVxgog+FDfcQCILozC8JjPWN3Sr4Cj8Rd4jzt7afeSppcN/WLNHcI8z3E0SZ5vJcMu5ZuR06b8x1lvBBfB0DvaXFAu2k/hhddmo5+nCuxFMfieTE1wvemKzT9jX9GMOtgSgHDYywGySwJ+fKXxlKhddqO6ijwVLTu8buynVmGz22OX2uhpbGser3/abS4+SwHx/ojerZ8ZgjNrNfwOEGG4ZkW7VWtghN5hs+2p1eVuZMDZothLzGDIiBjfk6Yjrgl5h2Pj/hxYRI2dK2qsWpnGaMfI9UvyVsj3npKrNZpzl5Z+lvsc1OVRP2zuhYtBSe6A7Tm9T87W17zmgZpJKsWnymWicTucneVQT1q4k8G37YLyjPtORsK6ZqOEp+VK/7Uv4nf2BOiZbYB05PzYwXxsS6n/Ou1W1yybo1QwJPIr9cVheGKBTWDl4W32fidQ2uStEesKzngTbTJ19ahumccstk/fTLr69JlC3WD3CEw5dnpvmgnYb5+Msc/joEy7tAVL00T341CmFdaBu1wTYknYZFGmSPSGWAzCiJr/eSVfZvaoPXQUwZJgWqHzZvS+EAKXX98malmNT24VOupjY/woup+FPm9Gp8XOOBf8LIY7uhR1ywGE7wQt5cKuiSy/W66KQzOsGvh+iiQ3XddEGwTyLQ9MDr0QE=
+    - secure: xeGUArwVLIx0CCWp34deTa0AkVQssMFAWLLHuXifg0TZaySjKLlVFdQjlrjchoz0z1RasoIFX2A3BW+J+ofpqYq0pkDZBSS5NLWVC4sx4SDlq0mGh+Ne+pjV5YOOhZ0BN8qV5kVGhP/vdz4MdQnSYYOLT9oBAlqtV53vS1F9PmOtDPRhtw5cMF02Fx3qQiVd45rj2uKRL26YZm+oAD4FY0tiV4sokRFuZqmH5SYF6869W3bDvHWY6Hpe6PXp+ZhribZLuODnGkmApT1Dkgy0wA1o5kacO+Dybi3GUo6zovSr4RZPIU0umVYv3yGxsXFh4SMd0/QngGm2EFXBkeAmdRc6oUDybsokhBXDbgOScBcpERN8D6fJ1d5Hqyk15NCjS+NqWM4a2DmfCfp74wDoUxq9ioA9ymwKGISZiy/tXWiC7yWRGy0Chh0GSx1h4fbmAurVb/1HMyi32+axwewwPHXFWfVmbEwvdra3SsTCypMgxJUjVqBPZr9CpIvZShEo53WKvx+yLhcW5RBZwS2Y2y4o5HWd+F/IePca7PyhxzINxs4uhtHhfp/9aAx1ZdOl6B0o5ES3cBLwLRTmhRkZ5X10FiZJjdX5WoLyDkRmn4d7VZrRtytt7oQsWOVHmvmpp++oRY0Q3QGfaoZGNKEuxwewsES/p+s4ROurid5uCLs=
+    - secure: bKNnVZ/C6AUC5BV+Qq29PV+Kq4X55ntkw1fUQQ8JRFJVtW7KscZO7n1RrXi0FbZBCRbJvOliXnHh74oQK/eTSHvCRwIPEzk7sjyyuSOsSkS8Udkzz7axlz96E99+qenw5M2Oqz9EC9qqB3zDOWRD31qn+I/vQanNgaCBfO8qyvq++H11CB52SJWSYAWwN5c11aqnatXg26UFdzOqMOKDU0JDdXurq9b0fGmGsfb1HqFAwkXv6ehKKI4qPsGtA53Lry3qDDEMZGktSapw4aGRWSGoSHjkNXyHn+twjcC+K4OFiXihiaNfp87PpU1WfG7PGbp+MlqgmMoZ0W+XVf/F+hM90UE6Xf8zPDqt8I82rpJwBIYaIIkw23/p8NTiVus+R9/+UboAB+zB1bMQaYkdbS6D73JavqVK6kS6NeytYhciwuuYCkgkp9ElNN8B2IJ9K9XJagg8GVF4um/PT0sFC3nTZp4NuTv28Ypjx4I9tHRx/JMywDn+mgG025FyT+2Mc2EEhERb171/8nAdslta2Rr5QyWV4pXMl0XdoRl63jgpWPOU2bpTWmxlr4YmWCCmHIiV+3AGUP+uPg+39QHZj3QUENtLdYYi9YBgcodt/8oCdwbOmpCr94M1Ne0KpkXN7dkmoHoW2yWT0SE6B8N3rCKmBqirPz62c+FhJFxMNyM=
+    - GITHUB_URL=https://$GITHUB_USER:$GITHUB_PASSWORD@github.com/pmeisen/tida-m2
+    - MAVEN_M2=$HOME/.m2
+
 before_install:
+  - git config --global user.name "$GITHUB_USER"
+  - git config --global user.email "$GITHUB_EMAIL"
+  - git config --global push.default matching
+
   - wget https://github.com/pmeisen/tida-workspace/archive/master.zip -O /tmp/master.zip
   - unzip -o /tmp/master.zip -d ../
   - mv ../tida-workspace-master ../tida-workspace
-  - ls -l /home/travis/.m2/repository
-  - ls -l /home/travis/.m2/repository/net/meisen/general
-  - find /home/travis/.m2/repository/net/meisen/general
+
+  - mkdir -p $MAVEN_M2
+  - cd $MAVEN_M2
+  - rm -R *
+  - git clone $GITHUB_URL .
+  - cd $TRAVIS_BUILD_DIR
 install: true
+
 script: ant 03-run-test-suite 04-deploy
 
-after_failure:
-    - find /home/travis/.m2/repository/net/meisen/general
+after_success:
+  - cd $MAVEN_M2
+  - git add .
+  - git commit -m "Travis automated build $TRAVIS_BUILD_NUMBER ($TRAVIS_BUILD_ID)"
+  - git push $GITHUB_URL
+  - cd $TRAVIS_BUILD_DIR
