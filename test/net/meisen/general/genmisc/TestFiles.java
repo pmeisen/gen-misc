@@ -323,8 +323,10 @@ public class TestFiles {
         // check the file
         assertFalse(String.valueOf(file), Files.isInDirectory(file, file));
         assertTrue(String.valueOf(file), Files.isInDirectory(file, tmpDir));
-        assertTrue(String.valueOf(file), Files.isInDirectory(file.getAbsolutePath(), tmpDir.getParent()));
-        assertTrue(String.valueOf(file), Files.isInDirectory(file.getAbsolutePath(), tmpDir.getParentFile()));
+        assertTrue(String.valueOf(file), Files.isInDirectory(file.getAbsolutePath(), tmpDir));
+        assertTrue(String.valueOf(file), Files.isInDirectory(file.getAbsoluteFile(), tmpDir));
+        assertTrue(String.valueOf(file), Files.isInDirectory(file.getAbsolutePath(), tmpDir.getAbsolutePath()));
+        assertTrue(String.valueOf(file), Files.isInDirectory(file.getAbsolutePath(), tmpDir.getAbsoluteFile()));
 
         // delete the test-file
         assertTrue(file.delete());

@@ -6,10 +6,6 @@ addons:
     packages:
       - oracle-java8-installer
 
-os:
-  - linux
-  - osx
-
 env:
   global:
     - secure: HfNoPGGZcCPoJVxgog+FDfcQCILozC8JjPWN3Sr4Cj8Rd4jzt7afeSppcN/WLNHcI8z3E0SZ5vJcMu5ZuR06b8x1lvBBfB0DvaXFAu2k/hhddmo5+nCuxFMfieTE1wvemKzT9jX9GMOtgSgHDYywGySwJ+fKXxlKhddqO6ijwVLTu8buynVmGz22OX2uhpbGser3/abS4+SwHx/ojerZ8ZgjNrNfwOEGG4ZkW7VWtghN5hs+2p1eVuZMDZothLzGDIiBjfk6Yjrgl5h2Pj/hxYRI2dK2qsWpnGaMfI9UvyVsj3npKrNZpzl5Z+lvsc1OVRP2zuhYtBSe6A7Tm9T87W17zmgZpJKsWnymWicTucneVQT1q4k8G37YLyjPtORsK6ZqOEp+VK/7Uv4nf2BOiZbYB05PzYwXxsS6n/Ou1W1yybo1QwJPIr9cVheGKBTWDl4W32fidQ2uStEesKzngTbTJ19ahumccstk/fTLr69JlC3WD3CEw5dnpvmgnYb5+Msc/joEy7tAVL00T341CmFdaBu1wTYknYZFGmSPSGWAzCiJr/eSVfZvaoPXQUwZJgWqHzZvS+EAKXX98malmNT24VOupjY/woup+FPm9Gp8XOOBf8LIY7uhR1ywGE7wQt5cKuiSy/W66KQzOsGvh+iiQ3XddEGwTyLQ9MDr0QE=
