@@ -2,6 +2,7 @@ package net.meisen.general.genmisc;
 
 import net.meisen.general.genmisc.resources.Resource;
 import net.meisen.general.genmisc.resources.ResourceInfo;
+import net.meisen.general.genmisc.resources.ResourceType;
 import net.meisen.general.genmisc.types.Files;
 import net.meisen.general.genmisc.types.Misc;
 import org.junit.AfterClass;
@@ -393,7 +394,7 @@ public class TestResource {
         final String classPath = System.getProperty("java.class.path", ".");
         final String[] classPathElements = classPath.split(pathSep);
         File jarTestFile = null;
-        System.out.println(Arrays.asList(classPathElements));
+
         for (final String element : classPathElements) {
             final File posFile = new File(element);
             if ("net-meisen-general-gen-dummy-TRUNK-SNAPSHOT.jar".equals(posFile.getName())) {
@@ -409,14 +410,14 @@ public class TestResource {
         // assertEquals("Expected to find exactly 4 files.", 4, files.size());
         assertTrue("The dummyRes '" + dummyRes.getCanonicalPath() + "' was not found.",
                 files.stream()
-                        .filter(f -> f.getFullPath().startsWith(File.separator) &&
+                        .filter(f -> f.getType().equals(ResourceType.FILE_SYSTEM_FILE) &&
                                 f.getFullPath().endsWith("dummy.txt"))
                         .findAny()
                         .orElse(null) != null);
         assertTrue("The dummySubRes '" + dummySubRes.getCanonicalPath() + "' was not found.",
                 files.stream()
-                        .filter(f -> f.getFullPath().startsWith(File.separator) &&
-                                f.getFullPath().endsWith("dir.sample/dummy.txt"))
+                        .filter(f -> f.getType().equals(ResourceType.FILE_SYSTEM_FILE) &&
+                                f.getFullPath().endsWith("dir.sample" + File.separator + "dummy.txt"))
                         .findAny()
                         .orElse(null) != null);
         assertTrue("The resource '"

@@ -194,7 +194,7 @@ public class TestResourceInfo {
         assertEquals(info.getInJarPath(), null);
         assertEquals(info.getJarPath(), null);
         assertEquals(info.getType(), ResourceType.FILE_SYSTEM_PATH);
-        assertTrue(info.getFullPath(), info.getFullPath().endsWith("dir.sample/"));
+        assertTrue(info.getFullPath(), info.getFullPath().endsWith("dir.sample" + File.separator));
     }
 
     /**
@@ -263,7 +263,7 @@ public class TestResourceInfo {
         assertTrue(file.exists());
 
         // the relative path
-        relPath = dir.getName() + "/" + file.getName();
+        relPath = dir.getName() + File.separator + file.getName();
 
         // check the result
         info = new ResourceInfo(relPath, true);
@@ -277,7 +277,7 @@ public class TestResourceInfo {
         assertTrue(file.exists());
 
         // the relative path
-        relPath = dir.getName() + "/" + file.getName();
+        relPath = dir.getName() + File.separator + file.getName();
 
         // check the result
         info = new ResourceInfo(relPath, true);

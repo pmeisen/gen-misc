@@ -117,8 +117,7 @@ public class ResourceInfo {
                 // set the defined stuff
                 setUrl(url, rootDir, isFile);
             } else {
-                throw new IllegalArgumentException("The path '" + urlPath
-                        + "' cannot be interpreted as resource path.");
+                throw new IllegalArgumentException("The path '" + urlPath + "' cannot be interpreted as resource path.");
             }
         }
         // check if its a directory or a file which exists and is absolute
@@ -237,10 +236,10 @@ public class ResourceInfo {
             final String protocol = url.getProtocol();
 
             if ("jar".equals(protocol)) {
-                final String jarFilePath = fullyResolvedPath
-                        .substring(0, fullyResolvedPath.indexOf(INJARMARKER) + INJARMARKER.length() - 1);
-                final String pathInJar = fullyResolvedPath
-                        .substring(fullyResolvedPath.indexOf(INJARMARKER) + INJARMARKER.length());
+                final String jarFilePath = fullyResolvedPath.substring(0, fullyResolvedPath.indexOf(INJARMARKER) +
+                        INJARMARKER.length() - 1);
+                final String pathInJar = fullyResolvedPath.substring(fullyResolvedPath.indexOf(INJARMARKER) +
+                        INJARMARKER.length());
                 final File jarFile = new File(jarFilePath);
 
                 if (jarFile.exists()) {
@@ -283,8 +282,7 @@ public class ResourceInfo {
                             setEmpty();
                         }
                     } catch (final IOException e) {
-                        throw new IllegalStateException("Cannot read jar at '"
-                                + jarPath + "'", e);
+                        throw new IllegalStateException("Cannot read jar at '" + jarPath + "'", e);
                     }
                 } else {
                     setEmpty();
@@ -384,7 +382,7 @@ public class ResourceInfo {
         String classPath;
 
         // make sure we don't have a absolute path for the classloader
-        if (path.startsWith("/")) {
+        if (path.startsWith("/") || path.startsWith("\\")) {
             classPath = path.substring(1);
         } else {
             classPath = path;
@@ -502,8 +500,7 @@ public class ResourceInfo {
      * <code>false</code>, i.e. its a directory
      */
     public boolean isFile() {
-        if (type == ResourceType.FILE_SYSTEM_FILE
-                || type == ResourceType.IN_JAR_FILE) {
+        if (type == ResourceType.FILE_SYSTEM_FILE || type == ResourceType.IN_JAR_FILE) {
             return true;
         } else {
             return false;
