@@ -607,8 +607,7 @@ public class ResourceInfo {
      */
     public static Collection<ResourceInfo> transformFromFileCollection(
             final File rootPath, final Collection<? extends File> files) {
-        return transformFromFileCollection(Files.getCanonicalPath(rootPath),
-                files);
+        return transformFromFileCollection(Files.getCanonicalPath(rootPath), files);
     }
 
     /**
