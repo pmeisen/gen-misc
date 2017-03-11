@@ -46,6 +46,10 @@ public class Files {
      * All defined extension, mime-types pairs
      */
     public final static Map<String, String> MIMETYPES = new HashMap<>();
+    /**
+     * The default mime-type used if not determinable by the file-name
+     */
+    public final static String DEFAULT_MIMETYPE = "text/plain";
 
     static {
 
@@ -79,11 +83,6 @@ public class Files {
                     + e.getLocalizedMessage() + "'");
         }
     }
-
-    /**
-     * The default mime-type used if not determinable by the file-name
-     */
-    public final static String DEFAULT_MIMETYPE = "text/plain";
 
     /**
      * This function checks a path to a directory, if it exists and if it is a
@@ -949,7 +948,7 @@ public class Files {
 
         // create a buffer for the files
         final byte[] readBuffer = new byte[1024];
-        int bytesIn = 0;
+        int bytesIn;
 
         // get all the files to be zipped
         final List<File> files = getDirectoryContent(sourceDir);
@@ -1037,8 +1036,7 @@ public class Files {
      * @throws FileNotFoundException if the specified file could not be found
      * @throws IOException           if the file could not be read
      */
-    public static String readFromFile(final String file)
-            throws FileNotFoundException, IOException {
+    public static String readFromFile(final String file) throws IOException {
         return readFromFile(new File(file));
     }
 
@@ -1050,8 +1048,7 @@ public class Files {
      * @throws FileNotFoundException if the specified file could not be found
      * @throws IOException           if the file could not be read
      */
-    public static String readFromFile(final File file)
-            throws FileNotFoundException, IOException {
+    public static String readFromFile(final File file) throws IOException {
         return readFromFile(file, null);
     }
 
@@ -1196,7 +1193,7 @@ public class Files {
      * @param destFile the destination
      * @return <code>true</code> if the <code>Resource</code> was copied,
      * otherwise <code>false</code>
-     * @throws IOException
+     * @throws IOException if the files could not be read or written
      */
     public static boolean copyResourceToFile(final String resource,
                                              final String destFile) throws IOException {
@@ -1213,7 +1210,7 @@ public class Files {
      * @param destFile the destination as <code>File</code>
      * @return <code>true</code> if the <code>Resource</code> was copied,
      * otherwise <code>false</code>
-     * @throws IOException
+     * @throws IOException if the files could not be read or written
      */
     public static boolean copyResourceToFile(final String resource,
                                              final File destFile) throws IOException {
@@ -1229,7 +1226,7 @@ public class Files {
      * @param destFile the destination <code>File</code>
      * @return <code>true</code> if the <code>Resource</code> was copied,
      * otherwise <code>false</code>
-     * @throws IOException
+     * @throws IOException if the files could not be read or written
      * @see ResourceInfo
      */
     public static boolean copyResourceToFile(final ResourceInfo resource,
