@@ -56,16 +56,16 @@ public class Collections {
      * Determines the 0-based position of the <code>v</code> within the
      * {@link Collection}
      *
-     * @param c the {@link Collection} to look in
-     * @param v the value to look for
+     * @param collection the {@link Collection} to look in
+     * @param value the value to look for
      * @return the 0-based position of the <code>v</code> within the collection,
      * or <code>-1</code> if the value could not be found
      * @see Objects#equals(Object, Object)
      */
-    public static <X> int getPosition(final Collection<X> c, X v) {
+    public static <X> int getPosition(final Collection<X> collection, X value) {
         int i = 0;
-        for (final X item : c) {
-            if (Objects.equals(item, v)) {
+        for (final X item : collection) {
+            if (Objects.equals(item, value)) {
                 return i;
             }
             i++;
@@ -79,22 +79,22 @@ public class Collections {
      * {@link Collection}
      *
      * @param position the position to retrieve the value from
-     * @param c        the {@link Collection} to get the value from
+     * @param collection        the {@link Collection} to get the value from
      * @return the value found on the specified position
      * @throws IndexOutOfBoundsException if the specified position is not within the range of the
      *                                   {@link Collection}
      */
-    public static <X> X get(final int position, final Collection<X> c) throws IndexOutOfBoundsException {
+    public static <X> X get(final int position, final Collection<X> collection) throws IndexOutOfBoundsException {
 
-        if (c.size() <= position || position < 0) {
+        if (collection.size() <= position || position < 0) {
             throw new IndexOutOfBoundsException("The position '" + position
-                    + "' is invalid for a Collection of size '" + c.size()
+                    + "' is invalid for a Collection of size '" + collection.size()
                     + "'");
-        } else if (c instanceof List) {
-            return ((List<X>) c).get(position);
+        } else if (collection instanceof List) {
+            return ((List<X>) collection).get(position);
         } else {
             int i = 0;
-            for (final X item : c) {
+            for (final X item : collection) {
                 if (i == position) {
                     return item;
                 }
@@ -142,22 +142,21 @@ public class Collections {
     /**
      * This method is used to filter a <code>Collection</code>.
      *
-     * @param c      the <code>Collection</code> to be filtered
+     * @param collection      the <code>Collection</code> to be filtered
      * @param filter the <code>Filter</code> to use, if <code>null</code> all
      *               values will be returned
      * @return the filtered <code>Collection</code>
      */
-    public static <T> Collection<T> filter(final Collection<T> c,
-                                           final Filter<T> filter) {
+    public static <T> Collection<T> filter(final Collection<T> collection, final Filter<T> filter) {
         final Collection<T> filtered = new ArrayList<>();
 
         // if no filter is specified we return all
         if (filter == null) {
-            filtered.addAll(c);
+            filtered.addAll(collection);
         } else {
 
             // check the filter for each item
-            for (final T item : c) {
+            for (final T item : collection) {
                 if (filter.check(item)) {
                     filtered.add(item);
                 }
@@ -191,29 +190,30 @@ public class Collections {
     /**
      * Compares two <code>Collection</code> instances
      *
-     * @param col1        the first <code>Collection</code> to compare with
-     * @param col2        the second <code>Collection</code> to compare with
+     * @param collection1        the first <code>Collection</code> to compare with
+     * @param collection2        the second <code>Collection</code> to compare with
      * @param ignoreOrder <code>true</code> to ignore any order within the
      *                    <code>Collection</code> instances - if there is one, otherwise
      *                    <code>false</code>
      * @return <code>true</code> if the <code>Collection</code> instances are
      * equal, otherwise <code>false</code>
      */
-    public static boolean checkEqual(final Collection<?> col1,
-                                     final Collection<?> col2, final boolean ignoreOrder) {
+    public static boolean checkEqual(final Collection<?> collection1,
+                                     final Collection<?> collection2,
+                                     final boolean ignoreOrder) {
 
-        if (col1 == null && col2 == null)
+        if (collection1 == null && collection2 == null)
             return true;
-        else if (col1 == null)
+        else if (collection1 == null)
             return false;
-        else if (col2 == null)
+        else if (collection2 == null)
             return false;
-        else if (col1.size() != col2.size())
+        else if (collection1.size() != collection2.size())
             return false;
 
         boolean found;
-        final List<Object> copyList1 = new ArrayList<>(col1);
-        for (final Object compareValue : col2) {
+        final List<Object> copyList1 = new ArrayList<>(collection1);
+        for (final Object compareValue : collection2) {
 
             // look for the value
             found = false;
