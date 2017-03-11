@@ -19,7 +19,7 @@ public class Collections {
     /**
      * A <code>Filter</code> is used to filter a collection
      *
-     * @param <T>
+     * @param <T> the type of the objects the parameter filters
      * @author pmeisen
      * @see Collections#filter(Collection, Filter)
      */
